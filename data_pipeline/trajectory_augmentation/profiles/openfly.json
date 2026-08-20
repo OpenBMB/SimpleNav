@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "dataset_key": "OpenFly_lerobot",
+  "paths": {
+    "train_split": "vln_train",
+    "output_dir": "vln_train_enhanced"
+  },
+  "world_pose": {
+    "mode": "adapter",
+    "class": "vln_aug.world_pose:OpenFlyAnnotationPoseIndex",
+    "path": "openfly_env/Annotation/train.json",
+    "source_kind": "original_openfly_annotation_world_pose",
+    "alignment_transform": "reflect-y-yaw",
+    "render_transform": "reflect-y-z-yaw"
+  },
+  "sampling": {
+    "image_stride_choices": [5],
+    "image_stride_policy": "fixed-per-episode",
+    "image_interval_seed": 20260718
+  },
+  "render": {
+    "image_width": 224,
+    "image_height": 224
+  },
+  "selection": {
+    "retain_fraction": 1.0,
+    "balanced_image_strides": true,
+    "include_scene_ids": [
+      "env_airsim_16",
+      "env_airsim_18",
+      "env_airsim_23",
+      "env_airsim_26",
+      "env_airsim_gz",
+      "env_airsim_sh"
+    ],
+    "seed": 20260717,
+    "sample_per_stride": 1
+  },
+  "sample_episode_indices": []
+}
