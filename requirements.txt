@@ -1,3 +1,0 @@
-# Compatibility entry point for users who install with pip.
-# pyproject.toml is the single source of truth for dependency versions.
--e .
