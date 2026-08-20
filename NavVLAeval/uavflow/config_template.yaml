@@ -1,0 +1,96 @@
+# Copy to a run-specific YAML, then replace paths, scene and GPU values.
+benchmark:
+  name: uavflow
+  class_path: NavVLAeval.uavflow.benchmark:UAVFlowBenchmarkSpec
+  max_steps: 15
+  max_samples: null # null | positive integer
+  kwargs:
+    stop_policy: small_delta # small_delta
+    small_delta_pos: 0.03
+    small_delta_yaw: 1.0
+    small_delta_steps: 10
+
+input:
+  type: uavflow_json
+  adapter_class_path: NavVLAeval.uavflow.inputs:UAVFlowJsonInputAdapter
+  namespace: uavflow_eval
+  path: /path/to/input_json_or_directory
+  instruction_type: instruction # instruction | goal
+  scene_id: DowntownWest
+
+model:
+  model_class_path: NavVLAeval.common.model.model_wrappers:StarVLAEvalModel
+  framework_name: navvla_cpm
+  repo_root: ../..
+  checkpoint: /path/to/checkpoint/pytorch_model.pt
+  unnorm_key: vln_train_train
+  inference_seed: 42 # null | integer
+  config_overrides:
+    framework:
+      qwenvl:
+        base_vlm: /path/to/MiniCPM-V-4.6
+
+dataset:
+  dataset_py: navvla_uavflow_online
+  runtime_adapter: uavflow
+  action_type: anchor_relative_body_frame_xyz_yaw
+  action_dim: 4
+  state_dim: 0
+  include_state: false # true | false
+  action_horizon: 8
+  history_selection: bats # bats | recent | uniform
+  history_image_frames: null # null = token-budget cap | non-negative integer cap
+  history_update_mode: action_observations # action_observations | post_action
+  dataset_name: uavflow
+  eval_image_fps: 0.2
+  bats_epsilon: 0.1
+  bats_k: 4.0
+  use_dynamic_bats_k: true # true | false
+  bats_sampling_mode: priority_capped # priority_capped | independent
+  bats_seed: 42
+  bats_token_budget: 1024
+  budget_num_cameras: 1
+  current_visual_tokens: 64
+  history_visual_tokens: 4
+  tvi_tokens: 1
+
+env:
+  type: unrealzoo
+  backend_class_path: NavVLAeval.common.simulators.unrealzoo.backend:UnrealZooEnvironmentBackend
+  planner_class_path: NavVLAeval.common.simulators.unrealzoo.backend:UnrealZooBackendPlanner
+  kwargs:
+    env_id: UnrealTrack-DowntownWest-ContinuousColor-v0
+    scene_name: DowntownWest
+    unreal_env_root: /path/to/UAV-Flow/env
+    render_lib_root: /path/to/ue_runtime
+    binary_path: /path/to/UnrealZoo_binary
+    unrealzoo_gym_root: /path/to/unrealzoo-gym
+    resolution: [256, 256]
+    camera_id: 0
+    viewmode: lit # lit | unlit
+    offscreen: true # true | false
+    display: null # null | display string
+    sleep_time: 30
+    post_connect_warmup_sec: 10.0
+    connect_retries: 24
+    connect_retry_interval: 10.0
+    configure_ue_after_connect: false # true | false
+    agent_categories: [player]
+    population_min: 2
+    population_max: 2
+    random_target: false # true | false
+    execute_waypoints_per_step: 8 # null | positive integer
+
+parallel:
+  gpu_ids: [0]
+  partition_mode: contiguous_episode_chunks
+  worker_timeout_sec: 0
+
+output:
+  root: /path/to/eval_result/uavflow_parallel
+  run_name: uavflow_eval
+  save_step_artifacts: true # true | false
+  save_images: false # true | false
+  action_observation_image_policy: step # step | action | both | none
+  image_cameras: [image]
+  metrics: [nDTW]

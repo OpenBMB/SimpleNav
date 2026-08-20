@@ -1,0 +1,122 @@
+benchmark:
+  name: vlnce_r2r
+  class_path: NavVLAeval.vlnce.r2r.benchmark:R2RBenchmarkSpec
+  max_steps: 200
+  max_samples: null
+  kwargs:
+    task_name: r2r
+    split: val_unseen
+    success_distance: 3.0
+    stop_on_success_radius: false
+
+input:
+  type: vlnce_r2r
+  adapter_class_path: NavVLAeval.vlnce.r2r.inputs:R2RInputAdapter
+  namespace: r2r_val_unseen
+  path: ../../../local/data/VLN-CE
+  task_name: r2r
+  split: val_unseen
+
+model:
+  model_class_path: NavVLAeval.common.model.model_wrappers:StarVLAEvalModel
+  framework_name: navvla_qwen35_cpm
+  repo_root: ../../..
+  checkpoint: ../../../local/checkpoints/vlnce/checkpoints/steps_8000_pytorch_model.pt
+  unnorm_key: vln_train_train
+  inference_seed: 42
+  config_overrides:
+    framework:
+      name: navvla_qwen35_cpm
+      qwenvl:
+        base_vlm: ../../../local/models/Qwen3.5-4B
+        attn_implementation: flash_attention_2
+        max_text_tokens: 2048
+      navvla:
+        use_platform_text: true
+        tvi_mode: time_yaw
+        history_visual_tokens: 4
+        long_memory_source_visual_tokens: 4
+        long_memory_visual_tokens: 0
+        current_visual_tokens: 64
+        visual_token_profile: qwen3_5_4b_postmerge_pool4_256_mmap
+        visual_cache_stage: vit_postmerge_pool4
+        visual_cache_input_resize: [256, 256]
+        visual_cache_encoder_ckpt: ../../../local/models/Qwen3.5-4B
+      action_model:
+        action_dim: 4
+        action_horizon: 8
+        max_seq_len: 2048
+        diffusion_model_cfg:
+          cross_attention_dim: 2560
+          interleave_self_attention: true
+
+dataset:
+  runtime_adapter: vlnce
+  dataset_py: vlnce_r2r
+  dataset_name: r2r
+  input_style: navvla
+  action_type: anchor_relative_body_frame_xyz_yaw
+  action_dim: 4
+  state_dim: 0
+  include_state: false
+  action_horizon: 8
+  required_cameras: [front, left, right, rear]
+  history_selection: bats
+  history_image_frames: null
+  history_update_mode: action_observations
+  bats_epsilon: 0.1
+  bats_k: 4.0
+  use_dynamic_bats_k: true
+  bats_sampling_mode: priority_capped
+  bats_seed: 42
+  bats_token_budget: 1024
+  budget_num_cameras: 4
+  current_visual_tokens: 64
+  history_visual_tokens: 4
+  tvi_tokens: 1
+
+env:
+  type: habitat
+  backend_class_path: NavVLAeval.common.simulators.habitat.backend:VLNCE031HabitatBackend
+  planner_class_path: NavVLAeval.common.simulators.habitat.backend:VLNCE031HabitatBackendPlanner
+  kwargs:
+    data_root: ../../../local/data/VLN-CE
+    evt_bench_root: ../../../local/simulators/VLN-CE/Evt-bench
+    habitat_lab_root: ../../../local/simulators/VLN-CE/Evt-bench/habitat-lab
+    habitat_sim_site_packages: ../../../local/simulators/VLN-CE/build_py310_habitat_sim_031/lib/python3.10/site-packages
+    nvidia_egl_root: ../../../local/simulators/nvidia-egl
+    split: val_unseen
+    success_distance: 3.0
+    image_size: 256
+    camera_height: 1.25
+    max_episode_steps: 200
+    task_name: r2r
+    seed: 0
+    continuous_control_mode: collision_slide_pose_delta
+    capture_action_observations: true
+    action_adapter_class_path: NavVLAeval.common.simulators.habitat.action_adapter:BodyFrameContinuousActionAdapter
+    action_adapter_kwargs:
+      step_scale: 1.0
+      min_delta: 0.001
+      enable_lateral: true
+      lateral_sign: -1.0
+      yaw_sign: -1.0
+      action_index: 0
+    execute_waypoints_per_step: 8
+
+parallel:
+  gpu_ids: [0, 1, 2, 3, 4, 5, 6, 7]
+  partition_mode: contiguous_episode_chunks
+  worker_timeout_sec: 0
+
+output:
+  root: ../../../local/eval_results/vlnce
+  run_name: r2r_qwen35_rxr_step8000_val_unseen
+  save_step_artifacts: true
+  save_images: false
+  action_observation_image_policy: step
+  image_cameras: [front, left, right, rear]
+  metrics: [SR, OSR, NE, SPL, nDTW, path_length, steps_taken]
+
+stop_rule: mean_adjacent_waypoint_translation
+stop_threshold: 0.03
