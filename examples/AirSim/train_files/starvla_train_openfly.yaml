@@ -1,0 +1,80 @@
+run_id: airsim_openfly_qwenoft
+run_root_dir: results/Checkpoints
+seed: 42
+trackers: [jsonl, wandb]
+wandb_entity: fulanya55-hit
+wandb_project: airsim_openfly
+is_debug: false
+
+framework:
+  name: QwenOFT
+  qwenvl:
+    base_vlm: ./playground/Pretrained_models/Qwen3-VL-4B-Instruct
+    attn_implementation: flash_attention_2
+    vl_hidden_dim: 2048
+  action_model:
+    action_model_type: MLP
+    action_hidden_dim: 1024
+    hidden_size: 1024
+    add_pos_embed: false
+    max_seq_len: 1024
+    action_dim: 4
+    state_dim: 8
+    action_horizon: 1
+    future_action_window_size: 0
+    past_action_window_size: 0
+
+  reduce_in_full_precision: true
+
+datasets:
+  vla_data:
+    dataset_py: airsim_openfly_datasets
+    data_root_dir: playground/Datasets/AIRSIM_OPENFLY
+    data_mix: airsim_openfly_train
+    split: train
+    include_state: true
+    normalize_action: true
+    normalize_state: true
+    history_action_chunk_len: 2
+    history_image_frames: 2
+    keyframe_selection_mode: openfly_action_change
+    shuffle: true
+    obs_image_size: [256, 256]
+    action_type: body_frame_xyz_yaw
+    per_device_batch_size: 1
+    load_all_data_for_training: true
+    obs: ["front_image"]
+    num_workers: 8
+
+trainer:
+  epochs: 2
+  max_train_steps: 100000
+  num_warmup_steps: 5000
+  save_interval: 5000
+  eval_interval: 100
+  learning_rate:
+    base: 2.5e-05
+    qwen_vl_interface: 5.0e-05
+    action_model: 1.0e-04
+  lr_scheduler_type: cosine_with_min_lr
+  scheduler_specific_kwargs:
+    min_lr: 1.0e-06
+  freeze_modules: ''
+  max_grad_norm: 1.0
+  warmup_ratio: 0.1
+  weight_decay: 0.0
+  logging_frequency: 10
+  gradient_clipping: 1.0
+  gradient_accumulation_steps: 1
+
+  optimizer:
+    name: AdamW
+    betas: [0.9, 0.95]
+    eps: 1.0e-08
+    weight_decay: 1.0e-08
+
+  is_resume: false
+  resume_epoch: null
+  resume_step: null
+  enable_gradient_checkpointing: true
+  enable_mixed_precision_training: true
