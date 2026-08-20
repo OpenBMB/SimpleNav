@@ -1,0 +1,98 @@
+benchmark:
+  name: aerialvln
+  class_path: NavVLAeval.aerialvln.benchmark:AerialVLNBenchmarkSpec
+  max_steps: 180
+  max_samples: null
+  kwargs:
+    success_radius: 20.0
+    termination_mode: max_steps
+
+input:
+  type: aerialvln_json
+  adapter_class_path: NavVLAeval.aerialvln.inputs:AerialVLNJsonInputAdapter
+  roots:
+    - namespace: aerialvln_val_seen
+      path: ../../local/data/AerialVLN/aerialvln_json/val_seen.json
+  scene_ids: [2, 3, 4, 5, 8, 10, 11, 12, 14, 16, 17, 20, 22, 23, 26]
+
+model:
+  model_class_path: NavVLAeval.common.model.model_wrappers:StarVLAEvalModel
+  framework_name: navvla_qwen35_cpm
+  repo_root: ../..
+  checkpoint: ../../local/checkpoints/aerialvln/final_model/pytorch_model.pt
+  unnorm_key: vln_train_enhanced_lerobot_merged_remaining_20260813_vln_train
+  inference_seed: 42
+  config_overrides:
+    framework:
+      qwenvl:
+        base_vlm: ../../local/models/Qwen3.5-4B
+      navvla:
+        tvi_mode: learned_token
+        action_placeholder_count: 32
+
+dataset:
+  dataset_py: navvla_aerialvln_online
+  runtime_adapter: aerialvln
+  input_style: navvla
+  action_type: anchor_relative_body_frame_xyz_yaw
+  action_dim: 4
+  state_dim: 0
+  include_state: false
+  action_horizon: 8
+  required_cameras: [front]
+  history_selection: bats
+  history_image_frames: null
+  history_update_mode: action_observations
+  bats_epsilon: 0.1
+  bats_k: 4.0
+  use_dynamic_bats_k: true
+  bats_sampling_mode: priority_capped
+  bats_seed: 42
+  bats_token_budget: 1024
+  budget_num_cameras: 1
+  current_visual_tokens: 64
+  history_visual_tokens: 4
+  tvi_tokens: 1
+  current_wrapper_tokens: 2
+  history_wrapper_tokens: 0
+  history_candidate_source_stride: 5
+  include_aerialvln_prompt_prefix: false
+
+env:
+  type: airsim
+  backend_class_path: NavVLAeval.common.simulators.airsim.backend:AirSimEnvironmentBackend
+  planner_class_path: NavVLAeval.common.simulators.airsim.backend:AirSimBackendPlanner
+  kwargs:
+    env_root: ../../local/data/AerialVLN/AerialVLN_env
+    layout: aerialvln
+    render_lib_root: ../../local/simulators/airsim_runtime
+    settings_profile: aerialvln
+    sensor_profile: aerialvln
+    camera_name: front_0
+    base_airsim_port: 42451
+    startup_timeout: 120.0
+    episode_startup_settle_sec: 0.0
+    render_warmup_sec: 25.0
+    teleport_render_sync_frames: 3
+    ignore_collision: true
+    reset_ignore_collision: true
+    capture_action_observations: true
+    action_execution_mode: teleport_each_waypoint
+    execute_waypoints_per_step: 8
+    action_waypoint_semantics: anchor_relative_body_frame_xyz_yaw
+    airsim_z_sign: 1.0
+    ue_args: [-RenderOffscreen, -NoSound, -NoVSync]
+
+parallel:
+  gpu_ids: [0]
+  partition_mode: contiguous_episode_chunks
+  worker_timeout_sec: 0
+
+output:
+  root: ../../local/eval_results/aerialvln
+  run_name: qwen35_aerialvln_portable
+  save_step_artifacts: true
+  save_images: false
+  action_observation_image_policy: step
+  image_cameras: [image]
+  metrics: [SR, OSR, NE, SPL, standard_SPL, path_length, gt_path_length, steps_taken]

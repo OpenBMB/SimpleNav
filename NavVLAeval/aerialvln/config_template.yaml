@@ -1,0 +1,90 @@
+# Copy to a run-specific YAML, then replace paths, split and GPU/port values.
+benchmark:
+  name: aerialvln
+  class_path: NavVLAeval.aerialvln.benchmark:AerialVLNBenchmarkSpec
+  max_steps: 150
+  max_samples: null # null | positive integer
+  kwargs:
+    success_radius: 20.0
+
+input:
+  type: aerialvln_json
+  adapter_class_path: NavVLAeval.aerialvln.inputs:AerialVLNJsonInputAdapter
+  namespace: aerialvln_s_val_seen
+  path: /path/to/aerialvln_eval.jsonl
+  scene_ids: [10] # [] | [scene_id, ...]
+
+model:
+  model_class_path: NavVLAeval.common.model.model_wrappers:StarVLAEvalModel
+  framework_name: navvla_cpm
+  repo_root: ../..
+  checkpoint: /path/to/checkpoint/pytorch_model.pt
+  unnorm_key: aerialvln
+  inference_seed: 42 # null | integer
+  config_overrides:
+    framework:
+      qwenvl:
+        base_vlm: /path/to/MiniCPM-V-4.6
+
+dataset:
+  dataset_py: navvla_aerialvln_online
+  runtime_adapter: aerialvln
+  input_style: navvla
+  action_type: anchor_relative_body_frame_xyz_yaw
+  action_dim: 4
+  state_dim: 0
+  include_state: false # true | false
+  action_horizon: 8
+  history_selection: bats # bats | recent | uniform
+  history_image_frames: null # null = token-budget cap | non-negative integer cap
+  history_update_mode: action_observations # action_observations | post_action
+  dataset_name: aerialvln_s_train
+  bats_epsilon: 0.1
+  bats_k: 4.0
+  use_dynamic_bats_k: true # true | false
+  bats_sampling_mode: priority_capped # priority_capped | independent
+  bats_seed: 42
+  bats_token_budget: 1024
+  budget_num_cameras: 1
+  current_visual_tokens: 64
+  history_visual_tokens: 4
+  tvi_tokens: 1
+
+env:
+  type: airsim
+  backend_class_path: NavVLAeval.common.simulators.airsim.backend:AirSimEnvironmentBackend
+  planner_class_path: NavVLAeval.common.simulators.airsim.backend:AirSimBackendPlanner
+  kwargs:
+    env_root: /path/to/AerialVLN_env
+    layout: aerialvln
+    render_lib_root: /path/to/airsim_runtime
+    settings_profile: aerialvln
+    sensor_profile: aerialvln
+    camera_name: front_0
+    base_airsim_port: 41451
+    startup_timeout: 120
+    episode_startup_settle_sec: 3
+    render_warmup_sec: 0
+    teleport_render_sync_frames: 3
+    ignore_collision: true # true | false
+    reset_ignore_collision: true # true | false
+    capture_action_observations: true # true | false
+    action_execution_mode: teleport_each_waypoint # teleport_each_waypoint | teleport_final | path
+    execute_waypoints_per_step: 8 # null | positive integer
+    action_waypoint_semantics: anchor_relative_body_frame_xyz_yaw
+    airsim_z_sign: 1 # 1 | -1
+    ue_args: [-RenderOffscreen, -NoSound, -NoVSync]
+
+parallel:
+  gpu_ids: [0, 2]
+  partition_mode: contiguous_episode_chunks
+  worker_timeout_sec: 0
+
+output:
+  root: /path/to/eval_result/aerialvln_parallel
+  run_name: aerialvln_eval
+  save_step_artifacts: true # true | false
+  save_images: false # true | false
+  action_observation_image_policy: step # step | action | both | none
+  image_cameras: [image]
+  metrics: [SR, OSR, NE, SPL, standard_SPL, path_length, gt_path_length]

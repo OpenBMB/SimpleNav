@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "dataset_key": "AerialVLN_lerobot",
+  "paths": {
+    "train_split": "vln_train",
+    "output_dir": "vln_train_enhanced"
+  },
+  "world_pose": {
+    "mode": "adapter",
+    "class": "vln_aug.world_pose:AerialVLNOriginalPoseIndex",
+    "path": "aerialvln_json/train.json",
+    "source_kind": "original_aerialvln_reference_path_world_pose",
+    "alignment_transform": "identity",
+    "render_transform": "identity"
+  },
+  "sampling": {
+    "image_stride_choices": [5],
+    "image_stride_policy": "fixed-per-episode",
+    "image_interval_seed": 0
+  },
+  "render": {
+    "image_width": 224,
+    "image_height": 224
+  },
+  "selection": {
+    "seed": 20260716,
+    "sample_per_stride": 1
+  },
+  "sample_episode_indices": []
+}
