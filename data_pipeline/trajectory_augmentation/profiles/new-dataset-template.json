@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "dataset_key": "NewDataset_lerobot",
+  "paths": {
+    "train_split": "vln_train",
+    "output_dir": "vln_train_enhanced"
+  },
+  "world_pose": {
+    "mode": "adapter",
+    "class": "your_package.pose_adapter:NewDatasetPoseIndex",
+    "path": "annotations/train.json",
+    "options": {},
+    "source_kind": "new_dataset_absolute_xyz_yaw",
+    "alignment_transform": "identity",
+    "render_transform": "identity"
+  },
+  "sampling": {
+    "image_stride_choices": [5],
+    "image_stride_policy": "fixed-per-episode",
+    "image_interval_seed": 0
+  },
+  "render": {
+    "image_width": 224,
+    "image_height": 224
+  },
+  "selection": {
+    "include_scene_ids": [],
+    "exclude_scene_ids": [],
+    "seed": 0,
+    "sample_per_stride": 1
+  },
+  "trajectory": {
+    "control_frequency_hz": 1.0,
+    "speed_mean_mps": 1.0,
+    "speed_std_mps": 0.05,
+    "speed_min_mps": 0.9,
+    "speed_max_mps": 1.1,
+    "turn_slowdown_enabled": true,
+    "turn_speed_min_factor": 0.55,
+    "turn_curvature_start_rad_per_m": 0.08,
+    "turn_curvature_full_rad_per_m": 0.45,
+    "turn_smoothing_multiplier": 2.0
+  },
+  "sample_episode_indices": []
+}

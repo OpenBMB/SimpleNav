@@ -1,0 +1,91 @@
+benchmark:
+  name: uavflow
+  class_path: NavVLAeval.uavflow.benchmark:UAVFlowBenchmarkSpec
+  max_steps: 15
+  max_samples: 10
+  kwargs:
+    stop_policy: small_delta
+    small_delta_pos: 0.03
+    small_delta_yaw: 1.0
+    small_delta_steps: 10
+
+input:
+  type: uavflow_json
+  adapter_class_path: NavVLAeval.uavflow.inputs:UAVFlowJsonInputAdapter
+  namespace: uavflow_eval
+  path: ../../local/data/UAV-Flow/input_jsons
+  instruction_type: instruction
+  scene_id: DowntownWest
+
+model:
+  model_class_path: NavVLAeval.common.model.model_wrappers:StarVLAEvalModel
+  framework_name: navvla_cpm
+  repo_root: ../..
+  checkpoint: ../../local/checkpoints/uavflow/pytorch_model.pt
+  unnorm_key: vln_train_train
+  inference_seed: 42
+  config_overrides:
+    framework:
+      qwenvl:
+        base_vlm: ../../local/models/MiniCPM-V-4.6
+
+dataset:
+  runtime_adapter: uavflow
+  dataset_py: navvla_uavflow_online
+  action_type: anchor_relative_body_frame_xyz_yaw
+  action_horizon: 8
+  history_selection: bats
+  history_update_mode: action_observations
+  bats_epsilon: 0.1
+  bats_k: 4.0
+  use_dynamic_bats_k: true
+  bats_sampling_mode: priority_capped
+  bats_seed: 42
+  bats_token_budget: 1024
+  budget_num_cameras: 1
+  current_visual_tokens: 64
+  history_visual_tokens: 4
+  tvi_tokens: 1
+  state_dim: 0
+  eval_image_fps: 0.2
+
+env:
+  type: unrealzoo
+  backend_class_path: NavVLAeval.common.simulators.unrealzoo.backend:UnrealZooEnvironmentBackend
+  planner_class_path: NavVLAeval.common.simulators.unrealzoo.backend:UnrealZooBackendPlanner
+  kwargs:
+    env_id: UnrealTrack-DowntownWest-ContinuousColor-v0
+    scene_name: DowntownWest
+    unreal_env_root: ../../local/simulators/UAV-Flow/env
+    render_lib_root: ../../local/simulators/unreal_runtime
+    binary_path: ../../local/simulators/UAV-Flow/UnrealZoo_UE5_6_Linux_v3.0.0/Linux/UnrealZoo_UE5_6/Binaries/Linux/UnrealZoo_UE5_6
+    unrealzoo_gym_root: ../../local/simulators/unrealzoo-gym
+    resolution: [256, 256]
+    camera_id: 0
+    viewmode: lit
+    offscreen: true
+    display: null
+    sleep_time: 30
+    post_connect_warmup_sec: 10.0
+    connect_retries: 24
+    connect_retry_interval: 10.0
+    configure_ue_after_connect: false
+    agent_categories: [player]
+    population_min: 2
+    population_max: 2
+    random_target: false
+    execute_waypoints_per_step: 8
+
+parallel:
+  gpu_ids: [0]
+  partition_mode: contiguous_episode_chunks
+  worker_timeout_sec: 0
+
+output:
+  root: ../../local/eval_results/uavflow
+  run_name: uavflow_portable
+  save_step_artifacts: true
+  save_images: false
+  action_observation_image_policy: step
+  image_cameras: [image]
+  metrics: [nDTW]
