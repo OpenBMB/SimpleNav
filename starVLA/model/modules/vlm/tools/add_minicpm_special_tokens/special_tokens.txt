@@ -1,4 +1,0 @@
-<think>
-</think>
-<action>
-</action>
