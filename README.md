@@ -14,7 +14,9 @@
   <a href="https://fulanya55.github.io/starVLA/">Project Page</a> ·
   <a href="data_pipeline/README.md">Data Pipeline</a> ·
   <a href="docs/guides/README.md">Documentation</a> ·
-  <a href="docs/guides/BENCHMARKS_RELEASE01.md">Results</a>
+  <a href="docs/guides/BENCHMARKS_RELEASE01.md">Results</a> ·
+  <a href="https://www.modelscope.cn/organization/SimpleNav">Datasets &amp; Simulators</a> ·
+  <a href="https://www.modelscope.cn/models/fulanya/masaic_ckpt/files">Checkpoints</a>
 </p>
 
 SimpleNAV connects heterogeneous navigation data, long-horizon VLA models, training, and benchmark evaluation through explicit interfaces. It supports aerial and indoor navigation, keeps dataset-specific coordinate and simulator semantics in adapters, and uses shared model, action, artifact, and evaluation contracts.
@@ -122,7 +124,7 @@ Each preview shows one rollout trajectory. Open the [project-page video gallery]
 
 Public resources:
 
-- [Datasets and simulator environments](https://www.modelscope.cn/profile/fulanya?tab=dataset)
+- [Datasets and simulator environments](https://www.modelscope.cn/organization/SimpleNav)
 - [SimpleNAV checkpoints](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files)
 
 Place downloaded packages in the repository-relative `local/` layout below.

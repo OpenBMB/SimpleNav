@@ -4,7 +4,7 @@
 
 ## 便携配置
 
-Benchmark 数据和仿真环境从 [ModelScope 数据主页](https://www.modelscope.cn/profile/fulanya?tab=dataset) 下载，权重从 [ModelScope 模型主页](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files) 下载。
+Benchmark 数据和仿真环境从 [ModelScope 数据主页](https://www.modelscope.cn/organization/SimpleNav) 下载，权重从 [ModelScope 模型主页](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files) 下载。
 
 | Benchmark | 配置 | 入口 | Backend |
 | --- | --- | --- | --- |

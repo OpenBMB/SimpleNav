@@ -17,7 +17,7 @@
 
 原始数据、生成数据和模拟器场景不放入 Git。模型使用的数据放在 `local/data/`，或在本地配置中指向其他存储位置。
 
-发布的数据集和仿真环境从 [SimpleNAV ModelScope 数据主页](https://www.modelscope.cn/profile/fulanya?tab=dataset) 下载。
+发布的数据集和仿真环境从 [SimpleNAV ModelScope 数据主页](https://www.modelscope.cn/organization/SimpleNav) 下载。
 
 ## 组件
 

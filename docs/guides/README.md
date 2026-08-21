@@ -22,5 +22,5 @@ Implementation references:
 - [Model-side data tools](../../tool/navvla/README.md)
 - [Qwen3.5-VL CPM implementation](QWEN35_CPM_IMPLEMENTATION.md)
 - [Evaluation framework](../../NavVLAeval/README.md)
-- [Public datasets and simulator environments](https://www.modelscope.cn/profile/fulanya?tab=dataset)
+- [Public datasets and simulator environments](https://www.modelscope.cn/organization/SimpleNav)
 - [Public checkpoints](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files)
