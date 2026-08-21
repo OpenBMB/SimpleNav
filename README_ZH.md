@@ -14,7 +14,9 @@
   <a href="https://fulanya55.github.io/starVLA/">项目主页</a> ·
   <a href="data_pipeline/README_ZH.md">数据管线</a> ·
   <a href="docs/guides/README_ZH.md">文档</a> ·
-  <a href="docs/guides/BENCHMARKS_RELEASE01_ZH.md">结果</a>
+  <a href="docs/guides/BENCHMARKS_RELEASE01_ZH.md">结果</a> ·
+  <a href="https://www.modelscope.cn/organization/SimpleNav">数据集与仿真环境</a> ·
+  <a href="https://www.modelscope.cn/models/fulanya/masaic_ckpt/files">SimpleNAV 权重</a>
 </p>
 
 SimpleNAV 通过明确接口连接异构导航数据、长时序 VLA 模型、训练和 benchmark 测评。项目支持空中与室内导航，将数据集特有的坐标和仿真语义保留在 adapter 中，并复用模型、动作、产物和测评协议。
@@ -122,7 +124,7 @@ SimpleNAV 将视觉语言骨干、筛选后的长历史、时空视角上下文�
 
 公开资源：
 
-- [数据集与仿真环境](https://www.modelscope.cn/profile/fulanya?tab=dataset)
+- [数据集与仿真环境](https://www.modelscope.cn/organization/SimpleNav)
 - [SimpleNAV 权重](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files)
 
 下载后按下面的仓库相对 `local/` 目录放置。

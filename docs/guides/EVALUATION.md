@@ -4,7 +4,7 @@
 
 ## Portable configs
 
-Download benchmark data and simulator environments from [ModelScope datasets](https://www.modelscope.cn/profile/fulanya?tab=dataset), and checkpoints from [ModelScope models](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files).
+Download benchmark data and simulator environments from [ModelScope datasets](https://www.modelscope.cn/organization/SimpleNav), and checkpoints from [ModelScope models](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files).
 
 | Benchmark | Config | Launcher | Backend |
 | --- | --- | --- | --- |

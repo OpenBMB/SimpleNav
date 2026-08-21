@@ -18,7 +18,7 @@
 | [Qwen3.5-4B](https://huggingface.co/Qwen/Qwen3.5-4B) | `local/models/Qwen3.5-4B/` |
 | GroundingDINO Swin-T | `local/models/GroundingDINO/groundingdino_swint_ogc.pth` |
 
-SimpleNAV 发布权重从 [ModelScope](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files) 下载。数据集和仿真环境从 [SimpleNAV ModelScope 数据主页](https://www.modelscope.cn/profile/fulanya?tab=dataset) 下载。
+SimpleNAV 发布权重从 [ModelScope](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files) 下载。数据集和仿真环境从 [SimpleNAV ModelScope 数据主页](https://www.modelscope.cn/organization/SimpleNav) 下载。
 
 ## Checkpoint 布局
 

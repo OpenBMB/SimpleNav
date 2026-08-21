@@ -18,7 +18,7 @@ See [Model Architecture](MODEL_ARCHITECTURE.md) and [Qwen3.5-VL CPM implementati
 | [Qwen3.5-4B](https://huggingface.co/Qwen/Qwen3.5-4B) | `local/models/Qwen3.5-4B/` |
 | GroundingDINO Swin-T | `local/models/GroundingDINO/groundingdino_swint_ogc.pth` |
 
-Download the released SimpleNAV checkpoints from [ModelScope](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files). Download dataset and simulator packages from the [SimpleNAV ModelScope dataset profile](https://www.modelscope.cn/profile/fulanya?tab=dataset).
+Download the released SimpleNAV checkpoints from [ModelScope](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files). Download dataset and simulator packages from the [SimpleNAV ModelScope dataset profile](https://www.modelscope.cn/organization/SimpleNav).
 
 ## Checkpoint layout
 

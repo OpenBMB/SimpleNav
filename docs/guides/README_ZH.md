@@ -22,5 +22,5 @@
 - [模型侧数据工具](../../tool/navvla/README.md)
 - [Qwen3.5-VL CPM 实现](QWEN35_CPM_IMPLEMENTATION.md)
 - [统一测评框架](../../NavVLAeval/README.md)
-- [公开数据集与仿真环境](https://www.modelscope.cn/profile/fulanya?tab=dataset)
+- [公开数据集与仿真环境](https://www.modelscope.cn/organization/SimpleNav)
 - [公开权重](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files)

@@ -17,7 +17,7 @@ raw dataset
 
 Source data, generated datasets, and simulator scenes stay outside Git. Put model-ready datasets under `local/data/` or point a local config to another storage location.
 
-Download the released datasets and simulator environments from the [SimpleNAV ModelScope dataset profile](https://www.modelscope.cn/profile/fulanya?tab=dataset).
+Download the released datasets and simulator environments from the [SimpleNAV ModelScope dataset profile](https://www.modelscope.cn/organization/SimpleNav).
 
 ## Components
 
