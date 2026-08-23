@@ -15,7 +15,7 @@ def main() -> None:
     parser.add_argument(
         "--visual-token-mode",
         default="online_images",
-        choices=["online_images", "offline_cache", "cached_history_online_current"],
+        choices=["online_images", "cached_history_online_current"],
     )
     parser.add_argument("--visual-token-profile", default="qwen3_vl_4b_pooled_history")
     parser.add_argument("--cache-sample-size", type=int, default=32)

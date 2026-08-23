@@ -15,8 +15,7 @@
   <a href="data_pipeline/README_ZH.md">数据管线</a> ·
   <a href="docs/guides/README_ZH.md">文档</a> ·
   <a href="docs/guides/BENCHMARKS_RELEASE01_ZH.md">结果</a> ·
-  <a href="https://www.modelscope.cn/organization/SimpleNav">数据集与仿真环境</a> ·
-  <a href="https://www.modelscope.cn/models/fulanya/masaic_ckpt/files">SimpleNAV 权重</a>
+  <a href="https://modelscope.cn/organization/SimpleNav">数据、环境与模型</a>
 </p>
 
 SimpleNAV 通过明确接口连接异构导航数据、长时序 VLA 模型、训练和 benchmark 测评。项目支持空中与室内导航，将数据集特有的坐标和仿真语义保留在 adapter 中，并复用模型、动作、产物和测评协议。
@@ -80,7 +79,7 @@ SimpleNAV 通过明确接口连接异构导航数据、长时序 VLA 模型、�
 
 ## 模型
 
-![SimpleNAV 历史视觉、当前观测、语言 token、VLM 骨干与动作专家模型架构](docs/assets/figures/simplenav_model_architecture.png)
+![SimpleNAV 历史视觉、当前观测、语言 token、VLM 骨干与动作专家模型架构](docs/assets/figures/simplenav_model_architecture.jpg)
 
 SimpleNAV 将视觉语言骨干、筛选后的长历史、时空视角上下文和连续动作头组合起来。模型消费上面的数据协议，并通过 adapter 保留数据集特有的坐标语义。
 
@@ -102,7 +101,7 @@ SimpleNAV 将视觉语言骨干、筛选后的长历史、时空视角上下文�
 
 ### 演示
 
-每张预览只展示一条 Rollout 轨迹。完整视频见[项目主页视频库](https://fulanya55.github.io/starVLA/#demos)。
+部分 Rollout 轨迹预览展示，完整视频见[项目主页视频库](https://fulanya55.github.io/starVLA/#demos)。
 
 <table>
   <tr>
@@ -114,8 +113,8 @@ SimpleNAV 将视觉语言骨干、筛选后的长历史、时空视角上下文�
     <td align="center"><img src="docs/assets/demos/previews/rxr.gif" alt="RxR-CE Rollout 轨迹" width="420"><br><strong>RxR-CE · Episode 10129</strong></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/assets/demos/previews/evt_bench.gif" alt="EVT-Bench Rollout 轨迹" width="420"><br><strong>EVT-Bench · Scene 2</strong></td>
-    <td></td>
+    <td align="center"><a href="docs/assets/demos/evt_bench/scene2.mp4"><img src="docs/assets/demos/previews/evt_bench.gif" alt="EVT-Bench Scene 2 Rollout 轨迹" width="420"></a><br><strong>EVT-Bench · Scene 2</strong></td>
+    <td align="center"><a href="docs/assets/demos/evt_bench/scene30.mp4"><img src="docs/assets/demos/evt_bench/scene30.jpg" alt="EVT-Bench Scene 30 Rollout 轨迹" width="420"></a><br><strong>EVT-Bench · Scene 30</strong></td>
   </tr>
 </table>
 
@@ -124,8 +123,7 @@ SimpleNAV 将视觉语言骨干、筛选后的长历史、时空视角上下文�
 
 公开资源：
 
-- [数据集与仿真环境](https://www.modelscope.cn/organization/SimpleNav)
-- [SimpleNAV 权重](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files)
+- [数据、环境与模型](https://modelscope.cn/organization/SimpleNav)
 
 下载后按下面的仓库相对 `local/` 目录放置。
 

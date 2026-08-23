@@ -19,7 +19,7 @@ from tool.navvla.context_index import (
 )
 from tool.navvla.visual_token_cache import MMAP_NPY_VISUAL_TOKEN_FORMAT, NPZ_VISUAL_TOKEN_FORMAT, profile_cache_root
 
-CACHE_REQUIRED_VISUAL_TOKEN_MODES = {"offline_cache", "cached_history_online_current"}
+CACHE_REQUIRED_VISUAL_TOKEN_MODES = {"cached_history_online_current"}
 MEDIA_DECODE_MODES = {"none", "sampled", "all"}
 DATA_REQUIRED_COLUMNS = {
     "episode_index",
@@ -55,7 +55,7 @@ def validate_navvla_lerobot_dataset(
 ) -> dict[str, Any]:
     root = Path(dataset_root)
     visual_token_mode = str(visual_token_mode)
-    if visual_token_mode not in {"online_images", "offline_cache", "cached_history_online_current"}:
+    if visual_token_mode not in {"online_images", "cached_history_online_current"}:
         raise ValueError(f"unsupported visual_token_mode={visual_token_mode!r}")
     if check_media_decode not in MEDIA_DECODE_MODES:
         raise ValueError(f"check_media_decode must be one of {sorted(MEDIA_DECODE_MODES)}, got {check_media_decode!r}")
@@ -559,56 +559,16 @@ def _smoke_load_dataset(
     if not enabled:
         return {"enabled": False}
 
-    profile_manifest_path = profile_cache_root(root, visual_token_profile) / "manifest.json"
-    profile_file_format = None
-    if profile_manifest_path.exists():
-        profile_file_format = str(
-            json.loads(profile_manifest_path.read_text(encoding="utf-8")).get(
-                "file_format", NPZ_VISUAL_TOKEN_FORMAT
-            )
-        )
-    if (
-        visual_token_mode == "cached_history_online_current"
-        and profile_file_format == MMAP_NPY_VISUAL_TOKEN_FORMAT
-    ):
-        return _smoke_load_cpm_dataset(
-            root,
-            smoke_load=smoke_load,
-            smoke_load_all=smoke_load_all,
-            visual_token_mode=visual_token_mode,
-            required_cameras=required_cameras,
-            image_resize=image_resize,
-            visual_token_profile=visual_token_profile,
-            token_budget=token_budget,
-        )
-
-    from starVLA.dataloader.navvla_lerobot_datasets import NavVLALeRobotDataset
-
-    dataset = NavVLALeRobotDataset(
+    return _smoke_load_cpm_dataset(
         root,
+        smoke_load=smoke_load,
+        smoke_load_all=smoke_load_all,
         visual_token_mode=visual_token_mode,
-        visual_token_profile=visual_token_profile,
-        token_budget=token_budget,
         required_cameras=required_cameras,
         image_resize=image_resize,
+        visual_token_profile=visual_token_profile,
+        token_budget=token_budget,
     )
-    if smoke_load_all:
-        indices = list(range(len(dataset)))
-    else:
-        indices = _representative_indices(len(dataset), max(1, int(smoke_load)))
-    samples = []
-    for index in indices:
-        sample = dataset[index]
-        samples.append(
-            {
-                "index": int(index),
-                "history_blocks": len(sample["metadata"].get("history_blocks", [])),
-                "history_token_refs": len(sample["metadata"].get("history_token_refs", [])),
-                "history_mask": int(sample["history_mask"].shape[0]),
-                "action_shape": list(sample["action"].shape),
-            }
-        )
-    return {"enabled": True, "rows": len(dataset), "loaded_samples": len(indices), "examples": samples[:10]}
 
 
 def _smoke_load_cpm_dataset(

@@ -29,7 +29,7 @@
 | NaVid | [Code + weights][navid] | 153 | 13.0% | 38.2% | 11.6% |
 | NaVila | Release not recorded | 132 | 20.3% | 53.5% | 17.8% |
 | OpenFly-Agent | Release not recorded | 93 | 34.3% | 64.3% | 24.9% |
-| **SimpleNAV (single-dataset)** | **Full stack (this repository)** | **37.12** | **52.85%** | **74.15%** | **50.96%** |
+| **SimpleNAV (single-dataset)** | **Full stack** | **37.12** | **52.85%** | **74.15%** | **50.96%** |
 
 ## TravelUAV Test Seen
 
@@ -46,7 +46,7 @@
 | NavFoM | [Project page only][navfom] | 93.05 | 29.17 | 49.24 | 25.03 |
 | LongFly | [Paper only][longfly] | 60.02 | 36.39 | 65.87 | 31.07 |
 | AerialVLA | [Code + weights][aerialvla] | 65.88 | 47.96 | 57.69 | 38.54 |
-| **SimpleNAV (single-dataset)** | **Full stack (this repository)** | **85.61** | **22.42** | **55.08** | **20.51** |
+| **SimpleNAV (single-dataset)** | **Full stack** | **85.61** | **22.42** | **55.08** | **20.51** |
 
 ### Easy
 
@@ -61,7 +61,7 @@
 | NavFoM | [Project page only][navfom] | 58.98 | 32.91 | 53.16 | 27.87 |
 | LongFly | [Paper only][longfly] | 38.10 | 38.52 | 71.90 | 31.24 |
 | AerialVLA | [Code + weights][aerialvla] | 43.76 | 49.30 | 61.30 | 37.14 |
-| **SimpleNAV (single-dataset)** | **Full stack (this repository)** | **59.96** | **22.80** | **56.87** | **21.01** |
+| **SimpleNAV (single-dataset)** | **Full stack** | **59.96** | **22.80** | **56.87** | **21.01** |
 
 ### Hard
 
@@ -76,7 +76,7 @@
 | NavFoM | [Project page only][navfom] | 143.83 | 23.58 | 43.40 | 20.80 |
 | LongFly | [Paper only][longfly] | 85.20 | 33.94 | 58.94 | 30.88 |
 | AerialVLA | [Code + weights][aerialvla] | 93.16 | 46.30 | 53.23 | 40.26 |
-| **SimpleNAV (single-dataset)** | **Full stack (this repository)** | **118.28** | **21.95** | **52.81** | **19.88** |
+| **SimpleNAV (single-dataset)** | **Full stack** | **118.28** | **21.95** | **52.81** | **19.88** |
 
 ## AerialVLN-S Val Seen
 
@@ -90,7 +90,7 @@
 | Seq2Seq-DA | [Benchmark code][aerialvln-benchmark] | 85.5 | 9.9 | 24.1 | 4.5 |
 | CMA-DA | [Benchmark code][aerialvln-benchmark] | 92.2 | 9.9 | 26.5 | 3.7 |
 | LAG | Release not recorded | 90.2 | 7.2 | 15.7 | 2.4 |
-| **SimpleNAV (single-dataset)** | **Full stack (this repository)** | **126** | **8.4** | **18.92** | **3.4** |
+| **SimpleNAV (single-dataset)** | **Full stack** | **126** | **8.4** | **18.92** | **3.4** |
 
 ## R2R-CE Val-Unseen
 
@@ -106,7 +106,7 @@
 | NavFoM | [Project page only][navfom] | 12.7M | Single-view RGB | 5.01 | 64.9 | 56.2 | 51.2 |
 | NavFoM | [Project page only][navfom] | 12.7M | Four-view RGB | 4.61 | 72.1 | 61.7 | 55.3 |
 | Uni-NaVid | [Code + weights][uni-navid] | 5.9M | Single-view RGB | 5.58 | 53.3 | 47.0 | 42.7 |
-| **SimpleNAV (single-dataset)** | **Full stack (this repository)** | **1.9M** | **Four-view RGB** | **4.65** | **55.93** | **49.18** | **45.82** |
+| **SimpleNAV (single-dataset)** | **Full stack** | **1.9M** | **Four-view RGB** | **4.65** | **55.93** | **49.18** | **45.82** |
 
 ## RxR-CE Val-Unseen
 
@@ -122,7 +122,7 @@
 | NavFoM | [Project page only][navfom] | 12.7M | Single-view RGB | 5.51 | 57.4 | 49.4 | 60.2 |
 | NavFoM | [Project page only][navfom] | 12.7M | Four-view RGB | 4.74 | 64.4 | 56.2 | 65.8 |
 | Uni-NaVid | [Code + weights][uni-navid] | 5.9M | Single-view RGB | 6.24 | 48.7 | 40.9 | — |
-| **SimpleNAV (single-dataset)** | **Full stack (this repository)** | **1.9M** | **Four-view RGB** | **4.62** | **58.44** | **52.17** | **74.60** |
+| **SimpleNAV (single-dataset)** | **Full stack** | **1.9M** | **Four-view RGB** | **4.62** | **58.44** | **52.17** | **74.60** |
 
 ## EVT-Bench
 
@@ -137,7 +137,7 @@
 | TrackVLA++ | [Project page only][trackvla-pp] | 1M | Single-view / Four-view |
 | NavFoM | [Project page only][navfom] | 897K | Single-view / Four-view |
 | Uni-NaVid | [Code + weights][uni-navid] | Not disclosed | Single-view |
-| **SimpleNAV (single-dataset)** | **Full stack (this repository)** | **2.4M** | **Single-view** |
+| **SimpleNAV (single-dataset)** | **Full stack** | **2.4M** | **Single-view** |
 
 ### STT
 
