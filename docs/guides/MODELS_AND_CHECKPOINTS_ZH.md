@@ -7,7 +7,7 @@
 | Framework | Backbone | 导航组件 | 用途 |
 | --- | --- | --- | --- |
 | `navvla_qwen35_cpm` | Qwen3.5-VL | BATS、TVI、history cache、DiT-B 动作头 | 主要训练与空中测评路径 |
-| `navvla_qwenpi_v3` | Qwen 系列 | 较早的导航动作路径 | 历史基线 |
+| `navvla_cpm` | MiniCPM-V-4.6 | BATS、TVI、history cache、DiT-B 动作头 | 已发布的 UAV-Flow/EVT-Bench 测评路径 |
 
 详见[模型架构](MODEL_ARCHITECTURE_ZH.md)和 [Qwen3.5-VL CPM 实现](QWEN35_CPM_IMPLEMENTATION.md)。
 

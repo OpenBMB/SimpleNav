@@ -27,6 +27,7 @@ PORTABLE_EVAL_CONFIGS = tuple(
         "NavVLAeval/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml",
         "NavVLAeval/vlnce/r2r/config_portable.yaml",
         "NavVLAeval/vlnce/rxr/config_portable.yaml",
+        "NavVLAeval/uavflow/config_portable.yaml",
     )
 )
 

@@ -1,7 +1,7 @@
-# SimpleNAV
+# SimpleNav
 
 <p align="center">
-  <img src="docs/assets/logo.jpg" alt="SimpleNAV logo" width="168">
+  <img src="docs/assets/logo.jpg" alt="SimpleNav logo" width="168">
 </p>
 
 <p align="center">
@@ -15,15 +15,14 @@
   <a href="data_pipeline/README.md">Data Pipeline</a> ·
   <a href="docs/guides/README.md">Documentation</a> ·
   <a href="docs/guides/BENCHMARKS_RELEASE01.md">Results</a> ·
-  <a href="https://www.modelscope.cn/organization/SimpleNav">Datasets &amp; Simulators</a> ·
-  <a href="https://www.modelscope.cn/models/fulanya/masaic_ckpt/files">Checkpoints</a>
+  <a href="https://modelscope.cn/organization/SimpleNav">Data, Environments &amp; Models</a>
 </p>
 
-SimpleNAV connects heterogeneous navigation data, long-horizon VLA models, training, and benchmark evaluation through explicit interfaces. It supports aerial and indoor navigation, keeps dataset-specific coordinate and simulator semantics in adapters, and uses shared model, action, artifact, and evaluation contracts.
+SimpleNav connects heterogeneous navigation data, long-horizon VLA models, training, and benchmark evaluation through explicit interfaces. It supports aerial and indoor navigation, keeps dataset-specific coordinate and simulator semantics in adapters, and uses shared model, action, artifact, and evaluation contracts.
 
 ## Vision
 
-Navigation research should not require a separate data-model-evaluation stack for every dataset. SimpleNAV provides one research loop in which:
+Navigation research should not require a separate data-model-evaluation stack for every dataset. SimpleNav provides one research loop in which:
 
 - source datasets enter through explicit conversion adapters;
 - model components remain replaceable and composable;
@@ -31,18 +30,18 @@ Navigation research should not require a separate data-model-evaluation stack fo
 - benchmark-specific behavior stays inside evaluation plugins;
 - results remain traceable to code, data, config, checkpoint, and simulator versions.
 
-## Why SimpleNAV
+## Why SimpleNav
 
 | Area | What is provided |
 | --- | --- |
 | Simple Data | Conversion, trajectory augmentation, AirSim image collection, LeRobot v3 writing, validation, statistics, BATS context, and visual-token cache tools. |
-| Simple Model | Qwen3.5-VL navigation, long-history selection, temporal-view encoding, visual-token caching, and diffusion action heads. |
+| Simple Model | Model Adaptation Easily, long-history selection, temporal-view encoding, visual-token caching, and diffusion action heads. |
 | Simple Training | Configuration-driven local, distributed, single-dataset, and mixed-dataset training. |
 | Simple Evaluation | Portable OpenFly, TravelUAV, AerialVLN, R2R-CE, RxR-CE, and UAV-Flow configs with shared rollout artifacts. |
 
 ## Framework
 
-![SimpleNAV framework: data conversion, model training, and closed-loop evaluation](docs/assets/figures/simplenav_framework.png)
+![SimpleNav framework: data conversion, model training, and closed-loop evaluation](docs/assets/figures/simplenav_framework.png)
 
 | Path | Purpose |
 | --- | --- |
@@ -80,11 +79,15 @@ Each animation aligns one raw trajectory with its enhanced version. Click an ani
 
 ## Model
 
-![SimpleNAV model architecture with history, current observations, language tokens, VLM backbone, and action expert](docs/assets/figures/simplenav_model_architecture.png)
+SimpleNav combines a vision-language backbone, selected long history, temporal-view context, and a continuous action head. The model consumes the protocol above and keeps dataset-specific coordinate semantics in the adapter.
 
-SimpleNAV combines a vision-language backbone, selected long history, temporal-view context, and a continuous action head. The model consumes the protocol above and keeps dataset-specific coordinate semantics in the adapter.
+![SimpleNav model architecture with history, current observations, language tokens, VLM backbone, and action expert](docs/assets/figures/simplenav_model_architecture.jpg)
+
 
 ## Results
+
+The results are summarized as follows. 
+Full comparison tables and protocol notes are in [Release 01 Benchmarks](docs/guides/BENCHMARKS_RELEASE01.md).
 
 | Benchmark | Split | NE↓ | SR↑ | OS/OSR↑ | SPL↑ | nDTW↑ | SDTW↑ |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -98,11 +101,9 @@ SimpleNAV combines a vision-language backbone, selected long history, temporal-v
 | --- | --- | ---: | ---: | ---: |
 | EVT-Bench | STT | 89.31 | 96.08 | 1.09 |
 
-Full comparison tables and protocol notes are in [Release 01 Benchmarks](docs/guides/BENCHMARKS_RELEASE01.md).
-
 ### Demos
 
-Each preview shows one rollout trajectory. Open the [project-page video gallery](https://fulanya55.github.io/starVLA/#demos) for the full-length videos.
+Selected rollout trajectory previews are shown below. See the [project-page video gallery](https://fulanya55.github.io/starVLA/#demos) for the full videos.
 
 <table>
   <tr>
@@ -114,8 +115,8 @@ Each preview shows one rollout trajectory. Open the [project-page video gallery]
     <td align="center"><img src="docs/assets/demos/previews/rxr.gif" alt="RxR-CE rollout trajectory" width="420"><br><strong>RxR-CE · Episode 10129</strong></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/assets/demos/previews/evt_bench.gif" alt="EVT-Bench rollout trajectory" width="420"><br><strong>EVT-Bench · Scene 2</strong></td>
-    <td></td>
+    <td align="center"><a href="docs/assets/demos/evt_bench/scene2.mp4"><img src="docs/assets/demos/previews/evt_bench.gif" alt="EVT-Bench Scene 2 rollout trajectory" width="420"></a><br><strong>EVT-Bench · Scene 2</strong></td>
+    <td align="center"><a href="docs/assets/demos/evt_bench/scene30.mp4"><img src="docs/assets/demos/evt_bench/scene30.jpg" alt="EVT-Bench Scene 30 rollout trajectory" width="420"></a><br><strong>EVT-Bench · Scene 30</strong></td>
   </tr>
 </table>
 
@@ -124,8 +125,7 @@ Each preview shows one rollout trajectory. Open the [project-page video gallery]
 
 Public resources:
 
-- [Datasets and simulator environments](https://www.modelscope.cn/organization/SimpleNav)
-- [SimpleNAV checkpoints](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files)
+- [Data, environments, and models](https://modelscope.cn/organization/SimpleNav)
 
 Place downloaded packages in the repository-relative `local/` layout below.
 
@@ -134,8 +134,8 @@ Place downloaded packages in the repository-relative `local/` layout below.
 Requirements: Linux, Python 3.10, and a model-compatible NVIDIA driver. Dataset conversion also requires `ffmpeg`; closed-loop evaluation requires the corresponding simulator and scene assets.
 
 ```bash
-git clone -b SimpleNav https://github.com/fulanya55/starVLA.git SimpleNAV
-cd SimpleNAV
+git clone -b SimpleNav https://github.com/fulanya55/starVLA.git SimpleNav
+cd SimpleNav
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv python install 3.10
 uv sync --frozen --no-dev
@@ -174,7 +174,7 @@ Follow [Data Preparation](docs/guides/DATA_PIPELINE.md), then place local resour
 local/
 ├── models/                         # base VLMs and auxiliary models
 ├── data/                           # converted datasets and benchmark inputs
-├── checkpoints/                    # SimpleNAV checkpoints + dataset_statistics.json
+├── checkpoints/                    # SimpleNav checkpoints + dataset_statistics.json
 ├── simulators/                     # AirSim/Habitat runtimes and scene assets
 ├── eval_results/
 └── results/
@@ -260,4 +260,4 @@ Repository source code is released under the [MIT License](LICENSE). Datasets, p
 
 ## Acknowledgements
 
-SimpleNAV builds on open research and software including Qwen-VL, LeRobot, PyTorch, Transformers, DeepSpeed, AirSim, Habitat, and the datasets and benchmarks listed above. Please cite the original projects and datasets used in each experiment.
+SimpleNav builds on open research and software including Qwen-VL, LeRobot, PyTorch, Transformers, DeepSpeed, AirSim, Habitat, and the datasets and benchmarks listed above. Please cite the original projects and datasets used in each experiment.

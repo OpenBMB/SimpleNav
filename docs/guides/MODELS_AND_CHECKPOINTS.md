@@ -7,7 +7,7 @@
 | Framework | Backbone | Navigation components | Use |
 | --- | --- | --- | --- |
 | `navvla_qwen35_cpm` | Qwen3.5-VL | BATS, TVI, history cache, DiT-B action head | Primary training and aerial evaluation path |
-| `navvla_qwenpi_v3` | Qwen family | Earlier navigation action path | Historical baseline |
+| `navvla_cpm` | MiniCPM-V-4.6 | BATS, TVI, history cache, DiT-B action head | Released UAV-Flow/EVT-Bench evaluation path |
 
 See [Model Architecture](MODEL_ARCHITECTURE.md) and [Qwen3.5-VL CPM implementation](QWEN35_CPM_IMPLEMENTATION.md).
 

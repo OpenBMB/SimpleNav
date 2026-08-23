@@ -24,8 +24,7 @@
   },
   "actions": {
     "github": {"en": "View on GitHub ↗", "zh": "查看 GitHub ↗"},
-    "datasets": {"en": "Download data ↗", "zh": "下载数据 ↗"},
-    "weights": {"en": "Download weights ↗", "zh": "下载权重 ↗"},
+    "resources": {"en": "Download data, environments & models ↗", "zh": "下载数据、环境与模型 ↗"},
     "featured": {"en": "Featured rollouts", "zh": "精选 Rollout"},
     "previous": {"en": "Previous three rollouts", "zh": "上一组三个 Rollout"},
     "next": {"en": "Next three rollouts", "zh": "下一组三个 Rollout"}
@@ -54,8 +53,7 @@
     "lead": {"en": "The integrated data pipeline provides reusable conversion, augmentation, rendering, and validation across platforms and datasets.", "zh": "单仓数据管线提供可跨平台、跨数据集复用的转换、增强、采集和校验能力。"},
     "repository": {"en": "Open data_pipeline/ ↗", "zh": "打开 data_pipeline/ ↗"},
     "resources": [
-      {"label": {"en": "Datasets and simulator environments", "zh": "数据集与仿真环境"}, "href": "https://www.modelscope.cn/organization/SimpleNav"},
-      {"label": {"en": "Released checkpoints", "zh": "发布权重"}, "href": "https://www.modelscope.cn/models/fulanya/masaic_ckpt/files"}
+      {"label": {"en": "Data, environments, and models", "zh": "数据、环境与模型"}, "href": "https://modelscope.cn/organization/SimpleNav"}
     ]
   },
   "augmentation": {

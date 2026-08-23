@@ -7,7 +7,6 @@ Note: No device placement or optimizer concerns handled here (delegated to train
 """
 
 import importlib
-import pkgutil
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, Dict, List
@@ -24,6 +23,10 @@ from starVLA.training.trainer_utils import initialize_overwatch
 
 logger = initialize_overwatch(__name__)
 _FRAMEWORKS_IMPORTED = False
+_RELEASE_FRAMEWORK_MODULES = (
+    "starVLA.model.framework.VLM4A.navvla_cpm",
+    "starVLA.model.framework.VLM4A.navvla_qwen35_cpm",
+)
 
 
 def _auto_import_framework_modules() -> None:
@@ -31,22 +34,8 @@ def _auto_import_framework_modules() -> None:
     if _FRAMEWORKS_IMPORTED:
         return
 
-    _SKIP = {"__init__", "base_framework", "share_tools"}
-    framework_dir = Path(__file__).resolve().parent
-
-    # Scan top-level modules (backwards compat)
-    for _, module_name, is_pkg in pkgutil.iter_modules([str(framework_dir)]):
-        if module_name in _SKIP:
-            continue
-        if is_pkg:
-            # Scan sub-packages (VLM4A/, WM4A/, etc.)
-            sub_dir = framework_dir / module_name
-            for _, sub_name, _ in pkgutil.iter_modules([str(sub_dir)]):
-                if sub_name.startswith("_"):
-                    continue
-                importlib.import_module(f"starVLA.model.framework.{module_name}.{sub_name}")
-        else:
-            importlib.import_module(f"starVLA.model.framework.{module_name}")
+    for module_name in _RELEASE_FRAMEWORK_MODULES:
+        importlib.import_module(module_name)
 
     _FRAMEWORKS_IMPORTED = True
 

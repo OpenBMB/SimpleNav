@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import math
 from typing import Any, Optional
 
 import numpy as np
@@ -12,10 +13,6 @@ from PIL import Image
 from deployment.model_server.tools.image_tools import to_pil_preserve
 from starVLA.model.framework.base_framework import baseframework
 from starVLA.model.framework.share_tools import merge_framework_config
-from starVLA.model.framework.VLM4A.navvla_qwenpi_v3 import (
-    _grid_shape_for_token_count,
-    _image_token_spans,
-)
 from starVLA.model.modules.action_model.GR00T_ActionHeader import FlowmatchingActionHead, get_action_model
 from starVLA.model.modules.long_memory import LongMemoryTokenAggregator
 from starVLA.model.modules.navvla_context import (
@@ -54,6 +51,46 @@ from tool.navvla.visual_token_cache import (
 )
 
 QWEN35_LONG_MEMORY_SOURCE_POOLED_STAGE = "navvla_long_memory_source_pooled"
+
+
+def _image_token_spans(input_ids: torch.Tensor, image_token_id: int) -> list[tuple[int, int]]:
+    positions = torch.nonzero(input_ids == image_token_id, as_tuple=False).flatten().tolist()
+    if not positions:
+        return []
+
+    spans: list[tuple[int, int]] = []
+    start = positions[0]
+    previous = positions[0]
+    for position in positions[1:]:
+        if position == previous + 1:
+            previous = position
+            continue
+        spans.append((start, previous + 1))
+        start = position
+        previous = position
+    spans.append((start, previous + 1))
+    return spans
+
+
+def _grid_shape_for_token_count(
+    grid: torch.Tensor,
+    target_tokens: int,
+    *,
+    merge_size: int = 2,
+) -> tuple[int, int, int]:
+    temporal, height, width = [int(value) for value in grid.tolist()]
+    temporal = max(1, temporal)
+    merge = max(1, int(merge_size))
+    target = max(1, int(target_tokens))
+    spatial_target = max(1, int(math.ceil(float(target) / float(temporal))))
+    original_h_tokens = max(1, height // merge)
+    original_w_tokens = max(1, width // merge)
+    aspect = float(original_h_tokens) / float(max(1, original_w_tokens))
+    target_h = max(1, int(round(math.sqrt(float(spatial_target) * aspect))))
+    while target_h > 1 and spatial_target % target_h != 0:
+        target_h -= 1
+    target_w = max(1, int(math.ceil(float(spatial_target) / float(target_h))))
+    return temporal, target_h * merge, target_w * merge
 
 
 def _model_device_dtype(model: torch.nn.Module) -> tuple[torch.device, torch.dtype]:
