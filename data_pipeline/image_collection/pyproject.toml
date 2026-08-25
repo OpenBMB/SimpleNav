@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vln-waypoint-image-collection"
+version = "1.0.0"
+description = "Four-view AirSim RGB collection from VLN trajectory render requests"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "airsim==1.8.1",
+  "msgpack-rpc-python==0.4.1",
+  "numpy==1.24.4",
+  "pyarrow==12.0.1",
+  "Pillow==10.0.0",
+]
+
+[project.scripts]
+vln-collect = "waypoint_collector.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["waypoint_collector*", "airsim_plugin*"]

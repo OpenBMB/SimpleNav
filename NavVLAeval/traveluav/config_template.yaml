@@ -1,0 +1,102 @@
+# Copy to a run-specific YAML, then replace paths, roots and GPU/port values.
+benchmark:
+  name: traveluav
+  class_path: NavVLAeval.traveluav.benchmark:TravelUAVBenchmarkSpec
+  max_steps: 200
+  max_samples: null # null | positive integer
+  kwargs:
+    always_help: true # true | false
+    dataset_root: /path/to/TravelUAV
+    depth_collision_policy: log_only # log_only | stop
+    ignore_movement_collision: false # true = movement collision is logged but never terminates
+    groundingdino_config: /path/to/GroundingDINO_config.py
+    groundingdino_model_path: /path/to/groundingdino.pth
+    dino_device: cuda # cuda | cpu | CUDA device index
+    stop_policy: dino # dino | none
+    success_radius: 20.0
+    use_gt: true # true | false
+
+input:
+  type: navvla_lerobot_v3
+  adapter_class_path: NavVLAeval.traveluav.inputs:TravelUAVLeRobotV3InputAdapter
+  roots:
+    - namespace: vln_val_seen
+      path: /path/to/vln_val_seen
+    - namespace: vln_val_unseen
+      path: /path/to/vln_val_unseen
+
+model:
+  model_class_path: NavVLAeval.common.model.model_wrappers:StarVLAEvalModel
+  framework_name: navvla_cpm
+  repo_root: ../..
+  checkpoint: /path/to/checkpoint/pytorch_model.pt
+  unnorm_key: vln_train_train
+  inference_seed: 42 # null | integer
+  config_overrides:
+    framework:
+      qwenvl:
+        base_vlm: /path/to/MiniCPM-V-4.6
+
+dataset:
+  dataset_py: navvla_traveluav_online
+  runtime_adapter: traveluav
+  input_style: navvla
+  action_type: anchor_relative_body_frame_xyz_yaw
+  action_dim: 4
+  state_dim: 16
+  include_state: true # true | false
+  action_horizon: 8
+  history_selection: bats # bats | recent | uniform
+  history_image_frames: null # null = token-budget cap | non-negative integer cap
+  history_update_mode: action_observations # action_observations | post_action
+  history_candidate_source_stride: 5 # match TravelUAV training images sampled every 5 source waypoints
+  dataset_name: traveluav
+  bats_epsilon: 0.1
+  bats_k: 4.0
+  use_dynamic_bats_k: true # true | false
+  bats_sampling_mode: priority_capped # priority_capped | independent
+  bats_seed: 42
+  bats_token_budget: 1024
+  budget_num_cameras: 4
+  current_visual_tokens: 64
+  history_visual_tokens: 4
+  tvi_tokens: 1
+
+env:
+  type: airsim
+  backend_class_path: NavVLAeval.common.simulators.airsim.backend:AirSimEnvironmentBackend
+  planner_class_path: NavVLAeval.common.simulators.airsim.backend:AirSimBackendPlanner
+  kwargs:
+    env_root: /path/to/TravelUAV_env
+    layout: traveluav
+    render_lib_root: /path/to/airsim_runtime
+    settings_profile: traveluav
+    sensor_profile: traveluav
+    camera_name: FrontCameraRecord
+    base_airsim_port: 41451
+    startup_timeout: 120
+    episode_startup_settle_sec: 0
+    render_warmup_sec: 0
+    teleport_render_sync_frames: 3
+    ignore_collision: false # true | false
+    reset_ignore_collision: false # true | false
+    capture_action_observations: true # true | false
+    action_execution_mode: teleport_final # teleport_each_waypoint | teleport_final | path
+    execute_waypoints_per_step: 8 # null | positive integer
+    action_waypoint_semantics: anchor_relative_frd_xyz_yaw
+    airsim_z_sign: 1 # 1 | -1
+    ue_args: [-RenderOffscreen, -NoSound, -NoVSync]
+
+parallel:
+  gpu_ids: [0]
+  partition_mode: contiguous_episode_chunks
+  worker_timeout_sec: 0
+
+output:
+  root: /path/to/eval_result/traveluav_parallel
+  run_name: traveluav_eval
+  save_step_artifacts: true # true | false
+  save_images: false # true | false
+  action_observation_image_policy: step # step | action | both | none
+  image_cameras: [frontcamera, downcamera]
+  metrics: [SR, OSR, NE, SPL, standard_SPL, path_length, gt_path_length]
