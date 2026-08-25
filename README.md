@@ -260,4 +260,4 @@ Repository source code is released under the [MIT License](LICENSE). Datasets, p
 
 ## Acknowledgements
 
-SimpleNav builds on open research and software including Qwen-VL, LeRobot, PyTorch, Transformers, DeepSpeed, AirSim, Habitat, and the datasets and benchmarks listed above. Please cite the original projects and datasets used in each experiment.
+SimpleNav builds on open research and software including starVLA, Qwen-VL, LeRobot, PyTorch, Transformers, DeepSpeed, AirSim, Habitat, and the datasets and benchmarks listed above. Please cite the original projects and datasets used in each experiment.
