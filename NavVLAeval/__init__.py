@@ -1,1 +1,0 @@
-"""NavVLA evaluation package."""

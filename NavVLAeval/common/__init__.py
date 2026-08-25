@@ -1,2 +1,0 @@
-"""Shared AirSim evaluation helpers."""
-

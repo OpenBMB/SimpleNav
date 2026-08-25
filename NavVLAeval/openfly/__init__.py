@@ -1,2 +1,0 @@
-"""OpenFly AirSim evaluation entrypoints."""
-
