@@ -1,0 +1,328 @@
+{
+  "nav": {
+    "overview": {"en": "Overview", "zh": "概览"},
+    "framework": {"en": "Framework", "zh": "框架"},
+    "models": {"en": "Models", "zh": "模型"},
+    "data": {"en": "Data", "zh": "数据"},
+    "benchmarks": {"en": "Benchmarks", "zh": "测评"},
+    "demos": {"en": "Demos", "zh": "演示"},
+    "roadmap": {"en": "Roadmap", "zh": "路线图"},
+    "docs": {"en": "Docs", "zh": "文档"}
+  },
+  "hero": {
+    "eyebrow": {"en": "NAVIGATION VLA RESEARCH FRAMEWORK", "zh": "视觉语言导航 VLA 研究框架"},
+    "title": {"en": "<em>SimpleNav:</em> Make Navigation VLA Simple.", "zh": "<em>SimpleNav:</em> 让导航 VLA 变得简单。"},
+    "lead": {"en": "A unified path from heterogeneous navigation data to composable models, reproducible training, and comparable evaluation.", "zh": "从异构导航数据到可组合模型、可复现训练和可比较测评的一条统一路径。"},
+    "primary": {"en": "Explore the framework <span>↓</span>", "zh": "浏览框架 <span>↓</span>"},
+    "secondary": {"en": "Read the README <span>↗</span>", "zh": "阅读 README <span>↗</span>"},
+    "status": {"en": "Code and data pipeline in one repository", "zh": "主项目与数据管线已合并为单仓"},
+    "meta": {"en": "OpenFly · TravelUAV · AerialVLN-S · R2R-CE · RxR-CE · EVT-Bench", "zh": "OpenFly · TravelUAV · AerialVLN-S · R2R-CE · RxR-CE · EVT-Bench"}
+  },
+  "intro": {
+    "label": {"en": "WHY SIMPLE", "zh": "为什么 Simple"},
+    "text": {"en": "Simple means explicit interfaces—not fewer semantics. Data adapters, model components, training recipes, and benchmark plugins can evolve independently while remaining auditable together.", "zh": "Simple 不是省略语义，而是明确接口。数据 adapter、模型组件、训练 recipe 和 benchmark 插件可以独立演进，同时保持整体可审计。"}
+  },
+  "actions": {
+    "github": {"en": "View on GitHub ↗", "zh": "查看 GitHub ↗"},
+    "resources": {"en": "Download data, environments & models ↗", "zh": "下载数据、环境与模型 ↗"},
+    "featured": {"en": "Featured rollouts", "zh": "精选 Rollout"},
+    "previous": {"en": "Previous three rollouts", "zh": "上一组三个 Rollout"},
+    "next": {"en": "Next three rollouts", "zh": "下一组三个 Rollout"}
+  },
+  "scope": {
+    "statement": {"en": "Open end to end: data, models, training, evaluation, and reproducible artifacts.", "zh": "全链路开源：数据、模型、训练、测评与可复现产物一体开放。"}
+  },
+  "framework": {
+    "eyebrow": {"en": "ONE RESEARCH LOOP", "zh": "一条研究闭环"},
+    "title": {"en": "From raw trajectories to reliable decisions.", "zh": "从原始轨迹到可靠决策。"},
+    "lead": {"en": "Select a layer to see what stays stable and where new datasets, models, or benchmarks plug in.", "zh": "选择一个层次，查看哪些内容保持稳定，以及新的数据集、模型和 benchmark 如何接入。"}
+  },
+  "principles": {
+    "protocol": {"title": {"en": "Shared infrastructure", "zh": "共享基础设施"}, "text": {"en": "Storage, loading, configs, and artifacts are shared. Task-specific coordinate and action semantics stay explicit.", "zh": "存储、加载、配置和产物统一；任务特有的坐标与动作语义保持显式。"}},
+    "interface": {"title": {"en": "Extension through interfaces", "zh": "通过接口扩展"}, "text": {"en": "New datasets, model parts, and benchmarks add adapters or plugins instead of special cases in the common loop.", "zh": "新增数据集、模型组件和 benchmark 通过 adapter 或插件接入，而不是在公共闭环中累积特例。"}},
+    "repro": {"title": {"en": "Reproduction as an artifact", "zh": "复现本身是产物"}, "text": {"en": "A score travels with its code, data, config, checkpoint, simulator, episode records, and raw summary.", "zh": "一个分数必须携带代码、数据、配置、checkpoint、模拟器、episode 记录和原始汇总。"}}
+  },
+  "models": {
+    "eyebrow": {"en": "THE MODEL LAYER", "zh": "模型层"},
+    "title": {"en": "Simple on purpose. Modular underneath.", "zh": "目标是 Simple，内部是模块化。"},
+    "lead": {"en": "SimpleNAV includes its own long-horizon navigation architecture—not only a set of tools around a backbone.", "zh": "SimpleNAV 不只是围绕 backbone 的工具集合，还包含自身的长时序导航模型架构。"}
+  },
+  "data": {
+    "eyebrow": {"en": "THE DATA LAYER", "zh": "数据层"},
+    "title": {"en": "A clear route into a common format.", "zh": "清晰进入统一格式的路径。"},
+    "lead": {"en": "The integrated data pipeline provides reusable conversion, augmentation, rendering, and validation across platforms and datasets.", "zh": "单仓数据管线提供可跨平台、跨数据集复用的转换、增强、采集和校验能力。"},
+    "repository": {"en": "Open data_pipeline/ ↗", "zh": "打开 data_pipeline/ ↗"},
+    "resources": [
+      {"label": {"en": "Data, environments, and models", "zh": "数据、环境与模型"}, "href": "https://modelscope.cn/organization/SimpleNav"}
+    ]
+  },
+  "augmentation": {
+    "eyebrow": {"en": "TRAJECTORY AUGMENTATION", "zh": "轨迹增强"},
+    "title": {"en": "Raw and enhanced, side by side.", "zh": "原始轨迹与增强轨迹并排对比。"},
+    "lead": {"en": "Aligned rollout videos and trajectory plots from the integrated data pipeline.", "zh": "来自集成数据管线的对齐 Rollout 视频与轨迹图。"}
+  },
+  "benchmarks": {
+    "eyebrow": {"en": "RELEASE 01 / EVIDENCE", "zh": "RELEASE 01 / 证据"},
+    "title": {"en": "Results you can trace.", "zh": "每个结果都可追溯。"},
+    "lead": {"en": "Switch benchmarks and splits to inspect headline results and complete method comparisons without a wide scrolling table.", "zh": "切换 benchmark 与 split，可在当前视图中检查核心结果和完整方法对比，无需横向滚动超宽表。"}
+  },
+  "demos": {
+    "eyebrow": {"en": "ROLLOUT GALLERY", "zh": "ROLLOUT 展示"},
+    "title": {"en": "See representative rollouts.", "zh": "查看代表性 Rollout。"},
+    "lead": {"en": "A compact gallery of representative rollouts.", "zh": "精选代表性 Rollout，保持展示聚焦。"}
+  },
+  "roadmap": {
+    "eyebrow": {"en": "WHAT COMES NEXT", "zh": "后续方向"},
+    "title": {"en": "A framework that grows with the task.", "zh": "随任务一起成长的框架。"},
+    "lead": {"en": "The destination is not a fixed set of scripts. It is an extensible VLN foundation for different data, architectures, platforms, and deployment settings.", "zh": "目标不是固定的一组脚本，而是面向不同数据、架构、平台和部署场景的可扩展 VLN 基础。"}
+  },
+  "docs": {
+    "eyebrow": {"en": "GO DEEPER", "zh": "深入阅读"},
+    "title": {"en": "The source stays close to the work.", "zh": "文档与代码保持贴近。"},
+    "lead": {"en": "Stable topic documents separate public interfaces from run-specific notes, so the landing page stays readable as the project expands.", "zh": "稳定专题文档将公共接口与具体实验记录分开，让项目扩展时首页仍然清晰。"}
+  },
+  "footer": {
+    "tagline": {"en": "Make Navigation VLA Simple.", "zh": "让导航 VLA 变得简单。"},
+    "note": {"en": "Built as a static project page · Release 01", "zh": "静态项目展示页 · Release 01"}
+  },
+  "frameworkNodes": {
+    "data": {"label": {"en": "Data", "zh": "数据"}, "subtitle": {"en": "convert · normalize", "zh": "转换 · 归一化"}, "title": {"en": "Make heterogeneous data inspectable.", "zh": "让异构数据可检查。"}, "text": {"en": "Dataset adapters capture source layout, camera, time, coordinate, and action semantics before writing a common LeRobot v3 representation.", "zh": "数据集 adapter 在写入统一 LeRobot v3 表示前，明确记录源目录、相机、时间、坐标和动作语义。"}, "items": [{"en": "OpenFly · TravelUAV · AerialVLN", "zh": "OpenFly · TravelUAV · AerialVLN"}, {"en": "trajectory augmentation and rendering", "zh": "轨迹增强与模拟器采集"}, {"en": "validation, statistics, and manifests", "zh": "校验、统计和 manifest"}]},
+    "protocol": {"label": {"en": "Protocol", "zh": "协议"}, "subtitle": {"en": "state · action · history", "zh": "状态 · 动作 · 历史"}, "title": {"en": "Make semantics explicit.", "zh": "让语义保持显式。"}, "text": {"en": "A stable intermediate contract connects data, models, and evaluation without pretending that every task has the same coordinates or actions.", "zh": "稳定的中间协议连接数据、模型和测评，同时不强行假设所有任务拥有相同坐标和动作。"}, "items": [{"en": "adapter-declared storage and body-frame model motion", "zh": "adapter 声明的存储语义与机体坐标系模型运动"}, {"en": "camera, time, and history contracts", "zh": "相机、时间和历史契约"}, {"en": "shared normalization statistics", "zh": "共享归一化统计"}]},
+    "model": {"label": {"en": "Model", "zh": "模型"}, "subtitle": {"en": "VLM · memory · head", "zh": "VLM · 记忆 · 动作头"}, "title": {"en": "Keep the architecture composable.", "zh": "保持模型架构可组合。"}, "text": {"en": "Current observations, selected history, temporal-view information, platform state, and a continuous action head form the SimpleNAV navigation path.", "zh": "当前观测、筛选历史、时空视角信息、平台状态和连续动作头共同构成 SimpleNAV 导航路径。"}, "items": [{"en": "Qwen3.5-VL primary path", "zh": "Qwen3.5-VL 主要路径"}, {"en": "BATS · TVI · visual-token cache", "zh": "BATS · TVI · 视觉 token cache"}, {"en": "DiT-B · 8-step waypoint chunk", "zh": "DiT-B · 8 步 waypoint chunk"}]},
+    "train": {"label": {"en": "Train", "zh": "训练"}, "subtitle": {"en": "single · multi-domain", "zh": "单域 · 多域"}, "title": {"en": "Turn contracts into repeatable recipes.", "zh": "把契约变成可复现 recipe。"}, "text": {"en": "Configuration-driven runs connect data mixtures, normalization, distributed execution, checkpoint metadata, and recovery.", "zh": "配置驱动流程连接数据混合、归一化、分布式执行、checkpoint 元数据和恢复。"}, "items": [{"en": "single-dataset smoke tests", "zh": "单数据集 smoke test"}, {"en": "cross-domain mixture recipes", "zh": "跨域混合训练 recipe"}, {"en": "resolved configs and checkpoint contracts", "zh": "resolved config 与 checkpoint 契约"}]},
+    "eval": {"label": {"en": "Evaluate", "zh": "测评"}, "subtitle": {"en": "offline · closed-loop", "zh": "离线 · 闭环"}, "title": {"en": "Make comparisons auditable.", "zh": "让比较可以审计。"}, "text": {"en": "Benchmark adapters and simulator backends share planning, resume, episode artifacts, failure records, and aggregate metrics.", "zh": "Benchmark adapter 与模拟器后端共享规划、断点恢复、episode 产物、失败记录和汇总指标。"}, "items": [{"en": "AirSim · Habitat · offline", "zh": "AirSim · Habitat · 离线"}, {"en": "episode-level results", "zh": "逐 episode 结果"}, {"en": "protocol-bound benchmark summaries", "zh": "绑定协议的 benchmark 汇总"}]}
+  },
+  "modelCards": [
+    {"id": "backbone", "label": {"en": "Backbone", "zh": "视觉语言骨干"}, "title": {"en": "Qwen3.5-VL for navigation.", "zh": "面向导航的 Qwen3.5-VL。"}, "text": {"en": "The Release 01 path uses Qwen3.5-VL for language, current vision, and navigation context.", "zh": "Release 01 使用 Qwen3.5-VL 处理语言、当前视觉和导航上下文。"}, "tags": ["Qwen3.5-VL", "navigation VLA", "backbone adapter"]},
+    {"id": "memory", "label": {"en": "Memory", "zh": "长历史"}, "title": {"en": "Use the right history, not all history.", "zh": "选择合适的历史，而不是堆叠所有历史。"}, "text": {"en": "BATS selects representative frames, TVI records temporal-view relationships, and a visual-token cache reduces repeated encoding.", "zh": "BATS 选择代表性帧，TVI 记录时间与视角关系，视觉 token cache 减少重复编码。"}, "tags": ["BATS", "TVI", "token cache"]},
+    {"id": "action", "label": {"en": "Action", "zh": "动作头"}, "title": {"en": "Predict a chunk that can move.", "zh": "预测可以执行的动作片段。"}, "text": {"en": "A DiT-B diffusion head predicts an 8-step waypoint chunk anchored at the current pose in the body frame.", "zh": "DiT-B 扩散动作头在当前位姿机体坐标系中预测 8 步 waypoint 动作片段。"}, "tags": ["DiT-B", "8 × waypoint", "body frame"]}
+  ],
+  "dataPipeline": [
+    {"en": "raw source", "zh": "原始数据"},
+    {"en": "adapter", "zh": "数据 adapter"},
+    {"en": "LeRobot v3", "zh": "LeRobot v3"},
+    {"en": "augment / render", "zh": "增强 / 采集"},
+    {"en": "validate", "zh": "校验"}
+  ],
+  "dataCards": [
+    {"title": {"en": "Conversion", "zh": "转换"}, "text": {"en": "Coordinates, time, camera, state, and action semantics become explicit before writing trainable data.", "zh": "在写入可训练数据前，明确坐标、时间、相机、状态和动作语义。"}, "status": {"en": "Included in data_pipeline/", "zh": "已包含在 data_pipeline/"}},
+    {"title": {"en": "Augmentation", "zh": "轨迹增强"}, "text": {"en": "Smooth and retime trajectories without changing the read-only source split.", "zh": "在不修改只读源 split 的前提下平滑和重采样轨迹。"}, "status": {"en": "Included in data_pipeline/", "zh": "已包含在 data_pipeline/"}},
+    {"title": {"en": "Validation", "zh": "校验"}, "text": {"en": "Check schemas, references, statistics, cache compatibility, videos, and dataloader samples.", "zh": "检查 schema、引用关系、统计、cache 兼容性、视频和 dataloader 样本。"}, "status": {"en": "Available in repository", "zh": "仓库中已有入口"}}
+  ],
+  "augmentationList": [
+    {"title": "AerialVLN · Example 1", "subtitle": {"en": "Raw / enhanced aligned by path progress", "zh": "按路径进度对齐原始与增强序列"}, "video": "assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.mp4", "poster": "assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced_poster.jpg", "plot": "assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png"},
+    {"title": "OpenFly · Episode 000008", "subtitle": {"en": "Raw / enhanced aligned by path progress", "zh": "按路径进度对齐原始与增强序列"}, "video": "assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.mp4", "poster": "assets/augmentation/openfly_000008_aligned_raw_vs_enhanced_poster.jpg", "plot": "assets/augmentation/openfly_000008_trajectory_raw_vs_enhanced.png"}
+  ],
+  "demosGroups": [
+    {"id": "all", "label": {"en": "All scenes", "zh": "全部场景"}},
+    {"id": "openfly", "label": "OpenFly"},
+    {"id": "traveluav", "label": "TravelUAV"},
+    {"id": "aerialvln", "label": "AerialVLN"},
+    {"id": "rxr", "label": "RxR-CE"},
+    {"id": "evt", "label": "EVT-Bench"}
+  ],
+  "demosList": [
+    {"id": "openfly-16", "group": "openfly", "title": "OpenFly · Env 16", "subtitle": {"en": "Episode 000420", "zh": "Episode 000420"}, "video": "assets/demos/openfly/env16_ep000420.mp4", "poster": "assets/demos/openfly/env16_ep000420.jpg"},
+    {"id": "openfly-18", "group": "openfly", "title": "OpenFly · Env 18", "subtitle": {"en": "Episode 000800", "zh": "Episode 000800"}, "video": "assets/demos/openfly/env18_ep000800.mp4", "poster": "assets/demos/openfly/env18_ep000800.jpg"},
+    {"id": "openfly-23", "group": "openfly", "title": "OpenFly · Env 23", "subtitle": {"en": "Episode 001557", "zh": "Episode 001557"}, "video": "assets/demos/openfly/env23_ep001557.mp4", "poster": "assets/demos/openfly/env23_ep001557.jpg"},
+    {"id": "openfly-26", "group": "openfly", "title": "OpenFly · Env 26", "subtitle": {"en": "Episode 001147", "zh": "Episode 001147"}, "video": "assets/demos/openfly/env26_ep001147.mp4", "poster": "assets/demos/openfly/env26_ep001147.jpg"},
+    {"id": "travel-town10", "group": "traveluav", "title": "TravelUAV · Town 10HD", "subtitle": {"en": "Episode 000767", "zh": "Episode 000767"}, "video": "assets/demos/traveluav/carla_town10hd_ep000767.mp4", "poster": "assets/demos/traveluav/carla_town10hd_ep000767.jpg"},
+    {"id": "travel-town15", "group": "traveluav", "title": "TravelUAV · Town 15", "subtitle": {"en": "Episode 000873", "zh": "Episode 000873"}, "video": "assets/demos/traveluav/carla_town15_ep000873.mp4", "poster": "assets/demos/traveluav/carla_town15_ep000873.jpg"},
+    {"id": "travel-modern", "group": "traveluav", "title": "TravelUAV · Modern City", "subtitle": {"en": "Episode 000405", "zh": "Episode 000405"}, "video": "assets/demos/traveluav/moderncity_ep000405.mp4", "poster": "assets/demos/traveluav/moderncity_ep000405.jpg"},
+    {"id": "travel-tropical", "group": "traveluav", "title": "TravelUAV · Tropical", "subtitle": {"en": "Episode 000149", "zh": "Episode 000149"}, "video": "assets/demos/traveluav/tropical_ep000149.mp4", "poster": "assets/demos/traveluav/tropical_ep000149.jpg"},
+    {"id": "aerialvln-8", "group": "aerialvln", "title": "AerialVLN · Env 8", "subtitle": {"en": "Closed-loop test rollout", "zh": "闭环测试 Rollout"}, "video": "assets/demos/aerialvln/env8.mp4", "poster": "assets/demos/aerialvln/env8.jpg"},
+    {"id": "rxr-10129", "group": "rxr", "title": "RxR-CE · Episode 10129", "subtitle": {"en": "Indoor multilingual VLN", "zh": "室内多语言 VLN"}, "video": "assets/demos/rxr/ep10129.mp4", "poster": "assets/demos/rxr/ep10129.jpg"},
+    {"id": "rxr-1588", "group": "rxr", "title": "RxR-CE · Episode 1588", "subtitle": {"en": "Indoor multilingual VLN", "zh": "室内多语言 VLN"}, "video": "assets/demos/rxr/ep1588.mp4", "poster": "assets/demos/rxr/ep1588.jpg"},
+    {"id": "rxr-5482", "group": "rxr", "title": "RxR-CE · Episode 5482", "subtitle": {"en": "Indoor multilingual VLN", "zh": "室内多语言 VLN"}, "video": "assets/demos/rxr/ep5482.mp4", "poster": "assets/demos/rxr/ep5482.jpg"},
+    {"id": "rxr-6407", "group": "rxr", "title": "RxR-CE · Episode 6407", "subtitle": {"en": "Indoor multilingual VLN", "zh": "室内多语言 VLN"}, "video": "assets/demos/rxr/ep6407.mp4", "poster": "assets/demos/rxr/ep6407.jpg"},
+    {"id": "evt-2", "group": "evt", "title": "EVT-Bench · Scene 2", "subtitle": {"en": "Embodied tracking", "zh": "具身跟踪"}, "video": "assets/demos/evt_bench/scene2.mp4", "poster": "assets/demos/evt_bench/scene2.jpg"},
+    {"id": "evt-20", "group": "evt", "title": "EVT-Bench · Scene 20", "subtitle": {"en": "Embodied tracking", "zh": "具身跟踪"}, "video": "assets/demos/evt_bench/scene20.mp4", "poster": "assets/demos/evt_bench/scene20.jpg"},
+    {"id": "evt-30", "group": "evt", "title": "EVT-Bench · Scene 30", "subtitle": {"en": "Embodied tracking", "zh": "具身跟踪"}, "video": "assets/demos/evt_bench/scene30.mp4", "poster": "assets/demos/evt_bench/scene30.jpg"}
+  ],
+  "heroDemoIds": ["travel-modern", "rxr-10129", "evt-2", "aerialvln-8", "openfly-26", "travel-tropical", "rxr-5482", "openfly-16", "travel-town15", "evt-20"],
+  "artifactProfiles": {
+    "__ours": {"label": {"en": "Full data, training, and evaluation stack", "zh": "完整数据、训练与测评代码栈"}, "url": "https://github.com/fulanya55/starVLA/tree/SimpleNav"},
+    "Human": {"label": {"en": "Baseline", "zh": "Baseline"}},
+    "Random": {"label": {"en": "Baseline", "zh": "Baseline"}},
+    "Random Action": {"label": {"en": "Baseline", "zh": "Baseline"}},
+    "Fixed Action": {"label": {"en": "Baseline", "zh": "Baseline"}},
+    "Action Sampling": {"label": {"en": "Benchmark code", "zh": "Benchmark 代码"}, "url": "https://github.com/AirVLN/AirVLN"},
+    "Seq2Seq": {"label": {"en": "Public baseline code", "zh": "公开 Baseline 代码"}, "url": "https://github.com/jacobkrantz/VLN-CE"},
+    "CMA": {"label": {"en": "Public baseline code", "zh": "公开 Baseline 代码"}, "url": "https://github.com/jacobkrantz/VLN-CE"},
+    "Seq2Seq-DA": {"label": {"en": "Benchmark code", "zh": "Benchmark 代码"}, "url": "https://github.com/AirVLN/AirVLN"},
+    "CMA-DA": {"label": {"en": "Benchmark code", "zh": "Benchmark 代码"}, "url": "https://github.com/AirVLN/AirVLN"},
+    "LingUNet": {"label": {"en": "Release not recorded", "zh": "未记录公开产物"}},
+    "LAG": {"label": {"en": "Release not recorded", "zh": "未记录公开产物"}},
+    "See-Point-Fly": {"label": {"en": "Release not recorded", "zh": "未记录公开产物"}},
+    "AerialVLN": {"label": {"en": "Benchmark code", "zh": "Benchmark 代码"}, "url": "https://github.com/AirVLN/AirVLN"},
+    "NaVid": {"label": {"en": "Code + weights", "zh": "代码 + 权重"}, "url": "https://github.com/jzhzhang/NaVid-VLN-CE"},
+    "NaVila": {"label": {"en": "Release not recorded", "zh": "未记录公开产物"}},
+    "OpenFly-Agent": {"label": {"en": "Release not recorded", "zh": "未记录公开产物"}},
+    "TravelUAV": {"label": {"en": "Code + weights", "zh": "代码 + 权重"}, "url": "https://github.com/prince687028/TravelUAV"},
+    "TravelUAV-DA": {"label": {"en": "Code + weights", "zh": "代码 + 权重"}, "url": "https://github.com/prince687028/TravelUAV"},
+    "NavFoM": {"label": {"en": "Project page only", "zh": "仅项目页"}, "url": "https://pku-epic.github.io/NavFoM-Web/"},
+    "LongFly": {"label": {"en": "Paper only", "zh": "仅论文"}, "url": "https://arxiv.org/abs/2512.22010"},
+    "AerialVLA": {"label": {"en": "Code + weights", "zh": "代码 + 权重"}, "url": "https://github.com/XuPeng23/AeroVLA"},
+    "Qwen-RobotNav-4B": {"label": {"en": "Report repository; no code/weights", "zh": "报告仓库；未公开代码/权重"}, "url": "https://github.com/QwenLM/Qwen-RobotNav"},
+    "Qwen-RobotNav-8B": {"label": {"en": "Report repository; no code/weights", "zh": "报告仓库；未公开代码/权重"}, "url": "https://github.com/QwenLM/Qwen-RobotNav"},
+    "ABot-N0": {"label": {"en": "Report repository; no code/weights", "zh": "报告仓库；未公开代码/权重"}, "url": "https://github.com/amap-cvlab/ABot-Navigation/tree/ABot-N0"},
+    "InternVLA-N1 (S2)": {"label": {"en": "Code + weights", "zh": "代码 + 权重"}, "url": "https://github.com/InternRobotics/InternNav"},
+    "InternVLA-N1 (S1+S2)": {"label": {"en": "Code + weights", "zh": "代码 + 权重"}, "url": "https://github.com/InternRobotics/InternNav"},
+    "Uni-NaVid": {"label": {"en": "Code + weights", "zh": "代码 + 权重"}, "url": "https://github.com/jzhzhang/Uni-NaVid"},
+    "VLingNav": {"label": {"en": "Project page only", "zh": "仅项目页"}, "url": "https://wsakobe.github.io/VLingNav-web/"},
+    "VLingNav (SFT)": {"label": {"en": "Project page only", "zh": "仅项目页"}, "url": "https://wsakobe.github.io/VLingNav-web/"},
+    "TrackVLA": {"label": {"en": "Benchmark code only", "zh": "仅 Benchmark 代码"}, "url": "https://github.com/wsakobe/TrackVLA"},
+    "TrackVLA++": {"label": {"en": "Project page only", "zh": "仅项目页"}, "url": "https://pku-epic.github.io/TrackVLA-plus-plus-Web/"}
+  },
+  "artifactProfileOverrides": {
+    "aerialvlns": {
+      "Seq2Seq": {"label": {"en": "Benchmark code", "zh": "Benchmark 代码"}, "url": "https://github.com/AirVLN/AirVLN"},
+      "CMA": {"label": {"en": "Benchmark code", "zh": "Benchmark 代码"}, "url": "https://github.com/AirVLN/AirVLN"}
+    }
+  },
+  "trainingDataProfiles": {
+    "r2r": {"Qwen-RobotNav-4B": "15.6M", "Qwen-RobotNav-8B": "15.6M", "ABot-N0": "21.9M", "InternVLA-N1 (S2)": ">5M", "InternVLA-N1 (S1+S2)": {"en": "Not reported", "zh": "未报告"}, "NavFoM": "12.7M", "Uni-NaVid": "5.9M", "__ours": "1.9M"},
+    "rxr": {"Qwen-RobotNav-4B": "15.6M", "Qwen-RobotNav-8B": "15.6M", "ABot-N0": "16.9M + 5.0M", "InternVLA-N1 (S2)": ">5M", "InternVLA-N1 (S1+S2)": {"en": "Not reported", "zh": "未报告"}, "NavFoM": "12.7M", "Uni-NaVid": "5.9M", "__ours": "1.9M"},
+    "evt": {"Qwen-RobotNav-4B": "1.5M", "Qwen-RobotNav-8B": "1.5M", "ABot-N0": "4.0M", "VLingNav": "855K", "VLingNav (SFT)": "855K", "TrackVLA": "855K", "TrackVLA++": "1M", "NavFoM": "897K", "Uni-NaVid": {"en": "Not disclosed", "zh": "未公开"}, "__ours": "2.4M"}
+  },
+  "benchmarksList": [
+    {
+      "id": "openfly", "label": "OpenFly", "status": {"en": "Seen · recorded", "zh": "Seen · 已记录"},
+      "description": {"en": "Seen-set comparison under the recorded OpenFly protocol.", "zh": "当前记录的 OpenFly Seen 协议下的方法对比。"},
+      "source": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md#openfly-seen", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md#openfly-seen"},
+      "views": [{
+        "id": "seen", "label": "Seen", "note": {"en": "402-episode closed-loop record", "zh": "402 个 episode 的闭环记录"},
+        "metrics": [{"label": "NE↓", "value": "37.12 m"}, {"label": "SR↑", "value": "52.85%"}, {"label": "OSR↑", "value": "74.15%"}, {"label": "SPL↑", "value": "50.96%"}],
+        "columns": ["NE↓", "SR↑", "OSR↑", "SPL↑"],
+        "rows": [
+          {"method": "Random", "values": ["242 m", "0.7%", "0.8%", "0%"]},
+          {"method": "Seq2Seq", "values": ["205 m", "2.9%", "24.3%", "2.6%"]},
+          {"method": "CMA", "values": ["161 m", "5.4%", "28.1%", "4.8%"]},
+          {"method": "See-Point-Fly", "values": ["—", "—", "—", "—"]},
+          {"method": "AerialVLN", "values": ["139 m", "7.5%", "30.0%", "6.8%"]},
+          {"method": "NaVid", "values": ["153 m", "13.0%", "38.2%", "11.6%"]},
+          {"method": "NaVila", "values": ["132 m", "20.3%", "53.5%", "17.8%"]},
+          {"method": "OpenFly-Agent", "values": ["93 m", "34.3%", "64.3%", "24.9%"]},
+          {"method": {"en": "SimpleNAV (single-dataset)", "zh": "SimpleNAV（单数据集）"}, "values": ["37.12 m", "52.85%", "74.15%", "50.96%"], "highlight": true}
+        ]
+      }]
+    },
+    {
+      "id": "traveluav", "label": "TravelUAV", "status": {"en": "Test Seen · recorded", "zh": "Test Seen · 已记录"},
+      "description": {"en": "Full, Easy, and Hard use the same metric layout for direct comparison.", "zh": "Full、Easy 和 Hard 使用相同指标布局，便于直接比较。"},
+      "source": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md#traveluav-test-seen", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md#traveluav-test-seen"},
+      "views": [
+        {
+          "id": "full", "label": "Full", "note": {"en": "Test Seen · all difficulty levels", "zh": "Test Seen · 全部难度"},
+          "metrics": [{"label": "NE↓", "value": "85.61 m"}, {"label": "SR↑", "value": "22.42"}, {"label": "OSR↑", "value": "55.08"}, {"label": "SPL↑", "value": "20.51"}], "columns": ["NE↓", "SR↑", "OSR↑", "SPL↑"],
+          "rows": [
+            {"method": "Human", "values": ["14.15", "94.51", "94.51", "77.84"]}, {"method": "Random Action", "values": ["222.20", "0.14", "0.21", "0.07"]}, {"method": "Fixed Action", "values": ["188.61", "2.27", "8.16", "1.40"]}, {"method": "CMA", "values": ["135.73", "8.37", "18.72", "7.90"]}, {"method": "TravelUAV", "values": ["106.28", "16.10", "44.26", "14.30"]}, {"method": "TravelUAV-DA", "values": ["98.66", "17.45", "48.87", "15.76"]}, {"method": "NavFoM", "values": ["93.05", "29.17", "49.24", "25.03"]}, {"method": "LongFly", "values": ["60.02", "36.39", "65.87", "31.07"]}, {"method": "AerialVLA", "values": ["65.88", "47.96", "57.69", "38.54"]}, {"method": {"en": "SimpleNAV (single-dataset)", "zh": "SimpleNAV（单数据集）"}, "values": ["85.61", "22.42", "55.08", "20.51"], "highlight": true}
+          ]
+        },
+        {
+          "id": "easy", "label": "Easy", "note": {"en": "Test Seen · easy subset", "zh": "Test Seen · Easy 子集"},
+          "metrics": [{"label": "NE↓", "value": "59.96 m"}, {"label": "SR↑", "value": "22.80"}, {"label": "OSR↑", "value": "56.87"}, {"label": "SPL↑", "value": "21.01"}], "columns": ["NE↓", "SR↑", "OSR↑", "SPL↑"],
+          "rows": [
+            {"method": "Human", "values": ["11.68", "95.44", "95.44", "76.19"]}, {"method": "Random Action", "values": ["142.07", "0.26", "0.39", "0.13"]}, {"method": "Fixed Action", "values": ["121.36", "3.48", "11.48", "2.14"]}, {"method": "CMA", "values": ["84.89", "11.48", "24.52", "10.68"]}, {"method": "TravelUAV", "values": ["68.78", "18.84", "47.61", "16.39"]}, {"method": "TravelUAV-DA", "values": ["66.40", "20.26", "51.23", "18.10"]}, {"method": "NavFoM", "values": ["58.98", "32.91", "53.16", "27.87"]}, {"method": "LongFly", "values": ["38.10", "38.52", "71.90", "31.24"]}, {"method": "AerialVLA", "values": ["43.76", "49.30", "61.30", "37.14"]}, {"method": {"en": "SimpleNAV (single-dataset)", "zh": "SimpleNAV（单数据集）"}, "values": ["59.96", "22.80", "56.87", "21.01"], "highlight": true}
+          ]
+        },
+        {
+          "id": "hard", "label": "Hard", "note": {"en": "Test Seen · hard subset", "zh": "Test Seen · Hard 子集"},
+          "metrics": [{"label": "NE↓", "value": "118.28 m"}, {"label": "SR↑", "value": "21.95"}, {"label": "OSR↑", "value": "52.81"}, {"label": "SPL↑", "value": "19.88"}], "columns": ["NE↓", "SR↑", "OSR↑", "SPL↑"],
+          "rows": [
+            {"method": "Human", "values": ["17.16", "93.37", "93.37", "79.85"]}, {"method": "Random Action", "values": ["320.12", "0.00", "0.00", "0.00"]}, {"method": "Fixed Action", "values": ["270.69", "0.79", "4.09", "0.49"]}, {"method": "CMA", "values": ["197.77", "4.57", "11.65", "4.51"]}, {"method": "TravelUAV", "values": ["152.04", "12.76", "40.16", "11.76"]}, {"method": "TravelUAV-DA", "values": ["138.04", "14.02", "45.98", "12.90"]}, {"method": "NavFoM", "values": ["143.83", "23.58", "43.40", "20.80"]}, {"method": "LongFly", "values": ["85.20", "33.94", "58.94", "30.88"]}, {"method": "AerialVLA", "values": ["93.16", "46.30", "53.23", "40.26"]}, {"method": {"en": "SimpleNAV (single-dataset)", "zh": "SimpleNAV（单数据集）"}, "values": ["118.28", "21.95", "52.81", "19.88"], "highlight": true}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aerialvlns", "label": "AerialVLN-S", "status": {"en": "Val Seen · recorded", "zh": "Val Seen · 已记录"},
+      "description": {"en": "AerialVLN-S Val Seen comparison with navigation error and trajectory success metrics.", "zh": "AerialVLN-S Val Seen 的导航误差与轨迹成功指标对比。"},
+      "source": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md#aerialvln-s-val-seen", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md#aerialvln-s-val-seen"},
+      "views": [{
+        "id": "val-seen", "label": "Val Seen", "note": {"en": "AerialVLN-S task", "zh": "AerialVLN-S 任务"},
+        "metrics": [{"label": "NE↓", "value": "126 m"}, {"label": "SR↑", "value": "8.4"}, {"label": "OSR↑", "value": "18.92"}, {"label": "SDTW↑", "value": "3.4"}], "columns": ["NE↓", "SR↑", "OSR↑", "SDTW↑"],
+        "rows": [
+          {"method": "Random", "values": ["109.6", "0", "0", "0"]},
+          {"method": "Action Sampling", "values": ["213.8", "0.9", "5.7", "0.3"]},
+          {"method": "LingUNet", "values": ["383.8", "0.6", "6.9", "0.2"]},
+          {"method": "Seq2Seq", "values": ["146", "4.8", "19.8", "1.6"]},
+          {"method": "CMA", "values": ["121", "3", "23.2", "0.6"]},
+          {"method": "Seq2Seq-DA", "values": ["85.5", "9.9", "24.1", "4.5"]},
+          {"method": "CMA-DA", "values": ["92.2", "9.9", "26.5", "3.7"]},
+          {"method": "LAG", "values": ["90.2", "7.2", "15.7", "2.4"]},
+          {"method": {"en": "SimpleNAV (single-dataset)", "zh": "SimpleNAV（单数据集）"}, "values": ["126", "8.4", "18.92", "3.4"], "highlight": true}
+        ]
+      }]
+    },
+    {
+      "id": "r2r", "label": "R2R-CE", "status": {"en": "Val-Unseen · recorded", "zh": "Val-Unseen · 已记录"},
+      "description": {"en": "Comparison across single-view, panoramic, and four-view inputs.", "zh": "对比单视角、全景和四视角输入设置。"},
+      "source": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md#r2r-ce-val-unseen", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md#r2r-ce-val-unseen"},
+      "views": [{
+        "id": "val-unseen", "label": "Val-Unseen", "note": {"en": "Habitat / VLN-CE", "zh": "Habitat / VLN-CE"},
+        "metrics": [{"label": "NE↓", "value": "4.65 m"}, {"label": "OS↑", "value": "55.93"}, {"label": "SR↑", "value": "49.18"}, {"label": "SPL↑", "value": "45.82"}], "columns": ["NE↓", "OS↑", "SR↑", "SPL↑"],
+        "rows": [
+          {"method": "Qwen-RobotNav-4B", "input": "Single-view", "values": ["4.22", "73.6", "66.9", "60.5"]}, {"method": "Qwen-RobotNav-8B", "input": "Single-view", "values": ["4.36", "72.7", "65.7", "59.6"]}, {"method": "Qwen-RobotNav-4B", "input": "Panoramic", "values": ["3.80", "77.2", "69.5", "63.6"]}, {"method": "Qwen-RobotNav-8B", "input": "Panoramic", "values": ["3.53", "78.5", "72.1", "66.6"]}, {"method": "ABot-N0", "input": "Panoramic RGB", "values": ["3.78", "70.8", "66.4", "63.9"]}, {"method": "InternVLA-N1 (S2)", "input": "Single-view RGB", "values": ["4.89", "60.6", "55.4", "52.1"]}, {"method": "InternVLA-N1 (S1+S2)", "input": "Single-view RGB + Depth", "values": ["4.83", "63.3", "58.2", "54.0"]}, {"method": "NavFoM", "input": "Single-view RGB", "values": ["5.01", "64.9", "56.2", "51.2"]}, {"method": "NavFoM", "input": "Four-view RGB", "values": ["4.61", "72.1", "61.7", "55.3"]}, {"method": "Uni-NaVid", "input": "Single-view RGB", "values": ["5.58", "53.3", "47.0", "42.7"]}, {"method": {"en": "SimpleNAV (single-dataset)", "zh": "SimpleNAV（单数据集）"}, "input": "Four-view RGB", "values": ["4.65", "55.93", "49.18", "45.82"], "highlight": true}
+        ]
+      }]
+    },
+    {
+      "id": "rxr", "label": "RxR-CE", "status": {"en": "Val-Unseen · recorded", "zh": "Val-Unseen · 已记录"},
+      "description": {"en": "Multilingual indoor VLN comparison with input settings shown explicitly.", "zh": "多语言室内 VLN 对比，并显式标注输入设置。"},
+      "source": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md#rxr-ce-val-unseen", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md#rxr-ce-val-unseen"},
+      "views": [{
+        "id": "val-unseen", "label": "Val-Unseen", "note": {"en": "Multilingual split", "zh": "多语言 split"},
+        "metrics": [{"label": "NE↓", "value": "4.62 m"}, {"label": "SR↑", "value": "58.44"}, {"label": "SPL↑", "value": "52.17"}, {"label": "nDTW↑", "value": "74.60"}], "columns": ["NE↓", "SR↑", "SPL↑", "nDTW↑"],
+        "rows": [
+          {"method": "Qwen-RobotNav-4B", "input": "Single-view", "values": ["4.15", "71.3", "61.5", "68.6"]}, {"method": "Qwen-RobotNav-8B", "input": "Single-view", "values": ["4.16", "73.4", "63.5", "69.9"]}, {"method": "Qwen-RobotNav-4B", "input": "Panoramic", "values": ["3.80", "75.2", "65.0", "71.9"]}, {"method": "Qwen-RobotNav-8B", "input": "Panoramic", "values": ["3.58", "76.5", "65.7", "72.5"]}, {"method": "ABot-N0", "input": "Panoramic RGB", "values": ["3.83", "69.3", "60.0", "—"]}, {"method": "InternVLA-N1 (S2)", "input": "Single-view RGB", "values": ["6.41", "49.5", "41.8", "62.6"]}, {"method": "InternVLA-N1 (S1+S2)", "input": "Single-view RGB + Depth", "values": ["5.91", "53.5", "46.1", "65.3"]}, {"method": "NavFoM", "input": "Single-view RGB", "values": ["5.51", "57.4", "49.4", "60.2"]}, {"method": "NavFoM", "input": "Four-view RGB", "values": ["4.74", "64.4", "56.2", "65.8"]}, {"method": "Uni-NaVid", "input": "Single-view RGB", "values": ["6.24", "48.7", "40.9", "—"]}, {"method": {"en": "SimpleNAV (single-dataset)", "zh": "SimpleNAV（单数据集）"}, "input": "Four-view RGB", "values": ["4.62", "58.44", "52.17", "74.60"], "highlight": true}
+        ]
+      }]
+    },
+    {
+      "id": "evt", "label": "EVT-Bench", "status": {"en": "STT · DT · AT recorded", "zh": "STT · DT · AT 已记录"},
+      "description": {"en": "Use the task selector to compare all reported methods under the same compact row layout.", "zh": "通过任务切换，在同一紧凑行布局中比较全部已报告方法。"},
+      "source": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md#evt-bench", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md#evt-bench"},
+      "views": [
+        {
+          "id": "stt", "label": "STT", "note": {"en": "Single-target tracking", "zh": "单目标任务"},
+          "metrics": [{"label": "SR↑", "value": "89.31"}, {"label": "TR↑", "value": "96.08"}, {"label": "CR↓", "value": "1.09"}], "columns": ["SR↑", "TR↑", "CR↓"],
+          "rows": [
+            {"method": "Qwen-RobotNav-4B", "input": "Single-view", "values": ["77.4", "90.0", "6.40"]}, {"method": "Qwen-RobotNav-8B", "input": "Single-view", "values": ["78.6", "89.7", "5.70"]}, {"method": "ABot-N0", "input": "Single-view", "values": ["86.9", "87.6", "8.54"]}, {"method": "VLingNav", "input": "Single-view", "values": ["88.4", "81.2", "2.07"]}, {"method": "VLingNav (SFT)", "input": "Single-view", "values": ["87.2", "78.9", "1.23"]}, {"method": "TrackVLA", "input": "Single-view", "values": ["85.1", "78.6", "1.65"]}, {"method": "TrackVLA++", "input": "Single-view", "values": ["86.0", "81.0", "2.10"]}, {"method": "TrackVLA++", "input": "Four-view", "values": ["90.9", "82.7", "1.50"]}, {"method": "NavFoM", "input": "Single-view", "values": ["85.0", "80.5", "—"]}, {"method": "NavFoM", "input": "Four-view", "values": ["88.4", "80.7", "—"]}, {"method": "Uni-NaVid", "input": "Single-view", "values": ["25.7", "39.5", "41.9"]}, {"method": {"en": "SimpleNAV (single-dataset)", "zh": "SimpleNAV（单数据集）"}, "input": "Single-view", "values": ["89.31", "96.08", "1.09"], "highlight": true}
+          ]
+        },
+        {
+          "id": "dt", "label": "DT", "note": {"en": "Dynamic tracking", "zh": "动态跟踪任务"},
+          "metrics": [{"label": "SR↑", "value": "45.20"}, {"label": "TR↑", "value": "76.67"}, {"label": "CR↓", "value": "6.05"}], "columns": ["SR↑", "TR↑", "CR↓"],
+          "rows": [
+            {"method": "Qwen-RobotNav-4B", "input": "Single-view", "values": ["—", "—", "—"]}, {"method": "Qwen-RobotNav-8B", "input": "Single-view", "values": ["—", "—", "—"]}, {"method": "ABot-N0", "input": "Single-view", "values": ["66.7", "75.4", "11.6"]}, {"method": "VLingNav", "input": "Single-view", "values": ["67.6", "73.5", "5.51"]}, {"method": "VLingNav (SFT)", "input": "Single-view", "values": ["66.1", "69.7", "4.78"]}, {"method": "TrackVLA", "input": "Single-view", "values": ["57.6", "63.2", "5.80"]}, {"method": "TrackVLA++", "input": "Single-view", "values": ["66.5", "68.8", "4.71"]}, {"method": "TrackVLA++", "input": "Four-view", "values": ["74.0", "73.7", "3.51"]}, {"method": "NavFoM", "input": "Single-view", "values": ["61.4", "68.2", "—"]}, {"method": "NavFoM", "input": "Four-view", "values": ["62.0", "67.9", "—"]}, {"method": "Uni-NaVid", "input": "Single-view", "values": ["11.3", "27.4", "43.5"]}, {"method": {"en": "SimpleNAV (single-dataset)", "zh": "SimpleNAV（单数据集）"}, "input": "Single-view", "values": ["45.20", "76.67", "6.05"], "highlight": true}
+          ]
+        },
+        {
+          "id": "at", "label": "AT", "note": {"en": "Active tracking", "zh": "主动跟踪任务"},
+          "metrics": [{"label": "SR↑", "value": "39.72"}, {"label": "TR↑", "value": "79.20"}, {"label": "CR↓", "value": "3.77"}], "columns": ["SR↑", "TR↑", "CR↓"],
+          "rows": [
+            {"method": "Qwen-RobotNav-4B", "input": "Single-view", "values": ["—", "—", "—"]}, {"method": "Qwen-RobotNav-8B", "input": "Single-view", "values": ["—", "—", "—"]}, {"method": "ABot-N0", "input": "Single-view", "values": ["67.3", "79.5", "7.05"]}, {"method": "VLingNav", "input": "Single-view", "values": ["—", "—", "—"]}, {"method": "VLingNav (SFT)", "input": "Single-view", "values": ["—", "—", "—"]}, {"method": "TrackVLA", "input": "Single-view", "values": ["50.2", "63.7", "17.1"]}, {"method": "TrackVLA++", "input": "Single-view", "values": ["51.2", "63.4", "15.9"]}, {"method": "TrackVLA++", "input": "Four-view", "values": ["55.9", "63.8", "15.1"]}, {"method": "NavFoM", "input": "Single-view", "values": ["—", "—", "—"]}, {"method": "NavFoM", "input": "Four-view", "values": ["—", "—", "—"]}, {"method": "Uni-NaVid", "input": "Single-view", "values": ["8.26", "28.6", "43.7"]}, {"method": {"en": "SimpleNAV (single-dataset)", "zh": "SimpleNAV（单数据集）"}, "input": "Single-view", "values": ["39.72", "79.20", "3.77"], "highlight": true}
+          ]
+        }
+      ]
+    }
+  ],
+  "roadmapList": [
+    {"release": "01", "title": {"en": "Reproducible foundations", "zh": "可复现基础"}, "text": {"en": "Unify data, model, training, and evaluation contracts; freeze the first public reproduction package.", "zh": "统一数据、模型、训练和测评契约，冻结第一版公开复现包。"}, "state": {"en": "Current focus", "zh": "当前重点"}},
+    {"release": "02", "title": {"en": "Modular VLN development", "zh": "模块化 VLN 开发框架"}, "text": {"en": "Expand the public data toolkit and stabilize dataset, model, and benchmark plugin interfaces.", "zh": "扩展公开数据工具，稳定数据集、模型和 benchmark 插件接口。"}, "state": {"en": "Next", "zh": "下一阶段"}},
+    {"release": "03", "title": {"en": "Cross-domain navigation", "zh": "跨域通用导航"}, "text": {"en": "Train across aerial, indoor, ground, driving, and real-platform domains with shared representations.", "zh": "在空中、室内、地面、驾驶和真实平台域之间进行联合训练，形成共享表示。"}, "state": {"en": "Planned", "zh": "规划中"}},
+    {"release": "∞", "title": {"en": "Embodied navigation ecosystem", "zh": "通用具身导航生态"}, "text": {"en": "Connect simulation, offline data, and real deployment with community-extensible models and benchmarks.", "zh": "连接模拟器、离线数据和真实部署，形成可由社区扩展的模型与 benchmark 生态。"}, "state": {"en": "Long term", "zh": "长期方向"}}
+  ],
+  "docsList": [
+    {"label": {"en": "Install", "zh": "安装"}, "title": {"en": "Installation", "zh": "环境安装"}, "text": {"en": "Model environment, data-tool environments, and system packages.", "zh": "模型环境、数据工具环境和系统依赖。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/INSTALLATION.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/INSTALLATION_ZH.md"}},
+    {"label": {"en": "Data", "zh": "数据"}, "title": {"en": "Data Pipeline", "zh": "数据管线"}, "text": {"en": "Adapters, normalization, augmentation, rendering, and validation.", "zh": "Adapter、归一化、增强、采集和校验。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/DATA_PIPELINE.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/DATA_PIPELINE_ZH.md"}},
+    {"label": {"en": "Protocol", "zh": "协议"}, "title": {"en": "Data Structure", "zh": "数据结构"}, "text": {"en": "LeRobot v3 layout and state/action semantics.", "zh": "LeRobot v3 结构与 state/action 语义。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/DATA_STRUCTURE.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/DATA_STRUCTURE_ZH.md"}},
+    {"label": {"en": "Model", "zh": "模型"}, "title": {"en": "Model Architecture", "zh": "模型架构"}, "text": {"en": "Backbone, memory, action head, and extension contracts.", "zh": "Backbone、记忆、动作头和扩展契约。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/MODEL_ARCHITECTURE.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/MODEL_ARCHITECTURE_ZH.md"}},
+    {"label": {"en": "Train", "zh": "训练"}, "title": {"en": "Training", "zh": "训练"}, "text": {"en": "Portable recipe, preflight, outputs, and extension steps.", "zh": "便携 recipe、preflight、输出与扩展步骤。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/TRAINING.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/TRAINING_ZH.md"}},
+    {"label": {"en": "Evaluate", "zh": "测评"}, "title": {"en": "Inference and Evaluation", "zh": "推理与测评"}, "text": {"en": "Portable benchmark configs, execution, resume, and artifacts.", "zh": "便携 benchmark 配置、执行、续跑与产物。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/EVALUATION.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/EVALUATION_ZH.md"}},
+    {"label": {"en": "VLN-CE", "zh": "VLN-CE"}, "title": {"en": "R2R-CE and RxR-CE Workflow", "zh": "R2R-CE 与 RxR-CE 流程"}, "text": {"en": "Released Qwen3.5 training, checkpoint layout, and Habitat evaluation commands.", "zh": "发布版 Qwen3.5 训练、checkpoint 布局与 Habitat 测评命令。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/VLNCE_TRAINING_AND_EVALUATION.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/VLNCE_TRAINING_AND_EVALUATION.md"}},
+    {"label": {"en": "Results", "zh": "结果"}, "title": {"en": "Release 01 Benchmarks", "zh": "Release 01 测评"}, "text": {"en": "Recorded metrics and complete method comparisons.", "zh": "已记录指标和完整方法对比。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md"}},
+    {"label": {"en": "Roadmap", "zh": "路线图"}, "title": {"en": "Vision and Roadmap", "zh": "愿景与路线图"}, "text": {"en": "General-purpose VLN direction and verifiable milestones.", "zh": "通用 VLN 方向与可验证里程碑。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/VISION_AND_ROADMAP.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/VISION_AND_ROADMAP_ZH.md"}}
+  ]
+}

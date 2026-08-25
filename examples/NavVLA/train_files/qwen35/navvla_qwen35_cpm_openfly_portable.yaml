@@ -1,0 +1,141 @@
+run_id: navvla_qwen35_cpm_openfly_1node_bs5_ga6_tb1024_ph32
+run_root_dir: local/results/navvla_qwen35_cpm_openfly/Checkpoints
+seed: 42
+trackers: [jsonl, tensorboard]
+is_debug: false
+wandb_entity: null
+wandb_project: navvla_qwen35_openfly
+
+launcher:
+  mode: local
+  python: .venv/bin/python
+  num_machines: 1
+  num_processes: 8
+  main_process_port: 29573
+  cuda_visible_devices: "0,1,2,3,4,5,6,7"
+  run_id_suffix: timestamp
+  environment:
+    WANDB_MODE: disabled
+    PYTORCH_CUDA_ALLOC_CONF: expandable_segments:True
+
+deepspeed:
+  fp16:
+    enabled: false
+  bf16:
+    enabled: true
+  zero_optimization:
+    stage: 2
+    allgather_partitions: true
+    allgather_bucket_size: 50000000
+    reduce_scatter: true
+    reduce_bucket_size: 50000000
+    overlap_comm: true
+    contiguous_gradients: true
+    cpu_offload: false
+  gradient_clipping: 1.0
+  steps_per_print: 10
+
+framework:
+  name: navvla_qwen35_cpm
+  qwenvl:
+    base_vlm: local/models/Qwen3.5-4B
+    attn_implementation: flash_attention_2
+    max_text_tokens: 2048
+    action_placeholder_token: <|fim_pad|>
+    action_start_token: <|fim_prefix|>
+    action_end_token: <|fim_suffix|>
+  navvla:
+    use_platform_text: true
+    tvi_mode: learned_token
+    action_placeholder_count: 32
+    history_visual_tokens: 4
+    long_memory_source_visual_tokens: 4
+    long_memory_visual_tokens: 0
+    current_visual_tokens: 64
+    history_augmentation:
+      enabled: false
+    visual_token_profile: qwen3_5_4b_postmerge_pool4_256_mmap
+    visual_cache_stage: vit_postmerge_pool4
+    visual_cache_input_resize: [256, 256]
+    visual_cache_encoder_ckpt: local/models/Qwen3.5-4B
+  action_model:
+    action_model_type: DiT-B
+    action_dim: 4
+    state_dim: 0
+    action_horizon: 8
+    future_action_window_size: 7
+    past_action_window_size: 0
+    repeated_diffusion_steps: 2
+    num_inference_timesteps: 4
+    add_pos_embed: true
+    max_seq_len: 2048
+    num_target_vision_tokens: 8
+    noise_beta_alpha: 1.5
+    noise_beta_beta: 1.0
+    noise_s: 0.999
+    num_timestep_buckets: 1000
+    diffusion_model_cfg:
+      cross_attention_dim: 2560
+      attention_head_dim: 64
+      dropout: 0.1
+      final_dropout: false
+      interleave_self_attention: true
+      norm_type: ada_norm
+      num_layers: 16
+      output_dim: 1024
+      positional_embeddings: null
+
+datasets:
+  vla_data:
+    dataset_py: navvla_cpm_dataset
+    datasets:
+      - name: openfly
+        dataset_statistics_key: vln_train_enhanced_lerobot_vln_train
+        data_root_dir: local/data/enhanced_vln_lerobot/OpenFly/vln_train_enhanced_lerobot
+        required_cameras: [front]
+    data_mix: navvla_qwen35_cpm_openfly_learned_token_tb1024_ph32
+    split: train
+    tvi_mode: learned_token
+    history_sampling_mode: bats
+    visual_token_mode: cached_history_online_current
+    visual_token_profile: qwen3_5_4b_postmerge_pool4_256_mmap
+    token_budget: 1024
+    current_visual_tokens: 64
+    history_visual_tokens: 4
+    include_state: false
+    image_resize: [256, 256]
+    shuffle: true
+    action_extra_dim_mode: none
+    action_path_progress_gamma: 2.0
+    require_long_memory_tokens: false
+    allow_missing_long_memory: true
+    per_device_batch_size: 5
+    num_workers: 4
+
+trainer:
+  epochs: 1.5
+  max_train_steps: 12502
+  num_warmup_steps: 376
+  save_interval: 2000
+  save_format: pt
+  save_training_state: true
+  eval_interval: 2000
+  learning_rate:
+    base: 2.0e-05
+    qwen35_vl_interface: 2.0e-05
+    action_model: 1.0e-04
+    tvi_embedding: 1.0e-04
+  lr_scheduler_type: cosine_with_min_lr
+  scheduler_specific_kwargs:
+    min_lr: 1.0e-06
+  freeze_modules: qwen35_vl_interface.model.model.visual
+  logging_frequency: 1
+  gradient_clipping: null
+  gradient_accumulation_steps: 6
+  optimizer:
+    betas: [0.9, 0.95]
+    eps: 1.0e-08
+    weight_decay: 1.0e-08
+  is_resume: false
+  resume_training_state: false
+  enable_gradient_checkpointing: true

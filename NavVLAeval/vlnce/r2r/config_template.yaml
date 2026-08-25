@@ -1,0 +1,100 @@
+# Copy to a run-specific YAML, then replace paths, split and GPU values.
+benchmark:
+  name: vlnce_r2r
+  class_path: NavVLAeval.vlnce.r2r.benchmark:R2RBenchmarkSpec
+  max_steps: 200
+  max_samples: null # null | positive integer
+  kwargs:
+    task_name: r2r
+    split: val_seen # train | val_seen | val_unseen | test
+    success_distance: 3.0
+    stop_on_success_radius: false # true | false
+
+input:
+  type: vlnce_r2r
+  adapter_class_path: NavVLAeval.vlnce.r2r.inputs:R2RInputAdapter
+  namespace: r2r_val_seen
+  path: /path/to/VLN-CE-StarVLA
+  task_name: r2r
+  split: val_seen # train | val_seen | val_unseen | test
+
+model:
+  model_class_path: NavVLAeval.common.model.model_wrappers:StarVLAEvalModel
+  framework_name: navvla_cpm
+  repo_root: ../../..
+  checkpoint: /path/to/checkpoint/pytorch_model.pt
+  unnorm_key: vln_train_train
+  inference_seed: 42 # null | integer
+  config_overrides:
+    framework:
+      qwenvl:
+        base_vlm: /path/to/MiniCPM-V-4.6
+
+dataset:
+  dataset_py: vlnce_r2r
+  runtime_adapter: vlnce
+  input_style: navvla
+  action_type: anchor_relative_body_frame_xyz_yaw
+  action_dim: 4
+  state_dim: 0
+  include_state: false # true | false
+  action_horizon: 8
+  history_selection: bats # bats | recent | uniform
+  history_image_frames: null # null = token-budget cap | non-negative integer cap
+  history_update_mode: action_observations # action_observations | post_action
+  dataset_name: vlnce_r2r
+  required_cameras: [front, left, right, rear]
+  bats_epsilon: 0.1
+  bats_k: 4.0
+  use_dynamic_bats_k: true # true | false
+  bats_sampling_mode: priority_capped # priority_capped | independent
+  bats_seed: 42
+  bats_token_budget: 1024
+  budget_num_cameras: 4
+  current_visual_tokens: 64
+  history_visual_tokens: 4
+  tvi_tokens: 1
+
+env:
+  type: habitat
+  backend_class_path: NavVLAeval.common.simulators.habitat.backend:VLNCE031HabitatBackend
+  planner_class_path: NavVLAeval.common.simulators.habitat.backend:VLNCE031HabitatBackendPlanner
+  kwargs:
+    data_root: /path/to/VLN-CE-StarVLA
+    evt_bench_root: /path/to/evt-bench
+    habitat_lab_root: /path/to/habitat-lab
+    habitat_sim_site_packages: /path/to/habitat_sim/site-packages
+    nvidia_egl_root: /path/to/nvidia-egl
+    split: val_seen # train | val_seen | val_unseen | test
+    success_distance: 3.0
+    image_size: 256
+    camera_height: 1.25
+    max_episode_steps: 200
+    task_name: r2r
+    seed: 0
+    continuous_control_mode: collision_slide_pose_delta # collision_slide_pose_delta | collision_stop_pose_delta | filtered_pose_delta | direct_pose_delta | geodesic_pose_delta
+    capture_action_observations: true # true = every executed action image becomes a history candidate
+    action_adapter_class_path: NavVLAeval.common.simulators.habitat.action_adapter:BodyFrameContinuousActionAdapter
+    action_adapter_kwargs:
+      step_scale: 1.0
+      stop_probability_threshold: 0.5
+      min_delta: 0.001
+      enable_lateral: true # true | false
+      lateral_sign: -1.0 # x_forward/y_right -> Habitat dx=-y_right
+      yaw_sign: -1.0 # Habitat positive yaw is left; NavVLA yaw_right_positive is negated
+      action_index: 0
+    execute_waypoints_per_step: 1 # null | positive integer
+
+parallel:
+  gpu_ids: [0]
+  partition_mode: contiguous_episode_chunks
+  worker_timeout_sec: 0
+
+output:
+  root: /path/to/eval_result/vlnce_r2r_parallel
+  run_name: r2r_eval
+  save_step_artifacts: false # true | false
+  save_images: false # true | false
+  action_observation_image_policy: step # step | action | both | none
+  image_cameras: [front, left, right, rear]
+  metrics: [SR, OSR, NE, SPL, nDTW, path_length, steps_taken]
