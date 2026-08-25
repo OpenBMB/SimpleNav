@@ -134,7 +134,7 @@ Place downloaded packages in the repository-relative `local/` layout below.
 Requirements: Linux, Python 3.10, and a model-compatible NVIDIA driver. Dataset conversion also requires `ffmpeg`; closed-loop evaluation requires the corresponding simulator and scene assets.
 
 ```bash
-git clone -b SimpleNav https://github.com/fulanya55/starVLA.git SimpleNav
+git clone https://github.com/openbmb/SimpleNav.git
 cd SimpleNav
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv python install 3.10
