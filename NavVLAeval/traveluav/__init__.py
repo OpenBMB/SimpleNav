@@ -1,2 +1,0 @@
-"""TravelUAV AirSim evaluation entrypoints."""
-
