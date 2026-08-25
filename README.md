@@ -11,7 +11,6 @@
 
 <p align="center">
   <a href="README_ZH.md">中文</a> ·
-  <a href="https://fulanya55.github.io/starVLA/">Project Page</a> ·
   <a href="data_pipeline/README.md">Data Pipeline</a> ·
   <a href="docs/guides/README.md">Documentation</a> ·
   <a href="docs/guides/BENCHMARKS_RELEASE01.md">Results</a> ·
@@ -103,7 +102,7 @@ Full comparison tables and protocol notes are in [Release 01 Benchmarks](docs/gu
 
 ### Demos
 
-Selected rollout trajectory previews are shown below. See the [project-page video gallery](https://fulanya55.github.io/starVLA/#demos) for the full videos.
+Selected rollout trajectory previews are shown below.
 
 <table>
   <tr>
