@@ -305,7 +305,7 @@ If SimpleNav is useful in your work, please cite the repository.
   title = {SimpleNav: Make Navigation VLA Simple},
   author = {{SimpleNav Contributors}},
   year = {YYYY},
-  url = {https://github.com/fulanya55/starVLA},
+  url = {https://github.com/fulanya55/SimpleNav},
 }
 ```
 
@@ -314,5 +314,6 @@ If SimpleNav is useful in your work, please cite the repository.
 Repository source code is released under the [MIT License](LICENSE). Datasets, pretrained models, simulators, scene assets, and third-party components retain their own licenses.
 
 ## Acknowledgements
+We thank pioneering navigation VLA studies, including NavFoM, Qwen-RobotNav, ABot-N0, and InternVLA-N1, whose valuable explorations have helped shape and advance this field.
 
-We thank the authors of [NavFoM: Embodied Navigation Foundation Model](https://arxiv.org/abs/2509.12129) for their open cross-embodiment and cross-task navigation foundation-model research. SimpleNav also builds on Qwen-VL, LeRobot, PyTorch, Transformers, DeepSpeed, AirSim, Habitat, and the datasets and benchmarks listed above. Please cite the original projects and datasets used in each experiment.
+SimpleNav builds upon Qwen-VL, LeRobot, PyTorch, Transformers, DeepSpeed, AirSim, Habitat, as well as the datasets and benchmarks described above. We gratefully acknowledge these open-source contributions and encourage users to cite the original projects and datasets employed in their experiments.
