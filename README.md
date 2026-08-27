@@ -26,7 +26,9 @@
   <a href="https://modelscope.cn/organization/SimpleNav">Data, Environments &amp; Models</a>
 </p>
 
-SimpleNav connects heterogeneous navigation data, long-horizon VLA models, training, and benchmark evaluation through explicit interfaces. It supports aerial and indoor navigation, keeps dataset-specific coordinate and simulator semantics in adapters, and uses shared model, action, artifact, and evaluation contracts.
+SimpleNav is a simple, unified, reproducible, and extensible framework for navigation VLA research. 
+It is jointly developed and open-sourced by Tsinghua University THUNLP, AI9Stars, OpenBMB and HITDIP. 
+SimpleNav connects heterogeneous navigation data, long-horizon VLA models, training, and benchmark evaluation through explicit interfaces. It supports aerial and ground navigation, keeps dataset-specific coordinate and simulator semantics in adapters, and uses shared model, action, artifact, and evaluation contracts.
 
 <details>
 <summary>Table of Contents</summary>
@@ -304,8 +306,8 @@ If SimpleNav is useful in your work, please cite the repository.
 @software{simplenav,
   title = {SimpleNav: Make Navigation VLA Simple},
   author = {{SimpleNav Contributors}},
-  year = {YYYY},
-  url = {https://github.com/fulanya55/SimpleNav},
+  year = {2026},
+  url = {https://github.com/OpenBMB/SimpleNav},
 }
 ```
 
@@ -314,6 +316,6 @@ If SimpleNav is useful in your work, please cite the repository.
 Repository source code is released under the [MIT License](LICENSE). Datasets, pretrained models, simulators, scene assets, and third-party components retain their own licenses.
 
 ## Acknowledgements
-We thank pioneering navigation VLA studies, including NavFoM, Qwen-RobotNav, ABot-N0, and InternVLA-N1, whose valuable explorations have helped shape and advance this field.
+We thank pioneering navigation VLA studies, including NavFoM, Qwen-RobotNav, ABot-N0, starVLA and InternVLA-N1, whose valuable explorations have helped shape and advance this field.
 
-SimpleNav builds upon Qwen-VL, LeRobot, PyTorch, Transformers, DeepSpeed, AirSim, Habitat, as well as the datasets and benchmarks described above. We gratefully acknowledge these open-source contributions and encourage users to cite the original projects and datasets employed in their experiments.
+SimpleNav builds upon starVLA, Qwen-VL, LeRobot, PyTorch, Transformers, DeepSpeed, AirSim, Habitat, as well as the datasets and benchmarks described above. We gratefully acknowledge these open-source contributions and encourage users to cite the original projects and datasets employed in their experiments.

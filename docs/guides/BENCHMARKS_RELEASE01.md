@@ -1,10 +1,10 @@
-# SimpleNAV Release 01 Benchmarks
+# SimpleNav Release 01 Benchmarks
 
 [Back to the main README](../../README.md) · [中文](BENCHMARKS_RELEASE01_ZH.md)
 
 ## Overview
 
-| Benchmark | Split / Task | SimpleNAV result |
+| Benchmark | Split / Task | SimpleNav result |
 | --- | --- | --- |
 | OpenFly | Seen | NE 37.1 m · SR 52.8% · OSR 74.2% · SPL 51.0% |
 | TravelUAV | Test Seen · Full | NE 85.6 m · SR 22.4 · OSR 55.1 · SPL 20.5 |
@@ -27,7 +27,7 @@
 | NaVid | [Code + weights][navid] | 153.0 | 13.0% | 38.2% | 11.6% |
 | NaVila | — | 132.0 | 20.3% | 53.5% | 17.8% |
 | OpenFly-Agent | — | 93.0 | 34.3% | 64.3% | 24.9% |
-| **SimpleNAV (single-dataset)** | **Repository** | **37.1** | **52.8%** | **74.2%** | **51.0%** |
+| **SimpleNav (single-dataset)** | **Full pipeline** | **37.1** | **52.8%** | **74.2%** | **51.0%** |
 
 ## TravelUAV Test Seen
 
@@ -44,7 +44,7 @@
 | NavFoM | [Project page only][navfom] | 93.1 | 29.2 | 49.2 | 25.0 |
 | **LongFly** | [Paper only][longfly] | **60.0** | 36.4 | **65.9** | 31.1 |
 | **AerialVLA** | [Code + weights][aerialvla] | 65.9 | **48.0** | 57.7 | **38.6** |
-| **SimpleNAV (single-dataset)** | **Repository** | 85.6 | 22.4 | 55.1 | 20.5 |
+| **SimpleNav (single-dataset)** | **Full pipeline** | 85.6 | 22.4 | 55.1 | 20.5 |
 
 ### Easy
 
@@ -59,7 +59,7 @@
 | NavFoM | [Project page only][navfom] | 59.0 | 32.9 | 53.2 | 27.9 |
 | **LongFly** | [Paper only][longfly] | **38.1** | 38.5 | **71.9** | 31.2 |
 | **AerialVLA** | [Code + weights][aerialvla] | 43.8 | **49.3** | 61.3 | **37.1** |
-| **SimpleNAV (single-dataset)** | **Repository** | 60.0 | 22.8 | 56.9 | 21.0 |
+| **SimpleNav (single-dataset)** | **Full pipeline** | 60.0 | 22.8 | 56.9 | 21.0 |
 
 ### Hard
 
@@ -74,7 +74,7 @@
 | NavFoM | [Project page only][navfom] | 143.8 | 23.6 | 43.4 | 20.8 |
 | **LongFly** | [Paper only][longfly] | **85.2** | 33.9 | **58.9** | 30.9 |
 | **AerialVLA** | [Code + weights][aerialvla] | 93.2 | **46.3** | 53.2 | **40.3** |
-| **SimpleNAV (single-dataset)** | **Repository** | 118.3 | 21.9 | 52.8 | 19.9 |
+| **SimpleNav (single-dataset)** | **Full pipeline** | 118.3 | 21.9 | 52.8 | 19.9 |
 
 ## AerialVLN-S Val Seen
 
@@ -88,7 +88,7 @@
 | **Seq2Seq-DA** | [Benchmark code][aerialvln-benchmark] | **85.5** | **9.9** | 24.1 | **4.5** |
 | **CMA-DA** | [Benchmark code][aerialvln-benchmark] | 92.2 | **9.9** | **26.5** | 3.7 |
 | LAG | — | 90.2 | 7.2 | 15.7 | 2.4 |
-| **SimpleNAV (single-dataset)** | **Repository** | 126.0 | 8.4 | 18.9 | 3.4 |
+| **SimpleNav (single-dataset)** | **Full pipeline** | 126.0 | 8.4 | 18.9 | 3.4 |
 
 ## R2R-CE Val-Unseen
 
@@ -104,7 +104,7 @@
 | NavFoM | [Project page only][navfom] | 12.7M | 7B | Single-view RGB | 5.0 | 64.9 | 56.2 | 51.2 |
 | NavFoM | [Project page only][navfom] | 12.7M | 7B | Four-view RGB | 4.6 | 72.1 | 61.7 | 55.3 |
 | Uni-NaVid | [Code + weights][uni-navid] | 5.9M | 7B | Single-view RGB | 5.6 | 53.3 | 47.0 | 42.7 |
-| **SimpleNAV (single-dataset)** | **Repository** | 1.9M | 5.3B | Four-view RGB | 4.7 | 55.9 | 49.2 | 45.8 |
+| **SimpleNav (single-dataset)** | **Full pipeline** | 1.9M | 5.3B | Four-view RGB | 4.7 | 55.9 | 49.2 | 45.8 |
 
 ## RxR-CE Val-Unseen
 
@@ -120,7 +120,7 @@
 | NavFoM | [Project page only][navfom] | 12.7M | 7B | Single-view RGB | 5.5 | 57.4 | 49.4 | 60.2 |
 | NavFoM | [Project page only][navfom] | 12.7M | 7B | Four-view RGB | 4.7 | 64.4 | 56.2 | 65.8 |
 | Uni-NaVid | [Code + weights][uni-navid] | 5.9M | 7B | Single-view RGB | 6.2 | 48.7 | 40.9 | — |
-| **SimpleNAV (single-dataset)** | **Repository** | 1.9M | 5.3B | Four-view RGB | 4.6 | 58.4 | 52.2 | **74.6** |
+| **SimpleNav (single-dataset)** | **Full pipeline** | 1.9M | 5.3B | Four-view RGB | 4.6 | 58.4 | 52.2 | **74.6** |
 
 ## EVT-Bench
 
@@ -135,7 +135,7 @@
 | TrackVLA++ | [Project page only][trackvla-pp] | 2M | 7B | Single-view / Four-view |
 | NavFoM | [Project page only][navfom] | 12.7M | 7B | Single-view / Four-view |
 | Uni-NaVid | [Code + weights][uni-navid] | — | 7B | Single-view |
-| **SimpleNAV (single-dataset)** | **Repository** | 2.4M | 5.3B | Single-view |
+| **SimpleNav (single-dataset)** | **Full pipeline** | 2.4M | 5.3B | Single-view |
 
 ### STT
 
@@ -152,7 +152,7 @@
 | NavFoM | 12.7M | 7B | Single-view | 85.0 | 80.5 | — |
 | NavFoM | 12.7M | 7B | Four-view | 88.4 | 80.7 | — |
 | Uni-NaVid | — | 7B | Single-view | 25.7 | 39.5 | 41.9 |
-| **SimpleNAV (single-dataset)** | 2.4M | 5.3B | Single-view | 82.8 | **93.5** | **1.2** |
+| **SimpleNav (single-dataset)** | 2.4M | 5.3B | Single-view | 82.8 | **93.5** | **1.2** |
 
 ### DT
 
@@ -169,7 +169,7 @@
 | NavFoM | 12.7M | 7B | Single-view | 61.4 | 68.2 | — |
 | NavFoM | 12.7M | 7B | Four-view | 62.0 | 67.9 | — |
 | Uni-NaVid | — | 7B | Single-view | 11.3 | 27.4 | 43.5 |
-| **SimpleNAV (single-dataset)** | 2.4M | 5.3B | Single-view | 45.2 | **76.7** | 6.0 |
+| **SimpleNav (single-dataset)** | 2.4M | 5.3B | Single-view | 45.2 | **76.7** | 6.0 |
 
 ### AT
 
@@ -186,7 +186,7 @@
 | NavFoM | 12.7M | 7B | Single-view | — | — | — |
 | NavFoM | 12.7M | 7B | Four-view | — | — | — |
 | Uni-NaVid | — | 7B | Single-view | 8.3 | 28.6 | 43.7 |
-| **SimpleNAV (single-dataset)** | 2.4M | 5.3B | Single-view | 39.7 | 79.2 | **3.8** |
+| **SimpleNav (single-dataset)** | 2.4M | 5.3B | Single-view | 39.7 | 79.2 | **3.8** |
 
 ## Metrics
 
