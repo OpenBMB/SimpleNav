@@ -100,7 +100,7 @@ SimpleNAV 将视觉语言骨干、筛选后的长历史、时空视角上下文�
 完整对比表和协议说明见 [Release 01 测评结果](docs/guides/BENCHMARKS_RELEASE01_ZH.md)。
 
 ### 演示
-
+ 
 部分 Rollout 轨迹预览展示，完整视频见[项目主页视频库](https://fulanya55.github.io/starVLA/#demos)。
 
 <table>
