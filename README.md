@@ -1,7 +1,7 @@
 # SimpleNav
 
 <p align="center">
-  <img src="https://simplenav.github.io/assets/logo.jpg" alt="SimpleNav logo" width="900">
+  <img src="https://simplenav.github.io/assets/logo_large_en.png" alt="SimpleNav logo" width="900">
 </p>
 
 <p align="center">
