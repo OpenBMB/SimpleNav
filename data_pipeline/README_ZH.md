@@ -32,24 +32,24 @@
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.mp4">
-    <img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif" alt="AerialVLN 增强前后视频对比" width="448">
+    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif" alt="AerialVLN 增强前后视频对比" width="448">
   </a>
 </p>
 
-<a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png">
-  <img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN 增强前后轨迹对比" width="100%">
+<a href="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png">
+  <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN 增强前后轨迹对比" width="100%">
 </a>
 
 #### 190 → 123 个采样点
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.mp4">
-    <img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.gif" alt="第二组 AerialVLN 增强前后视频对比" width="448">
+    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.gif" alt="第二组 AerialVLN 增强前后视频对比" width="448">
   </a>
 </p>
 
-<a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_trajectory_raw_vs_enhanced.png">
-  <img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_trajectory_raw_vs_enhanced.png" alt="第二组 AerialVLN 增强前后轨迹对比" width="100%">
+<a href="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_trajectory_raw_vs_enhanced.png">
+  <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_trajectory_raw_vs_enhanced.png" alt="第二组 AerialVLN 增强前后轨迹对比" width="100%">
 </a>
 
 ### OpenFly
@@ -58,24 +58,24 @@
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.mp4">
-    <img src="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.gif" alt="OpenFly 增强前后视频对比" width="448">
+    <img src="docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.gif" alt="OpenFly 增强前后视频对比" width="448">
   </a>
 </p>
 
-<a href="https://simplenav.github.io/assets/augmentation/openfly_000008_trajectory_raw_vs_enhanced.png">
-  <img src="https://simplenav.github.io/assets/augmentation/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly 增强前后轨迹对比" width="100%">
+<a href="docs/assets/trajectory_comparisons/openfly_000008_trajectory_raw_vs_enhanced.png">
+  <img src="docs/assets/trajectory_comparisons/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly 增强前后轨迹对比" width="100%">
 </a>
 
 #### 24 → 65 个采样点
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/openfly_002240_aligned_raw_vs_enhanced.mp4">
-    <img src="https://simplenav.github.io/assets/augmentation/openfly_002240_aligned_raw_vs_enhanced.gif" alt="第二组 OpenFly 增强前后视频对比" width="448">
+    <img src="docs/assets/trajectory_comparisons/openfly_002240_aligned_raw_vs_enhanced.gif" alt="第二组 OpenFly 增强前后视频对比" width="448">
   </a>
 </p>
 
-<a href="https://simplenav.github.io/assets/augmentation/openfly_002240_trajectory_raw_vs_enhanced.png">
-  <img src="https://simplenav.github.io/assets/augmentation/openfly_002240_trajectory_raw_vs_enhanced.png" alt="第二组 OpenFly 增强前后轨迹对比" width="100%">
+<a href="docs/assets/trajectory_comparisons/openfly_002240_trajectory_raw_vs_enhanced.png">
+  <img src="docs/assets/trajectory_comparisons/openfly_002240_trajectory_raw_vs_enhanced.png" alt="第二组 OpenFly 增强前后轨迹对比" width="100%">
 </a>
 
 ## 仓库结构

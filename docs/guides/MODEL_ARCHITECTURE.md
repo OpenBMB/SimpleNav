@@ -13,7 +13,7 @@ SimpleNAV targets long-horizon Vision-and-Language Navigation. Given language in
 
 ## Release 01 data flow
 
-![SimpleNAV model architecture](https://simplenav.github.io/assets/figures/simplenav_model_architecture.png)
+![SimpleNAV model architecture](../assets/figures/simplenav_model_architecture.png)
 
 ```mermaid
 flowchart TD
