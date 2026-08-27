@@ -128,7 +128,7 @@
   ],
   "heroDemoIds": ["travel-modern", "rxr-10129", "evt-2", "aerialvln-8", "openfly-26", "travel-tropical", "rxr-5482", "openfly-16", "travel-town15", "evt-20"],
   "artifactProfiles": {
-    "__ours": {"label": {"en": "Repository", "zh": "本仓库"}, "url": "https://github.com/fulanya55/starVLA/tree/SimpleNav"},
+    "__ours": {"label": {"en": "Repository", "zh": "本仓库"}, "url": "https://github.com/xwjim/SimpleNav/tree/main"},
     "Human": {"label": {"en": "Baseline", "zh": "Baseline"}},
     "Random": {"label": {"en": "Baseline", "zh": "Baseline"}},
     "Random Action": {"label": {"en": "Baseline", "zh": "Baseline"}},
@@ -181,7 +181,7 @@
     {
       "id": "openfly", "label": "OpenFly", "status": {"en": "Seen · recorded", "zh": "Seen · 已记录"},
       "description": {"en": "Seen-set comparison under the recorded OpenFly protocol.", "zh": "当前记录的 OpenFly Seen 协议下的方法对比。"},
-      "source": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md#openfly-seen", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md#openfly-seen"},
+      "source": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01.md#openfly-seen", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01_ZH.md#openfly-seen"},
       "views": [{
         "id": "seen", "label": "Seen", "note": {"en": "402-episode closed-loop record", "zh": "402 个 episode 的闭环记录"},
         "metrics": [{"label": "NE↓", "value": "37.1 m"}, {"label": "SR↑", "value": "52.8%"}, {"label": "OSR↑", "value": "74.2%"}, {"label": "SPL↑", "value": "51.0%"}],
@@ -202,7 +202,7 @@
     {
       "id": "traveluav", "label": "TravelUAV", "status": {"en": "Test Seen · recorded", "zh": "Test Seen · 已记录"},
       "description": {"en": "Full, Easy, and Hard use the same metric layout for direct comparison.", "zh": "Full、Easy 和 Hard 使用相同指标布局，便于直接比较。"},
-      "source": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md#traveluav-test-seen", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md#traveluav-test-seen"},
+      "source": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01.md#traveluav-test-seen", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01_ZH.md#traveluav-test-seen"},
       "views": [
         {
           "id": "full", "label": "Full", "note": {"en": "Test Seen · all difficulty levels", "zh": "Test Seen · 全部难度"},
@@ -230,7 +230,7 @@
     {
       "id": "aerialvlns", "label": "AerialVLN-S", "status": {"en": "Val Seen · recorded", "zh": "Val Seen · 已记录"},
       "description": {"en": "AerialVLN-S Val Seen comparison with navigation error and trajectory success metrics.", "zh": "AerialVLN-S Val Seen 的导航误差与轨迹成功指标对比。"},
-      "source": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md#aerialvln-s-val-seen", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md#aerialvln-s-val-seen"},
+      "source": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01.md#aerialvln-s-val-seen", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01_ZH.md#aerialvln-s-val-seen"},
       "views": [{
         "id": "val-seen", "label": "Val Seen", "note": {"en": "AerialVLN-S task", "zh": "AerialVLN-S 任务"},
         "metrics": [{"label": "NE↓", "value": "126.0 m"}, {"label": "SR↑", "value": "8.4"}, {"label": "OSR↑", "value": "18.9"}, {"label": "SDTW↑", "value": "3.4"}], "columns": ["NE↓", "SR↑", "OSR↑", "SDTW↑"],
@@ -250,7 +250,7 @@
     {
       "id": "r2r", "label": "R2R-CE", "status": {"en": "Val-Unseen · recorded", "zh": "Val-Unseen · 已记录"},
       "description": {"en": "Comparison across single-view, panoramic, and four-view inputs.", "zh": "对比单视角、全景和四视角输入设置。"},
-      "source": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md#r2r-ce-val-unseen", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md#r2r-ce-val-unseen"},
+      "source": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01.md#r2r-ce-val-unseen", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01_ZH.md#r2r-ce-val-unseen"},
       "views": [{
         "id": "val-unseen", "label": "Val-Unseen", "note": {"en": "Habitat / VLN-CE", "zh": "Habitat / VLN-CE"},
         "metrics": [{"label": "NE↓", "value": "4.7 m"}, {"label": "OS↑", "value": "55.9"}, {"label": "SR↑", "value": "49.2"}, {"label": "SPL↑", "value": "45.8"}], "columns": ["NE↓", "OS↑", "SR↑", "SPL↑"],
@@ -262,7 +262,7 @@
     {
       "id": "rxr", "label": "RxR-CE", "status": {"en": "Val-Unseen · recorded", "zh": "Val-Unseen · 已记录"},
       "description": {"en": "Multilingual indoor VLN comparison with input settings shown explicitly.", "zh": "多语言室内 VLN 对比，并显式标注输入设置。"},
-      "source": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md#rxr-ce-val-unseen", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md#rxr-ce-val-unseen"},
+      "source": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01.md#rxr-ce-val-unseen", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01_ZH.md#rxr-ce-val-unseen"},
       "views": [{
         "id": "val-unseen", "label": "Val-Unseen", "note": {"en": "Multilingual split", "zh": "多语言 split"},
         "metrics": [{"label": "NE↓", "value": "4.6 m"}, {"label": "SR↑", "value": "58.4"}, {"label": "SPL↑", "value": "52.2"}, {"label": "nDTW↑", "value": "74.6"}], "columns": ["NE↓", "SR↑", "SPL↑", "nDTW↑"],
@@ -274,7 +274,7 @@
     {
       "id": "evt", "label": "EVT-Bench", "status": {"en": "STT · DT · AT recorded", "zh": "STT · DT · AT 已记录"},
       "description": {"en": "Use the task selector to compare all reported methods under the same compact row layout.", "zh": "通过任务切换，在同一紧凑行布局中比较全部已报告方法。"},
-      "source": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md#evt-bench", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md#evt-bench"},
+      "source": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01.md#evt-bench", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01_ZH.md#evt-bench"},
       "views": [
         {
           "id": "stt", "label": "STT", "note": {"en": "Single-target tracking", "zh": "单目标任务"},
@@ -307,15 +307,15 @@
     {"release": "∞", "title": {"en": "Embodied navigation ecosystem", "zh": "通用具身导航生态"}, "text": {"en": "Connect simulation, offline data, and real deployment with community-extensible models and benchmarks.", "zh": "连接模拟器、离线数据和真实部署，形成可由社区扩展的模型与 benchmark 生态。"}, "state": {"en": "Long term", "zh": "长期方向"}}
   ],
   "docsList": [
-    {"label": {"en": "Install", "zh": "安装"}, "title": {"en": "Installation", "zh": "环境安装"}, "text": {"en": "Model environment, data-tool environments, and system packages.", "zh": "模型环境、数据工具环境和系统依赖。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/INSTALLATION.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/INSTALLATION_ZH.md"}},
-    {"label": {"en": "Data", "zh": "数据"}, "title": {"en": "Data Pipeline", "zh": "数据管线"}, "text": {"en": "Adapters, normalization, augmentation, rendering, and validation.", "zh": "Adapter、归一化、增强、采集和校验。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/DATA_PIPELINE.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/DATA_PIPELINE_ZH.md"}},
-    {"label": {"en": "Protocol", "zh": "协议"}, "title": {"en": "Data Structure", "zh": "数据结构"}, "text": {"en": "LeRobot v3 layout and state/action semantics.", "zh": "LeRobot v3 结构与 state/action 语义。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/DATA_STRUCTURE.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/DATA_STRUCTURE_ZH.md"}},
-    {"label": {"en": "Model", "zh": "模型"}, "title": {"en": "Model Architecture", "zh": "模型架构"}, "text": {"en": "Backbone, memory, action head, and extension contracts.", "zh": "Backbone、记忆、动作头和扩展契约。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/MODEL_ARCHITECTURE.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/MODEL_ARCHITECTURE_ZH.md"}},
-    {"label": {"en": "Train", "zh": "训练"}, "title": {"en": "Training", "zh": "训练"}, "text": {"en": "Portable recipe, preflight, outputs, and extension steps.", "zh": "便携 recipe、preflight、输出与扩展步骤。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/TRAINING.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/TRAINING_ZH.md"}},
-    {"label": {"en": "Track-DT", "zh": "Track-DT"}, "title": {"en": "Mixed Tracking Training", "zh": "混合跟踪训练"}, "text": {"en": "AT, DT, and STT training with the Qwen3.5-VL portable recipe.", "zh": "使用 Qwen3.5-VL 便携 recipe 训练 AT、DT 和 STT。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/TRACK_DT_TRAINING.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/TRACK_DT_TRAINING_ZH.md"}},
-    {"label": {"en": "Evaluate", "zh": "测评"}, "title": {"en": "Inference and Evaluation", "zh": "推理与测评"}, "text": {"en": "Portable benchmark configs, execution, resume, and artifacts.", "zh": "便携 benchmark 配置、执行、续跑与产物。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/EVALUATION.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/EVALUATION_ZH.md"}},
-    {"label": {"en": "VLN-CE", "zh": "VLN-CE"}, "title": {"en": "R2R-CE and RxR-CE Workflow", "zh": "R2R-CE 与 RxR-CE 流程"}, "text": {"en": "Released Qwen3.5 training, checkpoint layout, and Habitat evaluation commands.", "zh": "发布版 Qwen3.5 训练、checkpoint 布局与 Habitat 测评命令。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/VLNCE_TRAINING_AND_EVALUATION.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/VLNCE_TRAINING_AND_EVALUATION_ZH.md"}},
-    {"label": {"en": "Results", "zh": "结果"}, "title": {"en": "Release 01 Benchmarks", "zh": "Release 01 测评"}, "text": {"en": "Recorded metrics and complete method comparisons.", "zh": "已记录指标和完整方法对比。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/BENCHMARKS_RELEASE01_ZH.md"}},
-    {"label": {"en": "Roadmap", "zh": "路线图"}, "title": {"en": "Vision and Roadmap", "zh": "愿景与路线图"}, "text": {"en": "General-purpose VLN direction and verifiable milestones.", "zh": "通用 VLN 方向与可验证里程碑。"}, "href": {"en": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/VISION_AND_ROADMAP.md", "zh": "https://github.com/fulanya55/starVLA/blob/SimpleNav/docs/guides/VISION_AND_ROADMAP_ZH.md"}}
+    {"label": {"en": "Install", "zh": "安装"}, "title": {"en": "Installation", "zh": "环境安装"}, "text": {"en": "Model environment, data-tool environments, and system packages.", "zh": "模型环境、数据工具环境和系统依赖。"}, "href": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/INSTALLATION.md", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/INSTALLATION_ZH.md"}},
+    {"label": {"en": "Data", "zh": "数据"}, "title": {"en": "Data Pipeline", "zh": "数据管线"}, "text": {"en": "Adapters, normalization, augmentation, rendering, and validation.", "zh": "Adapter、归一化、增强、采集和校验。"}, "href": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/DATA_PIPELINE.md", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/DATA_PIPELINE_ZH.md"}},
+    {"label": {"en": "Protocol", "zh": "协议"}, "title": {"en": "Data Structure", "zh": "数据结构"}, "text": {"en": "LeRobot v3 layout and state/action semantics.", "zh": "LeRobot v3 结构与 state/action 语义。"}, "href": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/DATA_STRUCTURE.md", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/DATA_STRUCTURE_ZH.md"}},
+    {"label": {"en": "Model", "zh": "模型"}, "title": {"en": "Model Architecture", "zh": "模型架构"}, "text": {"en": "Backbone, memory, action head, and extension contracts.", "zh": "Backbone、记忆、动作头和扩展契约。"}, "href": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/MODEL_ARCHITECTURE.md", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/MODEL_ARCHITECTURE_ZH.md"}},
+    {"label": {"en": "Train", "zh": "训练"}, "title": {"en": "Training", "zh": "训练"}, "text": {"en": "Portable recipe, preflight, outputs, and extension steps.", "zh": "便携 recipe、preflight、输出与扩展步骤。"}, "href": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/TRAINING.md", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/TRAINING_ZH.md"}},
+    {"label": {"en": "Track-DT", "zh": "Track-DT"}, "title": {"en": "Mixed Tracking Training", "zh": "混合跟踪训练"}, "text": {"en": "AT, DT, and STT training with the Qwen3.5-VL portable recipe.", "zh": "使用 Qwen3.5-VL 便携 recipe 训练 AT、DT 和 STT。"}, "href": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/TRACK_DT_TRAINING.md", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/TRACK_DT_TRAINING_ZH.md"}},
+    {"label": {"en": "Evaluate", "zh": "测评"}, "title": {"en": "Inference and Evaluation", "zh": "推理与测评"}, "text": {"en": "Portable benchmark configs, execution, resume, and artifacts.", "zh": "便携 benchmark 配置、执行、续跑与产物。"}, "href": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/EVALUATION.md", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/EVALUATION_ZH.md"}},
+    {"label": {"en": "VLN-CE", "zh": "VLN-CE"}, "title": {"en": "R2R-CE and RxR-CE Workflow", "zh": "R2R-CE 与 RxR-CE 流程"}, "text": {"en": "Released Qwen3.5 training, checkpoint layout, and Habitat evaluation commands.", "zh": "发布版 Qwen3.5 训练、checkpoint 布局与 Habitat 测评命令。"}, "href": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/VLNCE_TRAINING_AND_EVALUATION.md", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/VLNCE_TRAINING_AND_EVALUATION_ZH.md"}},
+    {"label": {"en": "Results", "zh": "结果"}, "title": {"en": "Release 01 Benchmarks", "zh": "Release 01 测评"}, "text": {"en": "Recorded metrics and complete method comparisons.", "zh": "已记录指标和完整方法对比。"}, "href": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01.md", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/BENCHMARKS_RELEASE01_ZH.md"}},
+    {"label": {"en": "Roadmap", "zh": "路线图"}, "title": {"en": "Vision and Roadmap", "zh": "愿景与路线图"}, "text": {"en": "General-purpose VLN direction and verifiable milestones.", "zh": "通用 VLN 方向与可验证里程碑。"}, "href": {"en": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/VISION_AND_ROADMAP.md", "zh": "https://github.com/xwjim/SimpleNav/blob/main/docs/guides/VISION_AND_ROADMAP_ZH.md"}}
   ]
 }

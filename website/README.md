@@ -25,4 +25,4 @@ The generated `_site/` directory is a deployment artifact and should not be comm
 
 ## First-time GitHub Pages setup
 
-The workflow checks whether Pages is enabled before deploying. If it is disabled, the build still succeeds and uploads a `github-pages` artifact, while the deploy job is skipped with a warning. A repository administrator must select **Settings → Pages → Build and deployment → GitHub Actions** once. The `SimpleNav` workflow uses a separate `github-pages-SimpleNav` environment so it is not blocked by an existing `dev`-only deployment policy. After Pages is enabled, rerun the workflow from the Actions page; later pushes to `SimpleNav` deploy automatically.
+The `.github/workflows/pages.yml` workflow builds the site on pushes to `main` and deploys the generated `_site/` artifact. A repository administrator must select **Settings → Pages → Build and deployment → GitHub Actions** once. After Pages is enabled, run the workflow from the Actions page; later pushes to `main` deploy automatically.

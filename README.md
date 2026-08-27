@@ -11,15 +11,15 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
-  <a href="https://github.com/fulanya55/starVLA/stargazers"><img src="https://img.shields.io/github/stars/fulanya55/starVLA?style=social" alt="GitHub stars"></a>
+  <a href="https://github.com/xwjim/SimpleNav/stargazers"><img src="https://img.shields.io/github/stars/fulanya55/starVLA?style=social" alt="GitHub stars"></a>
   <a href="https://www.python.org/downloads/release/python-3100/"><img src="https://img.shields.io/badge/Python-3.10-3776AB?logo=python&amp;logoColor=white" alt="Python 3.10"></a>
-  <a href="https://fulanya55.github.io/starVLA/"><img src="https://img.shields.io/badge/Project%20Page-GitHub%20Pages-222222?logo=github" alt="Project Page"></a>
+  <a href="https://xwjim.github.io/SimpleNav/"><img src="https://img.shields.io/badge/Project%20Page-GitHub%20Pages-222222?logo=github" alt="Project Page"></a>
   <a href="https://modelscope.cn/organization/SimpleNav"><img src="https://img.shields.io/badge/ModelScope-SimpleNav-624AFF" alt="ModelScope"></a>
 </p>
 
 <p align="center">
   <a href="README_ZH.md">中文</a> ·
-  <a href="https://fulanya55.github.io/starVLA/">Project Page</a> ·
+  <a href="https://xwjim.github.io/SimpleNav/">Project Page</a> ·
   <a href="data_pipeline/README.md">Data Pipeline</a> ·
   <a href="docs/guides/README.md">Documentation</a> ·
   <a href="docs/guides/BENCHMARKS_RELEASE01.md">Results</a> ·
@@ -138,7 +138,7 @@ Full comparison tables and protocol notes are in [Release 01 Benchmarks](docs/gu
 
 ### Demos
 
-Selected rollout trajectory previews are shown below. See the [project-page video gallery](https://fulanya55.github.io/starVLA/#demos) for the full videos.
+Selected rollout trajectory previews are shown below. See the [project-page video gallery](https://xwjim.github.io/SimpleNav/#demos) for the full videos.
 
 <table>
   <tr>
@@ -176,7 +176,7 @@ Place downloaded packages in the repository-relative `local/` layout below.
 Requirements: Linux, Python 3.10, and a model-compatible NVIDIA driver. Dataset conversion also requires `ffmpeg`; closed-loop evaluation requires the corresponding simulator and scene assets.
 
 ```bash
-git clone -b SimpleNav https://github.com/fulanya55/starVLA.git SimpleNav
+git clone -b SimpleNav https://github.com/xwjim/SimpleNav.git SimpleNav
 cd SimpleNav
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv python install 3.10
