@@ -26,9 +26,7 @@
   <a href="https://modelscope.cn/organization/SimpleNav">Data, Environments &amp; Models</a>
 </p>
 
-SimpleNav is a simple, unified, reproducible, and extensible framework for navigation VLA research. 
-It is jointly developed and open-sourced by Tsinghua University THUNLP, AI9Stars, OpenBMB and HITDIP. 
-SimpleNav connects heterogeneous navigation data, long-horizon VLA models, training, and benchmark evaluation through explicit interfaces. It supports aerial and ground navigation, keeps dataset-specific coordinate and simulator semantics in adapters, and uses shared model, action, artifact, and evaluation contracts.
+SimpleNav is a simple, unified, reproducible, and extensible framework for navigation VLA research, jointly developed and open-sourced by THUNLP at Tsinghua University, AI9Stars, OpenBMB, and HITDIP. It provides a unified research pipeline that connects heterogeneous navigation data, long-horizon VLA models, training, and benchmark evaluation through well-defined interfaces. SimpleNav supports both aerial and ground navigation, preserves dataset-specific coordinate systems and simulator semantics through dedicated adapters, and standardizes model, action, artifact, and evaluation interfaces to enable efficient reuse, comparison, and extension across datasets, tasks, and platforms.
 
 <details>
 <summary>Table of Contents</summary>
@@ -78,7 +76,7 @@ Navigation research should not require a separate data-model-evaluation stack fo
 
 ![SimpleNav framework: data conversion, model training, and closed-loop evaluation](docs/assets/figures/simplenav_framework.png)
 
-| Path | Purpose |
+| Path | Description |
 | --- | --- |
 | [`data_pipeline/`](data_pipeline/README.md) | Raw-data conversion, trajectory augmentation, simulator image collection, and enhanced-data construction. |
 | [`starVLA/`](starVLA/) | Dataloaders, models, training runtime, and shared modules. |
@@ -86,20 +84,20 @@ Navigation research should not require a separate data-model-evaluation stack fo
 | [`NavVLAeval/`](NavVLAeval/README.md) | Closed-loop and offline benchmark evaluation. |
 | [`tool/navvla/`](tool/navvla/README.md) | Dataset validation, repair, statistics, context, cache, and open-loop tools. |
 | [`deployment/`](deployment/) | Deployment-side entry points. |
-| [`docs/`](docs/guides/README.md) | Installation, data, model, training, evaluation, and results documentation. |
+| [`docs/`](docs/guides/README.md) | Documentation for installation, data, models, training, evaluation, and results. |
 
 ## Data Protocol
 
 The primary LeRobot dataloader keeps storage, model input, and prediction target separate:
 
-| Field | Contract |
+| Field | Protocol |
 | --- | --- |
 | Stored `observation.state` | One pose `[x, y, z, yaw]` in the coordinate convention declared by the dataset adapter. |
 | Model state | When `include_state: true`, consecutive body-frame relative motions over the selected BATS history, ending at the current frame. It is not the stored absolute pose or the future action target. |
 | Primary action target | A future chunk `[H, 4]` of `[dx_forward, dy_right, dz_down, dyaw]`. Every waypoint is independently anchored at the current pose, not at the previous predicted waypoint. |
 | Normalization | `dataset_statistics.json` is authoritative. Actions use per-dimension `q01`/`q99`; padded action rows are zero after normalization. |
 
-Benchmark adapters may declare a different action contract when required by the benchmark. The config and adapter contract are authoritative. See [Data Structure and State/Action Protocol](docs/guides/DATA_STRUCTURE.md).
+Benchmark adapters may declare a different action Protocol when required by the benchmark. The config and adapter Protocol are authoritative. See [Data Structure and State/Action Protocol](docs/guides/DATA_STRUCTURE.md).
 
 ### Trajectory augmentation
 
@@ -121,6 +119,7 @@ SimpleNav combines a vision-language backbone, selected long history, temporal-v
 
 ## Results
 
+We adopt Qwen3.5-VL 4B as the unified vision-language backbone, and complete model training and closed-loop evaluation on 6 benchmarks respectively. Except for the necessary adaptation of data and task interfaces, we do not perform task-specific performance optimization for any individual benchmark.
 The results are summarized as follows.
 Full comparison tables and protocol notes are in [Release 01 Benchmarks](docs/guides/BENCHMARKS_RELEASE01.md).
 

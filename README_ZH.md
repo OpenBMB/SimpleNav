@@ -1,7 +1,7 @@
-# SimpleNAV
+# SimpleNav
 
 <p align="center">
-  <img src="docs/assets/logo.jpg" alt="SimpleNAV logo" width="168">
+  <img src="docs/assets/logo.jpg" alt="SimpleNav logo" width="168">
 </p>
 
 <p align="center">
@@ -22,40 +22,48 @@
   <a href="https://fulanya55.github.io/starVLA/">项目主页</a> ·
   <a href="data_pipeline/README_ZH.md">数据管线</a> ·
   <a href="docs/guides/README_ZH.md">文档</a> ·
-  <a href="docs/guides/BENCHMARKS_RELEASE01_ZH.md">结果</a> ·
+  <a href="docs/guides/BENCHMARKS_RELEASE01_ZH.md">实验结果</a> ·
   <a href="https://modelscope.cn/organization/SimpleNav">数据、环境与模型</a>
 </p>
 
-SimpleNAV 通过明确接口连接异构导航数据、长时序 VLA 模型、训练和 benchmark 测评。项目支持空中与室内导航，将数据集特有的坐标和仿真语义保留在 adapter 中，并复用模型、动作、产物和测评协议。
+SimpleNav 是一个面向导航 VLA 研究的简单、统一、可复现且可扩展的框架。
+该项目由清华大学 THUNLP、AI9Stars、OpenBMB 和 HITDIP 联合开发并开源。
+SimpleNav 通过明确的接口贯通异构导航数据、长时程 VLA 模型、模型训练与基准评测。框架同时支持空中导航和地面导航，通过适配器封装不同数据集的坐标系与仿真器语义，并在模型、动作、产物和评测环节采用统一协议。
 
 <details>
 <summary>目录</summary>
 
-- [愿景](#愿景)
-- [优势](#优势)
-- [整体架构](#整体架构)
-- [数据协议](#数据协议)
-- [模型](#模型)
-- [结果](#结果)
-- [演示](#演示)
-- [风险与局限](#风险与局限)
-- [快速开始](#快速开始)
-- [文档](#文档)
-- [Roadmap](#roadmap)
-- [引用](#引用)
-- [License](#license)
-- [Acknowledgements](#acknowledgements)
+- [SimpleNav](#simplenav)
+  - [愿景](#愿景)
+  - [优势](#优势)
+  - [整体架构](#整体架构)
+  - [数据协议](#数据协议)
+    - [轨迹增强对比](#轨迹增强对比)
+  - [模型](#模型)
+  - [结果](#结果)
+    - [演示](#演示)
+  - [风险与局限](#风险与局限)
+  - [快速开始](#快速开始)
+    - [1. Clone 并安装模型环境](#1-clone-并安装模型环境)
+    - [2. 准备数据](#2-准备数据)
+    - [3. 训练](#3-训练)
+    - [4. 测评](#4-测评)
+  - [文档](#文档)
+  - [Roadmap](#roadmap)
+  - [引用](#引用)
+  - [License](#license)
+  - [Acknowledgements](#acknowledgements)
 </details>
 
 ## 愿景
 
-不同导航数据集不应各自维护一套孤立的数据、模型和测评流程。SimpleNAV 构建一条统一研究闭环：
+导航研究不应针对每个数据集重复搭建一套独立的数据、模型与评测链路。SimpleNav 提供统一的研究闭环，使得：
 
-- 原始数据通过明确的转换 adapter 接入；
-- 模型组件可替换、可组合；
-- 训练由便携配置定义；
-- benchmark 特有逻辑保留在测评插件中；
-- 结果能够追溯到代码、数据、配置、checkpoint 和模拟器版本。
+- 原始数据集通过明确的转换适配器接入；
+- 模型组件可灵活替换与组合；
+- 训练任务通过可迁移的配置文件定义；
+- 基准特有的处理逻辑封装在评测插件中；
+- 实验结果可追溯至对应的代码、数据、配置、检查点及仿真器版本。
 
 ## 优势
 
@@ -68,7 +76,7 @@ SimpleNAV 通过明确接口连接异构导航数据、长时序 VLA 模型、�
 
 ## 整体架构
 
-![SimpleNAV 数据转换、模型训练和闭环测评整体框架](docs/assets/figures/simplenav_framework_zh.png)
+![SimpleNav 数据转换、模型训练和闭环测评整体框架](docs/assets/figures/simplenav_framework_zh.png)
 
 | 路径 | 作用 |
 | --- | --- |
@@ -106,13 +114,14 @@ SimpleNAV 通过明确接口连接异构导航数据、长时序 VLA 模型、�
 
 ## 模型
 
-![SimpleNAV 历史视觉、当前观测、语言 token、VLM 骨干与动作专家模型架构](docs/assets/figures/simplenav_model_architecture.png)
+SimpleNav 将视觉语言骨干、筛选后的长历史、时空视角上下文和连续动作头组合起来。模型消费上面的数据协议，并通过 adapter 保留数据集特有的坐标语义。
 
-SimpleNAV 将视觉语言骨干、筛选后的长历史、时空视角上下文和连续动作头组合起来。模型消费上面的数据协议，并通过 adapter 保留数据集特有的坐标语义。
+![SimpleNav 历史视觉、当前观测、语言 token、VLM 骨干与动作专家模型架构](docs/assets/figures/simplenav_model_architecture.png)
+
 
 ## 结果
 
-结果如下。
+我们以Qwen3.5-VL为统一视觉语言骨干，分别在6个Benchmark上完成模型训练与闭环评测；除完成必要的数据与任务接口适配外，未针对单一Benchmark进行专门的性能优化,结果如下。
 
 | Benchmark | Split | NE↓ | SR↑ | OS/OSR↑ | SPL↑ | nDTW↑ | SDTW↑ |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -168,8 +177,8 @@ SimpleNAV 将视觉语言骨干、筛选后的长历史、时空视角上下文�
 需要 Linux、Python 3.10 和与模型兼容的 NVIDIA 驱动。数据转换还需要 `ffmpeg`；闭环测评需要对应的模拟器和场景资源。
 
 ```bash
-git clone -b SimpleNav https://github.com/fulanya55/starVLA.git SimpleNAV
-cd SimpleNAV
+git clone -b SimpleNav https://github.com/fulanya55/starVLA.git SimpleNav
+cd SimpleNav
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv python install 3.10
 uv sync --frozen --no-dev
@@ -208,7 +217,7 @@ data_pipeline/image_collection         -> vln-collect
 local/
 ├── models/                         # base VLM 与辅助模型
 ├── data/                           # 转换后数据与 benchmark 输入
-├── checkpoints/                    # SimpleNAV checkpoint + dataset_statistics.json
+├── checkpoints/                    # SimpleNav checkpoint + dataset_statistics.json
 ├── simulators/                     # AirSim/Habitat 运行时与场景
 ├── eval_results/
 └── results/
@@ -309,4 +318,6 @@ R2R-CE 与 RxR-CE 的 Qwen3.5 训练和测评流程见 [VLN-CE 训练与测评](
 
 ## Acknowledgements
 
-感谢 [NavFoM《Embodied Navigation Foundation Model》](https://arxiv.org/abs/2509.12129) 作者团队在跨具身、跨任务导航基础模型方向的开源研究。SimpleNAV 同时基于 Qwen-VL、LeRobot、PyTorch、Transformers、DeepSpeed、AirSim、Habitat，以及上述数据集和 benchmark 等开源研究与软件构建。使用时请同时引用对应的原始项目与数据集。
+感谢 NavFoM、Qwen-RobotNav、ABot-N0、starVLA 和 InternVLA-N1 等导航 VLA 研究所进行的开创性探索，这些工作推动了该领域的形成与发展。
+
+SimpleNav 基于 starVLA、Qwen-VL、LeRobot、PyTorch、Transformers、DeepSpeed、AirSim、Habitat，以及上述数据集和评测基准构建。我们衷心感谢这些开源项目所作出的贡献，并建议使用者在相关实验中引用所采用的原始项目与数据集。
