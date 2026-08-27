@@ -21,7 +21,7 @@ function renderStaticCopy() {
   document.documentElement.lang = state.lang === "zh" ? "zh-CN" : "en";
   document.title = state.lang === "zh" ? "SimpleNav: 让导航 VLA 变得简单" : "SimpleNav: Make Navigation VLA Simple";
   $$('[data-nav]').forEach((link) => { link.textContent = copy(state.data.nav[link.dataset.nav]); });
-  $("[data-readme-link]").href = `https://github.com/fulanya55/starVLA/blob/SimpleNav/${state.lang === "zh" ? "README_ZH.md" : "README.md"}`;
+  $("[data-readme-link]").href = `https://github.com/xwjim/SimpleNav/blob/main/${state.lang === "zh" ? "README_ZH.md" : "README.md"}`;
   const frameworkImage = $("[data-framework-image]");
   if (frameworkImage) {
     frameworkImage.src = state.lang === "zh"
