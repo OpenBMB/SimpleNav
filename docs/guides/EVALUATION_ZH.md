@@ -4,7 +4,7 @@
 
 ## 便携配置
 
-Benchmark 数据和仿真环境从 [ModelScope 数据主页](https://www.modelscope.cn/organization/SimpleNav) 下载，权重从 [ModelScope 模型主页](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files) 下载。
+Benchmark 数据、仿真环境和权重统一从 [SimpleNAV ModelScope 组织页](https://modelscope.cn/organization/SimpleNav) 下载。
 
 | Benchmark | 配置 | 入口 | Backend |
 | --- | --- | --- | --- |
@@ -12,13 +12,14 @@ Benchmark 数据和仿真环境从 [ModelScope 数据主页](https://www.modelsc
 | TravelUAV | `NavVLAeval/traveluav/config_portable.yaml` | `bash NavVLAeval/traveluav/run_eval.sh` | AirSim |
 | AerialVLN | `NavVLAeval/aerialvln/config_portable.yaml` | `bash NavVLAeval/aerialvln/run_eval.sh` | AirSim |
 | AerialVLN-S Val Seen · action stop | `NavVLAeval/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml` | `bash NavVLAeval/aerialvln/run_eval.sh --config <配置>` | AirSim |
+| EVT-Bench | `NavVLAeval/track/eval_qwen35_track.py` | `bash NavVLAeval/track/run_qwen35_track_eval.sh` | Habitat |
 | R2R-CE | `NavVLAeval/vlnce/r2r/config_portable.yaml` | `bash NavVLAeval/vlnce/r2r/run_eval.sh` | Habitat |
 | RxR-CE | `NavVLAeval/vlnce/rxr/config_portable.yaml` | `bash NavVLAeval/vlnce/rxr/run_eval.sh` | Habitat |
-| UAV-Flow | `NavVLAeval/uavflow/config_portable.yaml` | `bash NavVLAeval/uavflow/run_eval.sh` | Offline/AirSim adapter |
 
-R2R-CE 与 RxR-CE 发布配置的 Qwen3.5 checkpoint 布局和命令见 [VLN-CE Training and Evaluation](VLNCE_TRAINING_AND_EVALUATION.md)。
+R2R-CE 与 RxR-CE 发布配置的 Qwen3.5 checkpoint 布局和命令见 [VLN-CE 训练与测评](VLNCE_TRAINING_AND_EVALUATION_ZH.md)。
 
-路径均相对于配置文件自身解析。服务器专用配置不提交。
+各 launcher 会先定位仓库根目录，再解析仓库相对路径；下载的 Habitat
+任务配置继续使用其运行时相对路径。服务器专用配置不提交。
 
 ## 资源布局
 
@@ -32,11 +33,13 @@ local/
 │   ├── traveluav/{config.yaml,dataset_statistics.json,final_model/pytorch_model.pt}
 │   ├── aerialvln/{config.yaml,dataset_statistics.json,final_model/pytorch_model.pt}
 │   ├── r2r/pytorch_model.pt
-│   └── rxr/pytorch_model.pt
+│   ├── rxr/pytorch_model.pt
+│   └── evtbench/pytorch_model.pt
 ├── data/
 │   ├── OpenFly/
 │   ├── TravelUAV/
 │   ├── AerialVLN/
+│   ├── EVT-bench/
 │   └── VLN-CE/
 ├── simulators/
 │   ├── airsim_runtime/
@@ -78,6 +81,7 @@ bash NavVLAeval/aerialvln/run_eval.sh \
   --override parallel.gpu_ids='[0]'
 bash NavVLAeval/vlnce/r2r/run_eval.sh --override parallel.gpu_ids='[0]'
 bash NavVLAeval/vlnce/rxr/run_eval.sh --override parallel.gpu_ids='[0]'
+bash NavVLAeval/track/run_qwen35_track_eval_multigpu.sh stt
 ```
 
 单次运行的 GPU、样本数、scene filter、输出名称和调试项使用 config override。协议变化时复制配置。

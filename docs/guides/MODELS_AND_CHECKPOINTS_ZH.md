@@ -6,8 +6,7 @@
 
 | Framework | Backbone | 导航组件 | 用途 |
 | --- | --- | --- | --- |
-| `navvla_qwen35_cpm` | Qwen3.5-VL | BATS、TVI、history cache、DiT-B 动作头 | 主要训练与空中测评路径 |
-| `navvla_cpm` | MiniCPM-V-4.6 | BATS、TVI、history cache、DiT-B 动作头 | 已发布的 UAV-Flow/EVT-Bench 测评路径 |
+| `navvla_qwen35_cpm` | Qwen3.5-VL | BATS、TVI、history cache、DiT-B 动作头 | 主要训练与测评路径，包含 EVT-Bench Track-DT |
 
 详见[模型架构](MODEL_ARCHITECTURE_ZH.md)和 [Qwen3.5-VL CPM 实现](QWEN35_CPM_IMPLEMENTATION.md)。
 
@@ -18,7 +17,7 @@
 | [Qwen3.5-4B](https://huggingface.co/Qwen/Qwen3.5-4B) | `local/models/Qwen3.5-4B/` |
 | GroundingDINO Swin-T | `local/models/GroundingDINO/groundingdino_swint_ogc.pth` |
 
-SimpleNAV 发布权重从 [ModelScope](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files) 下载。数据集和仿真环境从 [SimpleNAV ModelScope 数据主页](https://www.modelscope.cn/organization/SimpleNav) 下载。
+SimpleNAV 数据、仿真环境和发布权重统一从 [SimpleNAV ModelScope 组织页](https://modelscope.cn/organization/SimpleNav) 下载。
 
 ## Checkpoint 布局
 
@@ -39,9 +38,10 @@ Resolved model config 必须与 checkpoint 的 backbone、tokenizer/prompt token
 | OpenFly Qwen3.5-VL | `examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_openfly_portable.yaml` |
 | AerialVLN Qwen3.5-VL | `examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_aerialvln_portable.yaml` |
 | TravelUAV Qwen3.5-VL | `examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_traveluav_portable.yaml` |
+| EVT-Bench Track-DT Qwen3.5-VL | `examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_track.yaml` |
 | R2R-CE / RxR-CE Qwen3.5-VL | `examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_vlnce.yaml` |
 
-三个无人机数据集的完整流程见[无人机数据训练与测评](AERIAL_TRAINING_AND_EVALUATION_ZH.md)。R2R-CE 与 RxR-CE 的资源布局和命令见 [VLN-CE Training and Evaluation](VLNCE_TRAINING_AND_EVALUATION.md)。
+三个无人机数据集的完整流程见[无人机数据训练与测评](AERIAL_TRAINING_AND_EVALUATION_ZH.md)。EVT-Bench Track-DT recipe 见 [Track-DT 混合训练](TRACK_DT_TRAINING_ZH.md)。R2R-CE 与 RxR-CE 的资源布局和命令见 [VLN-CE 训练与测评](VLNCE_TRAINING_AND_EVALUATION_ZH.md)。
 
 ## 模型卡内容
 

@@ -141,8 +141,6 @@ Before adding benchmark-specific runtime code, check the shared mechanisms first
 - Per-waypoint observations should use `EnvironmentStepResult.action_observations` plus the runtime dataset history hook.
 - Scene/sample filtering should use existing input/config fields such as `scene_ids` and `benchmark.max_samples`.
 
-In a dirty checkout, inspect scoped diffs before editing shared files. Do not mix unrelated hunks from another benchmark into the current benchmark change.
-
 ## Commands
 
 Dry-run:
@@ -170,7 +168,6 @@ uv run --project . --no-sync pytest \
   tests/navvlaeval/test_model_wrapper.py \
   tests/navvlaeval/test_runtime_history_wrapper_tokens.py \
   tests/navvlaeval/test_spl_bounds.py \
-  tests/navvlaeval/test_unrealzoo_uavflow_coordinates.py \
   tests/test_openfly_eval_contracts.py \
   tests/test_airsim_observation_retry.py \
   tests/test_airsim_teleport_render_sync.py \
@@ -178,4 +175,4 @@ uv run --project . --no-sync pytest \
 uv run --project . --no-sync python -m compileall -q NavVLAeval starVLA tool/navvla deployment
 ```
 
-Portable configs are provided for OpenFly, TravelUAV, AerialVLN, R2R, RxR, and UAV-Flow. Paths are resolved relative to each config file. Populate `local/`, then run the matching `run_eval.sh` or pass `--config <benchmark>/config_portable.yaml` directly.
+Portable configs are provided for OpenFly, TravelUAV, AerialVLN, R2R, and RxR. Paths are resolved relative to each config file. Populate `local/`, then run the matching `run_eval.sh` or pass `--config <benchmark>/config_portable.yaml` directly.

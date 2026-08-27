@@ -115,7 +115,7 @@ vln-convert \
   --validate
 ```
 
-The converter supports TravelUAV, UAV-Flow, AerialVLN, VLN-CE, FLIGHT, IndoorUAV, HUGE, EmbodiedNav, OpenFly, OpenScene, nuScenes, and collected Enhanced VLN packages. CosFly uses the separate two-step `vln-cosfly` entry point.
+The converter supports TravelUAV, AerialVLN, VLN-CE, FLIGHT, IndoorUAV, HUGE, EmbodiedNav, OpenFly, OpenScene, nuScenes, and collected Enhanced VLN packages. CosFly uses the separate two-step `vln-cosfly` entry point.
 
 A successful artifact validation does not prove that `observation.state` is a simulator world pose. Before augmentation, still verify the original annotation, episode/scene/length identity, axes, z convention, and yaw units.
 

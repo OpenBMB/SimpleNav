@@ -10,6 +10,14 @@
 </p>
 
 <p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
+  <a href="https://github.com/fulanya55/starVLA/stargazers"><img src="https://img.shields.io/github/stars/fulanya55/starVLA?style=social" alt="GitHub stars"></a>
+  <a href="https://www.python.org/downloads/release/python-3100/"><img src="https://img.shields.io/badge/Python-3.10-3776AB?logo=python&amp;logoColor=white" alt="Python 3.10"></a>
+  <a href="https://fulanya55.github.io/starVLA/"><img src="https://img.shields.io/badge/Project%20Page-GitHub%20Pages-222222?logo=github" alt="Project Page"></a>
+  <a href="https://modelscope.cn/organization/SimpleNav"><img src="https://img.shields.io/badge/ModelScope-SimpleNav-624AFF" alt="ModelScope"></a>
+</p>
+
+<p align="center">
   <a href="README.md">English</a> ·
   <a href="https://fulanya55.github.io/starVLA/">项目主页</a> ·
   <a href="data_pipeline/README_ZH.md">数据管线</a> ·
@@ -19,6 +27,25 @@
 </p>
 
 SimpleNAV 通过明确接口连接异构导航数据、长时序 VLA 模型、训练和 benchmark 测评。项目支持空中与室内导航，将数据集特有的坐标和仿真语义保留在 adapter 中，并复用模型、动作、产物和测评协议。
+
+<details>
+<summary>目录</summary>
+
+- [愿景](#愿景)
+- [优势](#优势)
+- [整体架构](#整体架构)
+- [数据协议](#数据协议)
+- [模型](#模型)
+- [结果](#结果)
+- [演示](#演示)
+- [风险与局限](#风险与局限)
+- [快速开始](#快速开始)
+- [文档](#文档)
+- [Roadmap](#roadmap)
+- [引用](#引用)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
+</details>
 
 ## 愿景
 
@@ -37,11 +64,11 @@ SimpleNAV 通过明确接口连接异构导航数据、长时序 VLA 模型、�
 | Simple 数据 | 转换、轨迹增强、AirSim 图像采集、LeRobot v3 写入、校验、统计、BATS context 和视觉 token cache 工具。 |
 | Simple 模型 | Qwen3.5-VL 导航、长历史选择、时空视角编码、视觉 token cache 和扩散动作头。 |
 | Simple 训练 | 配置驱动的本地、分布式、单数据集和多数据集训练。 |
-| Simple 测评 | OpenFly、TravelUAV、AerialVLN、R2R-CE、RxR-CE 和 UAV-Flow 便携配置及统一 rollout 产物。 |
+| Simple 测评 | OpenFly、TravelUAV、AerialVLN、EVT-Bench、R2R-CE 和 RxR-CE 便携配置及统一 rollout 产物。 |
 
 ## 整体架构
 
-![SimpleNAV 数据转换、模型训练和闭环测评整体框架](docs/assets/figures/simplenav_framework.png)
+![SimpleNAV 数据转换、模型训练和闭环测评整体框架](docs/assets/figures/simplenav_framework_zh.png)
 
 | 路径 | 作用 |
 | --- | --- |
@@ -79,23 +106,25 @@ SimpleNAV 通过明确接口连接异构导航数据、长时序 VLA 模型、�
 
 ## 模型
 
-![SimpleNAV 历史视觉、当前观测、语言 token、VLM 骨干与动作专家模型架构](docs/assets/figures/simplenav_model_architecture.jpg)
+![SimpleNAV 历史视觉、当前观测、语言 token、VLM 骨干与动作专家模型架构](docs/assets/figures/simplenav_model_architecture.png)
 
 SimpleNAV 将视觉语言骨干、筛选后的长历史、时空视角上下文和连续动作头组合起来。模型消费上面的数据协议，并通过 adapter 保留数据集特有的坐标语义。
 
 ## 结果
 
+结果如下。
+
 | Benchmark | Split | NE↓ | SR↑ | OS/OSR↑ | SPL↑ | nDTW↑ | SDTW↑ |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| OpenFly | Seen | 37.12 m | 52.85 | 74.15 | 50.96 | - | - |
-| TravelUAV | Test Seen / Full | 85.61 m | 22.42 | 55.08 | 20.51 | - | - |
-| AerialVLN-S | Val Seen | 126 m | 8.40 | 18.92 | - | - | 3.40 |
-| R2R-CE | Val-Unseen | 4.65 m | 49.18 | 55.93 | 45.82 | - | - |
-| RxR-CE | Val-Unseen | 4.62 m | 58.44 | - | 52.17 | 74.60 | - |
+| OpenFly | Seen | 37.1 m | 52.8 | 74.2 | 51.0 | - | - |
+| TravelUAV | Test Seen / Full | 85.6 m | 22.4 | 55.1 | 20.5 | - | - |
+| AerialVLN-S | Val Seen | 126.0 m | 8.4 | 18.9 | - | - | 3.4 |
+| R2R-CE | Val-Unseen | 4.7 m | 49.2 | 55.9 | 45.8 | - | - |
+| RxR-CE | Val-Unseen | 4.6 m | 58.4 | - | 52.2 | 74.6 | - |
 
 | Benchmark | 任务 | SR↑ | TR↑ | CR↓ |
 | --- | --- | ---: | ---: | ---: |
-| EVT-Bench | STT | 89.31 | 96.08 | 1.09 |
+| EVT-Bench | STT | 82.8 | 93.5 | 1.2 |
 
 完整对比表和协议说明见 [Release 01 测评结果](docs/guides/BENCHMARKS_RELEASE01_ZH.md)。
 
@@ -105,8 +134,8 @@ SimpleNAV 将视觉语言骨干、筛选后的长历史、时空视角上下文�
 
 <table>
   <tr>
-    <td align="center"><img src="docs/assets/demos/previews/openfly.gif" alt="OpenFly Rollout 轨迹" width="420"><br><strong>OpenFly · Env 16</strong></td>
-    <td align="center"><img src="docs/assets/demos/previews/traveluav.gif" alt="TravelUAV Rollout 轨迹" width="420"><br><strong>TravelUAV · Modern City</strong></td>
+    <td align="center"><a href="docs/assets/demos/openfly/env16_ep000420.mp4"><img src="docs/assets/demos/previews/openfly.gif" alt="OpenFly Rollout 轨迹" width="420"></a><br><strong>OpenFly · Env 16</strong></td>
+    <td align="center"><a href="docs/assets/demos/traveluav/moderncity_ep000405.mp4"><img src="docs/assets/demos/previews/traveluav.gif" alt="TravelUAV Rollout 轨迹" width="420"></a><br><strong>TravelUAV · Modern City</strong></td>
   </tr>
   <tr>
     <td align="center"><img src="docs/assets/demos/previews/aerialvln.gif" alt="AerialVLN Rollout 轨迹" width="420"><br><strong>AerialVLN · Env 8</strong></td>
@@ -118,6 +147,13 @@ SimpleNAV 将视觉语言骨干、筛选后的长历史、时空视角上下文�
   </tr>
 </table>
 
+
+## 风险与局限
+
+- SimpleNav 是研究框架，不是经过安全认证的飞控系统；不得将模型输出作为唯一控制依据。
+- 请在仿真或受控环境中，由具备资质的人员监督，并配置手动接管、急停、地理围栏和独立安全监测。
+- 分布偏移、感知或通信延迟、执行器/模拟器不匹配，以及坐标或动作协议错误，都可能导致性能下降。
+- 不保证避碰、故障安全或法规合规；部署决策和运行责任由操作人员承担。
 
 ## 快速开始
 
@@ -210,6 +246,7 @@ bash examples/NavVLA/train_files/qwen35/run_train.sh \
 | TravelUAV | `NavVLAeval/traveluav/config_portable.yaml` | `bash NavVLAeval/traveluav/run_eval.sh` |
 | AerialVLN | `NavVLAeval/aerialvln/config_portable.yaml` | `bash NavVLAeval/aerialvln/run_eval.sh` |
 | AerialVLN-S Val Seen · action stop | `NavVLAeval/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml` | `bash NavVLAeval/aerialvln/run_eval.sh --config <配置>` |
+| EVT-Bench | `NavVLAeval/track/eval_qwen35_track.py` | `bash NavVLAeval/track/run_qwen35_track_eval.sh` |
 | R2R-CE | `NavVLAeval/vlnce/r2r/config_portable.yaml` | `bash NavVLAeval/vlnce/r2r/run_eval.sh` |
 | RxR-CE | `NavVLAeval/vlnce/rxr/config_portable.yaml` | `bash NavVLAeval/vlnce/rxr/run_eval.sh` |
 
@@ -226,7 +263,7 @@ bash NavVLAeval/openfly/run_eval.sh --dry-run \
 
 OpenFly、AerialVLN 与 TravelUAV 从数据下载、训练到权重测评的完整流程见[无人机数据训练与测评](docs/guides/AERIAL_TRAINING_AND_EVALUATION_ZH.md)。
 
-R2R-CE 与 RxR-CE 的 Qwen3.5 训练和测评流程见 [VLN-CE Training and Evaluation](docs/guides/VLNCE_TRAINING_AND_EVALUATION.md)。
+R2R-CE 与 RxR-CE 的 Qwen3.5 训练和测评流程见 [VLN-CE 训练与测评](docs/guides/VLNCE_TRAINING_AND_EVALUATION_ZH.md)。
 
 ## 文档
 
@@ -238,9 +275,10 @@ R2R-CE 与 RxR-CE 的 Qwen3.5 训练和测评流程见 [VLN-CE Training and Eval
 | 理解或扩展模型 | [模型架构](docs/guides/MODEL_ARCHITECTURE_ZH.md) |
 | 查找模型与 checkpoint 入口 | [模型与 Checkpoint](docs/guides/MODELS_AND_CHECKPOINTS_ZH.md) |
 | 训练模型 | [训练](docs/guides/TRAINING_ZH.md) |
+| 复现 EVT-Bench 训练与测评 | [EVT_BENCH 训练与测评](docs/guides/EVT_BENCH_RECIPE_ZH.md) |
 | 运行 benchmark | [测评](docs/guides/EVALUATION_ZH.md) |
 | 复现 OpenFly、AerialVLN 与 TravelUAV 训练和测评 | [无人机数据训练与测评](docs/guides/AERIAL_TRAINING_AND_EVALUATION_ZH.md) |
-| 复现 R2R-CE 与 RxR-CE 训练和测评 | [VLN-CE Training and Evaluation](docs/guides/VLNCE_TRAINING_AND_EVALUATION.md) |
+| 复现 R2R-CE 与 RxR-CE 训练和测评 | [VLN-CE 训练与测评](docs/guides/VLNCE_TRAINING_AND_EVALUATION_ZH.md) |
 | 查看完整结果 | [Release 01 测评结果](docs/guides/BENCHMARKS_RELEASE01_ZH.md) |
 | 查看项目方向 | [愿景与路线图](docs/guides/VISION_AND_ROADMAP_ZH.md) |
 
@@ -252,10 +290,23 @@ R2R-CE 与 RxR-CE 的 Qwen3.5 训练和测评流程见 [VLN-CE Training and Eval
 - 发布包含 resolved config 和 episode 级产物的可复现结果包。
 - 将测评失败反馈到数据生成和下一轮训练。
 
+## 引用
+
+如果 SimpleNav 对你的工作有帮助，欢迎引用本仓库。
+
+```bibtex
+@software{simplenav,
+  title = {SimpleNav: Make Navigation VLA Simple},
+  author = {{SimpleNav Contributors}},
+  year = {YYYY},
+  url = {https://github.com/fulanya55/starVLA},
+}
+```
+
 ## License
 
 仓库源码使用 [MIT License](LICENSE)。数据集、预训练模型、模拟器、场景资产和第三方组件遵循各自许可证。
 
 ## Acknowledgements
 
-SimpleNAV 基于 Qwen-VL、LeRobot、PyTorch、Transformers、DeepSpeed、AirSim、Habitat 以及上述数据集和 benchmark 等开源研究与软件构建。使用时请同时引用对应的原始项目与数据集。
+感谢 [NavFoM《Embodied Navigation Foundation Model》](https://arxiv.org/abs/2509.12129) 作者团队在跨具身、跨任务导航基础模型方向的开源研究。SimpleNAV 同时基于 Qwen-VL、LeRobot、PyTorch、Transformers、DeepSpeed、AirSim、Habitat，以及上述数据集和 benchmark 等开源研究与软件构建。使用时请同时引用对应的原始项目与数据集。

@@ -17,7 +17,7 @@
 
 原始数据、生成数据和模拟器场景不放入 Git。模型使用的数据放在 `local/data/`，或在本地配置中指向其他存储位置。
 
-发布的数据集和仿真环境从 [SimpleNAV ModelScope 数据主页](https://www.modelscope.cn/organization/SimpleNav) 下载。
+发布的数据集和仿真环境从 [SimpleNAV ModelScope 组织页](https://modelscope.cn/organization/SimpleNav) 下载。
 
 ## 组件
 
@@ -45,7 +45,7 @@ vln-convert \
   --validate
 ```
 
-当前 adapter 包括 TravelUAV、UAV-Flow、AerialVLN、渲染后的 VLN-CE、FLIGHT、IndoorUAV、HUGE、EmbodiedNav、OpenFly、OpenScene、nuScenes 和已完成采集的 Enhanced VLN 包。数据集特有参数见 `vln-convert --help` 和组件 README。
+当前 adapter 包括 TravelUAV、AerialVLN、渲染后的 VLN-CE、FLIGHT、IndoorUAV、HUGE、EmbodiedNav、OpenFly、OpenScene、nuScenes 和已完成采集的 Enhanced VLN 包。数据集特有参数见 `vln-convert --help` 和组件 README。
 
 ## 轨迹增强与渲染
 

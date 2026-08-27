@@ -382,7 +382,7 @@ def _observation_metadata(observation: dict[str, Any]) -> dict[str, Any]:
     metadata = observation.get("navvla_eval")
     if isinstance(metadata, dict):
         return metadata
-    for container_key in ("traveluav_episode", "uavflow_pose"):
+    for container_key in ("traveluav_episode",):
         container = observation.get(container_key)
         if isinstance(container, dict) and isinstance(container.get("navvla_eval"), dict):
             return container["navvla_eval"]

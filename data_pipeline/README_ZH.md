@@ -115,7 +115,7 @@ vln-convert \
   --validate
 ```
 
-统一转换器支持 TravelUAV、UAV-Flow、AerialVLN、VLN-CE、FLIGHT、IndoorUAV、HUGE、EmbodiedNav、OpenFly、OpenScene、nuScenes 和已采集的 Enhanced VLN；CosFly 使用独立的 `vln-cosfly` 两步入口。详见转换组件 README。
+统一转换器支持 TravelUAV、AerialVLN、VLN-CE、FLIGHT、IndoorUAV、HUGE、EmbodiedNav、OpenFly、OpenScene、nuScenes 和已采集的 Enhanced VLN；CosFly 使用独立的 `vln-cosfly` 两步入口。详见转换组件 README。
 
 转换成功只证明 LeRobot artifact 内部一致，不自动证明 `observation.state` 是模拟器世界位姿。进入轨迹增强前仍须核对原始注释、episode/scene/长度、轴方向、z 约定和 yaw 单位。
 

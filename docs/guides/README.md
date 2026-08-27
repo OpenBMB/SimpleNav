@@ -10,6 +10,7 @@
 | Understand or extend the model | [Model Architecture](MODEL_ARCHITECTURE.md) |
 | Find base-model, checkpoint, and model-card entries | [Models and Checkpoints](MODELS_AND_CHECKPOINTS.md) |
 | Train SimpleNAV | [Training](TRAINING.md) |
+| Reproduce mixed EVT-Bench Track-DT training | [Track-DT Mixed Training](TRACK_DT_TRAINING.md) |
 | Reproduce the OpenFly, AerialVLN, and TravelUAV workflow | [Aerial Training and Evaluation](AERIAL_TRAINING_AND_EVALUATION.md) |
 | Reproduce the released R2R-CE and RxR-CE workflow | [VLN-CE Training and Evaluation](VLNCE_TRAINING_AND_EVALUATION.md) |
 | Run inference and benchmark evaluation | [Evaluation](EVALUATION.md) |
@@ -22,5 +23,4 @@ Implementation references:
 - [Model-side data tools](../../tool/navvla/README.md)
 - [Qwen3.5-VL CPM implementation](QWEN35_CPM_IMPLEMENTATION.md)
 - [Evaluation framework](../../NavVLAeval/README.md)
-- [Public datasets and simulator environments](https://www.modelscope.cn/organization/SimpleNav)
-- [Public checkpoints](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files)
+- [Public data, simulator environments, and checkpoints](https://modelscope.cn/organization/SimpleNav)

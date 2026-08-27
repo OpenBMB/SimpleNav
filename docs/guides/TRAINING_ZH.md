@@ -9,12 +9,15 @@ examples/NavVLA/train_files/qwen35/
 ├── run_train.sh
 ├── navvla_qwen35_cpm_openfly_portable.yaml
 ├── navvla_qwen35_cpm_aerialvln_portable.yaml
-└── navvla_qwen35_cpm_traveluav_portable.yaml
+├── navvla_qwen35_cpm_traveluav_portable.yaml
+└── navvla_qwen35_cpm_track.yaml
 ```
 
 配置使用仓库相对路径和 8 GPU 本地 launcher。修改 recipe 前先复制配置。
 
-三个无人机 recipe 见[无人机数据训练与测评](AERIAL_TRAINING_AND_EVALUATION_ZH.md)。R2R-CE 与 RxR-CE 发布 recipe 见 [VLN-CE Training and Evaluation](VLNCE_TRAINING_AND_EVALUATION.md)。
+三个无人机 recipe 见[无人机数据训练与测评](AERIAL_TRAINING_AND_EVALUATION_ZH.md)。R2R-CE 与 RxR-CE 发布 recipe 见 [VLN-CE 训练与测评](VLNCE_TRAINING_AND_EVALUATION_ZH.md)。
+
+EVT-Bench AT/DT/STT 混合 recipe 见 [Track-DT 混合训练](TRACK_DT_TRAINING_ZH.md)。
 
 ## 所需资源
 

@@ -10,7 +10,16 @@
 </p>
 
 <p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
+  <a href="https://github.com/fulanya55/starVLA/stargazers"><img src="https://img.shields.io/github/stars/fulanya55/starVLA?style=social" alt="GitHub stars"></a>
+  <a href="https://www.python.org/downloads/release/python-3100/"><img src="https://img.shields.io/badge/Python-3.10-3776AB?logo=python&amp;logoColor=white" alt="Python 3.10"></a>
+  <a href="https://fulanya55.github.io/starVLA/"><img src="https://img.shields.io/badge/Project%20Page-GitHub%20Pages-222222?logo=github" alt="Project Page"></a>
+  <a href="https://modelscope.cn/organization/SimpleNav"><img src="https://img.shields.io/badge/ModelScope-SimpleNav-624AFF" alt="ModelScope"></a>
+</p>
+
+<p align="center">
   <a href="README_ZH.md">中文</a> ·
+  <a href="https://fulanya55.github.io/starVLA/">Project Page</a> ·
   <a href="data_pipeline/README.md">Data Pipeline</a> ·
   <a href="docs/guides/README.md">Documentation</a> ·
   <a href="docs/guides/BENCHMARKS_RELEASE01.md">Results</a> ·
@@ -18,6 +27,25 @@
 </p>
 
 SimpleNav connects heterogeneous navigation data, long-horizon VLA models, training, and benchmark evaluation through explicit interfaces. It supports aerial and indoor navigation, keeps dataset-specific coordinate and simulator semantics in adapters, and uses shared model, action, artifact, and evaluation contracts.
+
+<details>
+<summary>Table of Contents</summary>
+
+- [Vision](#vision)
+- [Why SimpleNav](#why-simplenav)
+- [Framework](#framework)
+- [Data Protocol](#data-protocol)
+- [Model](#model)
+- [Results](#results)
+- [Demos](#demos)
+- [Risks and Limitations](#risks-and-limitations)
+- [Quick Start](#quick-start)
+- [Documentation](#documentation)
+- [Roadmap](#roadmap)
+- [Citation](#citation)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
+</details>
 
 ## Vision
 
@@ -34,9 +62,9 @@ Navigation research should not require a separate data-model-evaluation stack fo
 | Area | What is provided |
 | --- | --- |
 | Simple Data | Conversion, trajectory augmentation, AirSim image collection, LeRobot v3 writing, validation, statistics, BATS context, and visual-token cache tools. |
-| Simple Model | Model Adaptation Easily, long-history selection, temporal-view encoding, visual-token caching, and diffusion action heads. |
+| Simple Model | Qwen3.5-VL navigation, long-history selection, temporal-view encoding, visual-token caching, and diffusion action heads. |
 | Simple Training | Configuration-driven local, distributed, single-dataset, and mixed-dataset training. |
-| Simple Evaluation | Portable OpenFly, TravelUAV, AerialVLN, R2R-CE, RxR-CE, and UAV-Flow configs with shared rollout artifacts. |
+| Simple Evaluation | Portable OpenFly, TravelUAV, AerialVLN, EVT-Bench, R2R-CE, and RxR-CE configs with shared rollout artifacts. |
 
 ## Framework
 
@@ -80,34 +108,34 @@ Each animation aligns one raw trajectory with its enhanced version. Click an ani
 
 SimpleNav combines a vision-language backbone, selected long history, temporal-view context, and a continuous action head. The model consumes the protocol above and keeps dataset-specific coordinate semantics in the adapter.
 
-![SimpleNav model architecture with history, current observations, language tokens, VLM backbone, and action expert](docs/assets/figures/simplenav_model_architecture.jpg)
+![SimpleNav model architecture with history, current observations, language tokens, VLM backbone, and action expert](docs/assets/figures/simplenav_model_architecture.png)
 
 
 ## Results
 
-The results are summarized as follows. 
+The results are summarized as follows.
 Full comparison tables and protocol notes are in [Release 01 Benchmarks](docs/guides/BENCHMARKS_RELEASE01.md).
 
 | Benchmark | Split | NE↓ | SR↑ | OS/OSR↑ | SPL↑ | nDTW↑ | SDTW↑ |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| OpenFly | Seen | 37.12 m | 52.85 | 74.15 | 50.96 | - | - |
-| TravelUAV | Test Seen / Full | 85.61 m | 22.42 | 55.08 | 20.51 | - | - |
-| AerialVLN-S | Val Seen | 126 m | 8.40 | 18.92 | - | - | 3.40 |
-| R2R-CE | Val-Unseen | 4.65 m | 49.18 | 55.93 | 45.82 | - | - |
-| RxR-CE | Val-Unseen | 4.62 m | 58.44 | - | 52.17 | 74.60 | - |
+| OpenFly | Seen | 37.1 m | 52.8 | 74.2 | 51.0 | - | - |
+| TravelUAV | Test Seen / Full | 85.6 m | 22.4 | 55.1 | 20.5 | - | - |
+| AerialVLN-S | Val Seen | 126.0 m | 8.4 | 18.9 | - | - | 3.4 |
+| R2R-CE | Val-Unseen | 4.7 m | 49.2 | 55.9 | 45.8 | - | - |
+| RxR-CE | Val-Unseen | 4.6 m | 58.4 | - | 52.2 | 74.6 | - |
 
 | Benchmark | Task | SR↑ | TR↑ | CR↓ |
 | --- | --- | ---: | ---: | ---: |
-| EVT-Bench | STT | 89.31 | 96.08 | 1.09 |
+| EVT-Bench | STT | 82.8 | 93.5 | 1.2 |
 
 ### Demos
 
-Selected rollout trajectory previews are shown below.
+Selected rollout trajectory previews are shown below. See the [project-page video gallery](https://fulanya55.github.io/starVLA/#demos) for the full videos.
 
 <table>
   <tr>
-    <td align="center"><img src="docs/assets/demos/previews/openfly.gif" alt="OpenFly rollout trajectory" width="420"><br><strong>OpenFly · Env 16</strong></td>
-    <td align="center"><img src="docs/assets/demos/previews/traveluav.gif" alt="TravelUAV rollout trajectory" width="420"><br><strong>TravelUAV · Modern City</strong></td>
+    <td align="center"><a href="docs/assets/demos/openfly/env16_ep000420.mp4"><img src="docs/assets/demos/previews/openfly.gif" alt="OpenFly rollout trajectory" width="420"></a><br><strong>OpenFly · Env 16</strong></td>
+    <td align="center"><a href="docs/assets/demos/traveluav/moderncity_ep000405.mp4"><img src="docs/assets/demos/previews/traveluav.gif" alt="TravelUAV rollout trajectory" width="420"></a><br><strong>TravelUAV · Modern City</strong></td>
   </tr>
   <tr>
     <td align="center"><img src="docs/assets/demos/previews/aerialvln.gif" alt="AerialVLN rollout trajectory" width="420"><br><strong>AerialVLN · Env 8</strong></td>
@@ -119,6 +147,13 @@ Selected rollout trajectory previews are shown below.
   </tr>
 </table>
 
+
+## Risks and Limitations
+
+- SimpleNav is a research framework, not a safety-certified flight-control system. Do not use model outputs as the sole control authority.
+- Validate in simulation and controlled environments with qualified supervision, manual override, emergency stop, geofencing, and independent safety monitors.
+- Performance can degrade under distribution shift, perception or communication latency, actuator/simulator mismatch, and coordinate or action-protocol errors.
+- No guarantee is made for collision avoidance, fail-safe behavior, or regulatory compliance; operators remain responsible for deployment decisions.
 
 ## Quick Start
 
@@ -133,7 +168,7 @@ Place downloaded packages in the repository-relative `local/` layout below.
 Requirements: Linux, Python 3.10, and a model-compatible NVIDIA driver. Dataset conversion also requires `ffmpeg`; closed-loop evaluation requires the corresponding simulator and scene assets.
 
 ```bash
-git clone https://github.com/openbmb/SimpleNav.git
+git clone -b SimpleNav https://github.com/fulanya55/starVLA.git SimpleNav
 cd SimpleNav
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv python install 3.10
@@ -211,6 +246,7 @@ Each public config resolves paths relative to its own directory.
 | TravelUAV | `NavVLAeval/traveluav/config_portable.yaml` | `bash NavVLAeval/traveluav/run_eval.sh` |
 | AerialVLN | `NavVLAeval/aerialvln/config_portable.yaml` | `bash NavVLAeval/aerialvln/run_eval.sh` |
 | AerialVLN-S Val Seen · action stop | `NavVLAeval/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml` | `bash NavVLAeval/aerialvln/run_eval.sh --config <config>` |
+| EVT-Bench | `NavVLAeval/track/eval_qwen35_track.py` | `bash NavVLAeval/track/run_qwen35_track_eval.sh` |
 | R2R-CE | `NavVLAeval/vlnce/r2r/config_portable.yaml` | `bash NavVLAeval/vlnce/r2r/run_eval.sh` |
 | RxR-CE | `NavVLAeval/vlnce/rxr/config_portable.yaml` | `bash NavVLAeval/vlnce/rxr/run_eval.sh` |
 
@@ -239,6 +275,7 @@ For the released R2R-CE and RxR-CE Qwen3.5 workflow, use [VLN-CE Training and Ev
 | Understand or extend the model | [Model Architecture](docs/guides/MODEL_ARCHITECTURE.md) |
 | Find model and checkpoint entries | [Models and Checkpoints](docs/guides/MODELS_AND_CHECKPOINTS.md) |
 | Train a model | [Training](docs/guides/TRAINING.md) |
+| Reproduce mixed EVT-Bench training/evaluation | [EVT_BENCH_RECIPE](docs/guides/EVT_BENCH_RECIPE.md) |
 | Run a benchmark | [Evaluation](docs/guides/EVALUATION.md) |
 | Reproduce OpenFly, AerialVLN, and TravelUAV training/evaluation | [Aerial Training and Evaluation](docs/guides/AERIAL_TRAINING_AND_EVALUATION.md) |
 | Reproduce R2R-CE and RxR-CE training/evaluation | [VLN-CE Training and Evaluation](docs/guides/VLNCE_TRAINING_AND_EVALUATION.md) |
@@ -253,10 +290,23 @@ For the released R2R-CE and RxR-CE Qwen3.5 workflow, use [VLN-CE Training and Ev
 - Publish reproducible result bundles with resolved configs and episode-level artifacts.
 - Connect evaluation failures to data generation and the next training iteration.
 
+## Citation
+
+If SimpleNav is useful in your work, please cite the repository.
+
+```bibtex
+@software{simplenav,
+  title = {SimpleNav: Make Navigation VLA Simple},
+  author = {{SimpleNav Contributors}},
+  year = {YYYY},
+  url = {https://github.com/fulanya55/starVLA},
+}
+```
+
 ## License
 
 Repository source code is released under the [MIT License](LICENSE). Datasets, pretrained models, simulators, scene assets, and third-party components retain their own licenses.
 
 ## Acknowledgements
 
-SimpleNav builds on open research and software including starVLA, Qwen-VL, LeRobot, PyTorch, Transformers, DeepSpeed, AirSim, Habitat, and the datasets and benchmarks listed above. Please cite the original projects and datasets used in each experiment.
+We thank the authors of [NavFoM: Embodied Navigation Foundation Model](https://arxiv.org/abs/2509.12129) for their open cross-embodiment and cross-task navigation foundation-model research. SimpleNav also builds on Qwen-VL, LeRobot, PyTorch, Transformers, DeepSpeed, AirSim, Habitat, and the datasets and benchmarks listed above. Please cite the original projects and datasets used in each experiment.

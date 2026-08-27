@@ -4,7 +4,7 @@ This guide reproduces the Qwen3.5-VL training and Habitat evaluation workflow fo
 
 All paths below are relative to the repository root. Run every command from the repository root unless noted otherwise.
 
-Download the released dataset and Habitat environment packages from [ModelScope datasets](https://www.modelscope.cn/organization/SimpleNav). Download the released SimpleNAV checkpoint bundle from [ModelScope models](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files).
+Download the released datasets, Habitat environment packages, and SimpleNAV checkpoint bundle from the [SimpleNAV ModelScope organization](https://modelscope.cn/organization/SimpleNav).
 
 ## 1. Environment
 

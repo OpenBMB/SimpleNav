@@ -65,11 +65,6 @@ class DiscoveryTests(unittest.TestCase):
             expected = [
                 _write_dataset(base / "plain", [_episode(0, "a", 1)], [{"episode_index": 0}]),
                 _write_dataset(
-                    base / "UAV-Flow" / "navvla_lerobot_uav_flow_sim",
-                    [_episode(0, "b", 1)],
-                    [{"episode_index": 0}],
-                ),
-                _write_dataset(
                     base / "VLNCE" / "navvla_lerobot_full_vlnce_r2r",
                     [_episode(0, "c", 1)],
                     [{"episode_index": 0}],

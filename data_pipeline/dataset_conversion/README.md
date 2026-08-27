@@ -83,7 +83,6 @@ semantic fields fail closed.
 | Adapter | Image FPS | Control rate | Main contents under `--source-root` |
 | --- | ---: | ---: | --- |
 | `traveluav` | 0.2 | 1 Hz | TravelUAV root, one episode directory, or a compatible JSON layout |
-| `uav_flow` | 5 | 5 Hz | UAV-Flow Real/Sim root; family roots use `--source-root-is-family-root` |
 | `aerialvln` | 1 | 1 Hz | AerialVLN annotations and RGB LMDB roots |
 | `vlnce_rendered` | 1 | 1 Hz | RGB manifest root produced by `vln-render-vlnce` |
 | `flight` | 1 | 2 Hz | FLIGHT annotations, videos, and trajectories |

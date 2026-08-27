@@ -8,7 +8,6 @@ from navvla_conversion.adapters import nuscenes as _nuscenes
 from navvla_conversion.adapters import openfly as _openfly
 from navvla_conversion.adapters import openscene as _openscene
 from navvla_conversion.adapters import traveluav as _traveluav
-from navvla_conversion.adapters import uav_flow as _uav_flow
 from navvla_conversion.adapters import vlnce_rendered as _vlnce_rendered
 from navvla_conversion.adapters.base import NavVLASourceAdapter, get_adapter, register_adapter
 

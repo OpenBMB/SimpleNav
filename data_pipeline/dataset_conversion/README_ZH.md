@@ -96,7 +96,6 @@ python -m navvla_conversion.cli.convert_dataset --help
 | Adapter | 默认图像 FPS | 默认控制频率 | `--source-root` 主要内容 |
 | --- | ---: | ---: | --- |
 | `traveluav` | 0.2 | 1 Hz | TravelUAV 数据根、单 episode 目录或兼容 JSON 布局 |
-| `uav_flow` | 5 | 5 Hz | UAV-Flow Real/Sim 根；family 根可配合 `--source-root-is-family-root` |
 | `aerialvln` | 1 | 1 Hz | AerialVLN 标注和 RGB LMDB 根 |
 | `vlnce_rendered` | 1 | 1 Hz | `vln-render-vlnce` 生成的 RGB manifest 根 |
 | `flight` | 1 | 2 Hz | FLIGHT 标注、视频及轨迹根 |
