@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
-  <a href="https://github.com/xwjim/SimpleNav/stargazers"><img src="https://img.shields.io/github/stars/xwjim/SimpleNav?style=social" alt="GitHub stars"></a>
+  <a href="https://github.com/OpenBMB/SimpleNav/stargazers"><img src="https://img.shields.io/github/stars/OpenBMB/SimpleNav?style=social" alt="GitHub stars"></a>
   <a href="https://www.python.org/downloads/release/python-3100/"><img src="https://img.shields.io/badge/Python-3.10-3776AB?logo=python&amp;logoColor=white" alt="Python 3.10"></a>
   <a href="https://simplenav.github.io/"><img src="https://img.shields.io/badge/Project%20Page-GitHub%20Pages-222222?logo=github" alt="Project Page"></a>
   <a href="https://modelscope.cn/organization/SimpleNav"><img src="https://img.shields.io/badge/ModelScope-SimpleNav-624AFF" alt="ModelScope"></a>
@@ -175,7 +175,7 @@ Place downloaded packages in the repository-relative `local/` layout below.
 Requirements: Linux, Python 3.10, and a model-compatible NVIDIA driver. Dataset conversion also requires `ffmpeg`; closed-loop evaluation requires the corresponding simulator and scene assets.
 
 ```bash
-git clone -b SimpleNav https://github.com/xwjim/SimpleNav.git SimpleNav
+git clone -b SimpleNav https://github.com/OpenBMB/SimpleNav.git SimpleNav
 cd SimpleNav
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv python install 3.10
