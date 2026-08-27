@@ -32,24 +32,24 @@ Click a video preview to open the corresponding H.264 MP4, or click a trajectory
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.mp4">
-    <img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif" alt="AerialVLN raw and enhanced video comparison" width="448">
+    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif" alt="AerialVLN raw and enhanced video comparison" width="448">
   </a>
 </p>
 
-<a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png">
-  <img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN raw and enhanced trajectory comparison" width="100%">
+<a href="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png">
+  <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN raw and enhanced trajectory comparison" width="100%">
 </a>
 
 #### 190 → 123 samples
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.mp4">
-    <img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.gif" alt="Second AerialVLN raw and enhanced video comparison" width="448">
+    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.gif" alt="Second AerialVLN raw and enhanced video comparison" width="448">
   </a>
 </p>
 
-<a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_trajectory_raw_vs_enhanced.png">
-  <img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_trajectory_raw_vs_enhanced.png" alt="Second AerialVLN raw and enhanced trajectory comparison" width="100%">
+<a href="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_trajectory_raw_vs_enhanced.png">
+  <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_trajectory_raw_vs_enhanced.png" alt="Second AerialVLN raw and enhanced trajectory comparison" width="100%">
 </a>
 
 ### OpenFly
@@ -58,24 +58,24 @@ Click a video preview to open the corresponding H.264 MP4, or click a trajectory
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.mp4">
-    <img src="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.gif" alt="OpenFly raw and enhanced video comparison" width="448">
+    <img src="docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.gif" alt="OpenFly raw and enhanced video comparison" width="448">
   </a>
 </p>
 
-<a href="https://simplenav.github.io/assets/augmentation/openfly_000008_trajectory_raw_vs_enhanced.png">
-  <img src="https://simplenav.github.io/assets/augmentation/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly raw and enhanced trajectory comparison" width="100%">
+<a href="docs/assets/trajectory_comparisons/openfly_000008_trajectory_raw_vs_enhanced.png">
+  <img src="docs/assets/trajectory_comparisons/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly raw and enhanced trajectory comparison" width="100%">
 </a>
 
 #### 24 → 65 samples
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/openfly_002240_aligned_raw_vs_enhanced.mp4">
-    <img src="https://simplenav.github.io/assets/augmentation/openfly_002240_aligned_raw_vs_enhanced.gif" alt="Second OpenFly raw and enhanced video comparison" width="448">
+    <img src="docs/assets/trajectory_comparisons/openfly_002240_aligned_raw_vs_enhanced.gif" alt="Second OpenFly raw and enhanced video comparison" width="448">
   </a>
 </p>
 
-<a href="https://simplenav.github.io/assets/augmentation/openfly_002240_trajectory_raw_vs_enhanced.png">
-  <img src="https://simplenav.github.io/assets/augmentation/openfly_002240_trajectory_raw_vs_enhanced.png" alt="Second OpenFly raw and enhanced trajectory comparison" width="100%">
+<a href="docs/assets/trajectory_comparisons/openfly_002240_trajectory_raw_vs_enhanced.png">
+  <img src="docs/assets/trajectory_comparisons/openfly_002240_trajectory_raw_vs_enhanced.png" alt="Second OpenFly raw and enhanced trajectory comparison" width="100%">
 </a>
 
 ## Repository Layout
