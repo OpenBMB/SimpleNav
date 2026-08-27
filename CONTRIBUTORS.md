@@ -1,2 +1,12 @@
 # Contributors
+Wang Xu,
+Wenxiang Wu,
+Yi Zhang,
+Can Zhang,
+QiRui He,
+Helu Zhi,
+Liwei Cheng,
+Ting Gao,
+Jing Yang,
+Cheng Yin,
 Jin Wei
