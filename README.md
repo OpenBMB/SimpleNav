@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
-  <a href="https://github.com/xwjim/SimpleNav/stargazers"><img src="https://img.shields.io/github/stars/fulanya55/starVLA?style=social" alt="GitHub stars"></a>
+  <a href="https://github.com/xwjim/SimpleNav/stargazers"><img src="https://img.shields.io/github/stars/xwjim/SimpleNav?style=social" alt="GitHub stars"></a>
   <a href="https://www.python.org/downloads/release/python-3100/"><img src="https://img.shields.io/badge/Python-3.10-3776AB?logo=python&amp;logoColor=white" alt="Python 3.10"></a>
   <a href="https://xwjim.github.io/SimpleNav/"><img src="https://img.shields.io/badge/Project%20Page-GitHub%20Pages-222222?logo=github" alt="Project Page"></a>
   <a href="https://modelscope.cn/organization/SimpleNav"><img src="https://img.shields.io/badge/ModelScope-SimpleNav-624AFF" alt="ModelScope"></a>
