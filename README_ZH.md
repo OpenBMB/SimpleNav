@@ -1,7 +1,7 @@
 # SimpleNav
 
 <p align="center">
-  <img src="docs/assets/logo.jpg" alt="SimpleNav logo" width="168">
+  <img src="https://simplenav.github.io/assets/logo.jpg" alt="SimpleNav logo" width="168">
 </p>
 
 <p align="center">
@@ -13,13 +13,13 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
   <a href="https://github.com/xwjim/SimpleNav/stargazers"><img src="https://img.shields.io/github/stars/xwjim/SimpleNav?style=social" alt="GitHub stars"></a>
   <a href="https://www.python.org/downloads/release/python-3100/"><img src="https://img.shields.io/badge/Python-3.10-3776AB?logo=python&amp;logoColor=white" alt="Python 3.10"></a>
-  <a href="https://xwjim.github.io/SimpleNav/"><img src="https://img.shields.io/badge/Project%20Page-GitHub%20Pages-222222?logo=github" alt="Project Page"></a>
+  <a href="https://simplenav.github.io/"><img src="https://img.shields.io/badge/Project%20Page-GitHub%20Pages-222222?logo=github" alt="Project Page"></a>
   <a href="https://modelscope.cn/organization/SimpleNav"><img src="https://img.shields.io/badge/ModelScope-SimpleNav-624AFF" alt="ModelScope"></a>
 </p>
 
 <p align="center">
   <a href="README.md">English</a> ·
-  <a href="https://xwjim.github.io/SimpleNav/">项目主页</a> ·
+  <a href="https://simplenav.github.io/">项目主页</a> ·
   <a href="data_pipeline/README_ZH.md">数据管线</a> ·
   <a href="docs/guides/README_ZH.md">文档</a> ·
   <a href="docs/guides/BENCHMARKS_RELEASE01_ZH.md">实验结果</a> ·
@@ -76,7 +76,7 @@ SimpleNav 通过明确的接口贯通异构导航数据、长时程 VLA 模型�
 
 ## 整体架构
 
-![SimpleNav 数据转换、模型训练和闭环测评整体框架](docs/assets/figures/simplenav_framework_zh.png)
+![SimpleNav 数据转换、模型训练和闭环测评整体框架](https://simplenav.github.io/assets/figures/simplenav_framework_zh.png)
 
 | 路径 | 作用 |
 | --- | --- |
@@ -107,8 +107,8 @@ SimpleNav 通过明确的接口贯通异构导航数据、长时程 VLA 模型�
 
 <table>
   <tr>
-    <td align="center"><a href="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.mp4"><img src="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif" alt="AerialVLN 增强前后视频对比" width="420"></a><br><strong>AerialVLN · 示例 1</strong><br><img src="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN 增强前后轨迹图" width="420"></td>
-    <td align="center"><a href="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.mp4"><img src="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.gif" alt="OpenFly 增强前后视频对比" width="420"></a><br><strong>OpenFly · Episode 000008</strong><br><img src="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly 增强前后轨迹图" width="420"></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif"><img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif" alt="AerialVLN 增强前后视频对比" width="420"></a><br><strong>AerialVLN · 示例 1</strong><br><img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN 增强前后轨迹图" width="420"></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.gif"><img src="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.gif" alt="OpenFly 增强前后视频对比" width="420"></a><br><strong>OpenFly · Episode 000008</strong><br><img src="https://simplenav.github.io/assets/augmentation/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly 增强前后轨迹图" width="420"></td>
   </tr>
 </table>
 
@@ -116,7 +116,7 @@ SimpleNav 通过明确的接口贯通异构导航数据、长时程 VLA 模型�
 
 SimpleNav 将视觉语言骨干、筛选后的长历史、时空视角上下文和连续动作头组合起来。模型消费上面的数据协议，并通过 adapter 保留数据集特有的坐标语义。
 
-![SimpleNav 历史视觉、当前观测、语言 token、VLM 骨干与动作专家模型架构](docs/assets/figures/simplenav_model_architecture.png)
+![SimpleNav 历史视觉、当前观测、语言 token、VLM 骨干与动作专家模型架构](https://simplenav.github.io/assets/figures/simplenav_model_architecture.png)
 
 
 ## 结果
@@ -139,7 +139,7 @@ SimpleNav 将视觉语言骨干、筛选后的长历史、时空视角上下文�
 
 ### 演示
  
-部分 Rollout 轨迹预览展示，完整视频见[项目主页视频库](https://xwjim.github.io/SimpleNav/#demos)。
+部分 Rollout 轨迹预览展示，完整视频见[项目主页视频库](https://simplenav.github.io/#demos)。
 
 <table>
   <tr>

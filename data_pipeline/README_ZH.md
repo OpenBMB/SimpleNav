@@ -31,25 +31,25 @@
 #### 172 → 208 个采样点
 
 <p align="center">
-  <a href="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.mp4">
-    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif" alt="AerialVLN 增强前后视频对比" width="448">
+  <a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.mp4">
+    <img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif" alt="AerialVLN 增强前后视频对比" width="448">
   </a>
 </p>
 
-<a href="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png">
-  <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN 增强前后轨迹对比" width="100%">
+<a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png">
+  <img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN 增强前后轨迹对比" width="100%">
 </a>
 
 #### 190 → 123 个采样点
 
 <p align="center">
-  <a href="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.mp4">
-    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.gif" alt="第二组 AerialVLN 增强前后视频对比" width="448">
+  <a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.mp4">
+    <img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.gif" alt="第二组 AerialVLN 增强前后视频对比" width="448">
   </a>
 </p>
 
-<a href="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_trajectory_raw_vs_enhanced.png">
-  <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_trajectory_raw_vs_enhanced.png" alt="第二组 AerialVLN 增强前后轨迹对比" width="100%">
+<a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_trajectory_raw_vs_enhanced.png">
+  <img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_trajectory_raw_vs_enhanced.png" alt="第二组 AerialVLN 增强前后轨迹对比" width="100%">
 </a>
 
 ### OpenFly
@@ -57,25 +57,25 @@
 #### 19 → 37 个采样点
 
 <p align="center">
-  <a href="docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.mp4">
-    <img src="docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.gif" alt="OpenFly 增强前后视频对比" width="448">
+  <a href="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.mp4">
+    <img src="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.gif" alt="OpenFly 增强前后视频对比" width="448">
   </a>
 </p>
 
-<a href="docs/assets/trajectory_comparisons/openfly_000008_trajectory_raw_vs_enhanced.png">
-  <img src="docs/assets/trajectory_comparisons/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly 增强前后轨迹对比" width="100%">
+<a href="https://simplenav.github.io/assets/augmentation/openfly_000008_trajectory_raw_vs_enhanced.png">
+  <img src="https://simplenav.github.io/assets/augmentation/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly 增强前后轨迹对比" width="100%">
 </a>
 
 #### 24 → 65 个采样点
 
 <p align="center">
-  <a href="docs/assets/trajectory_comparisons/openfly_002240_aligned_raw_vs_enhanced.mp4">
-    <img src="docs/assets/trajectory_comparisons/openfly_002240_aligned_raw_vs_enhanced.gif" alt="第二组 OpenFly 增强前后视频对比" width="448">
+  <a href="https://simplenav.github.io/assets/augmentation/openfly_002240_aligned_raw_vs_enhanced.mp4">
+    <img src="https://simplenav.github.io/assets/augmentation/openfly_002240_aligned_raw_vs_enhanced.gif" alt="第二组 OpenFly 增强前后视频对比" width="448">
   </a>
 </p>
 
-<a href="docs/assets/trajectory_comparisons/openfly_002240_trajectory_raw_vs_enhanced.png">
-  <img src="docs/assets/trajectory_comparisons/openfly_002240_trajectory_raw_vs_enhanced.png" alt="第二组 OpenFly 增强前后轨迹对比" width="100%">
+<a href="https://simplenav.github.io/assets/augmentation/openfly_002240_trajectory_raw_vs_enhanced.png">
+  <img src="https://simplenav.github.io/assets/augmentation/openfly_002240_trajectory_raw_vs_enhanced.png" alt="第二组 OpenFly 增强前后轨迹对比" width="100%">
 </a>
 
 ## 仓库结构
@@ -84,7 +84,7 @@
 data_pipeline/
 ├── README.md
 ├── README_ZH.md
-├── docs/assets/trajectory_comparisons/  # 对外展示的对比素材
+├── outputs/trajectory_comparisons/  # 生成的对比素材（发布在项目网站）
 ├── dataset_conversion/        # 原始数据与增强包统一转换为 NavVLA LeRobot v3
 ├── trajectory_augmentation/   # 位姿恢复、平滑、重采样和渲染请求导出
 └── image_collection/          # AirSim 四视角 RGB 采集与发布

@@ -1,7 +1,7 @@
 # SimpleNav
 
 <p align="center">
-  <img src="docs/assets/logo_large_en.png" alt="SimpleNav logo" width="900">
+  <img src="https://simplenav.github.io/assets/logo.jpg" alt="SimpleNav logo" width="900">
 </p>
 
 <p align="center">
@@ -13,13 +13,13 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
   <a href="https://github.com/xwjim/SimpleNav/stargazers"><img src="https://img.shields.io/github/stars/xwjim/SimpleNav?style=social" alt="GitHub stars"></a>
   <a href="https://www.python.org/downloads/release/python-3100/"><img src="https://img.shields.io/badge/Python-3.10-3776AB?logo=python&amp;logoColor=white" alt="Python 3.10"></a>
-  <a href="https://xwjim.github.io/SimpleNav/"><img src="https://img.shields.io/badge/Project%20Page-GitHub%20Pages-222222?logo=github" alt="Project Page"></a>
+  <a href="https://simplenav.github.io/"><img src="https://img.shields.io/badge/Project%20Page-GitHub%20Pages-222222?logo=github" alt="Project Page"></a>
   <a href="https://modelscope.cn/organization/SimpleNav"><img src="https://img.shields.io/badge/ModelScope-SimpleNav-624AFF" alt="ModelScope"></a>
 </p>
 
 <p align="center">
   <a href="README_ZH.md">中文</a> ·
-  <a href="https://xwjim.github.io/SimpleNav/">Project Page</a> ·
+  <a href="https://simplenav.github.io/">Project Page</a> ·
   <a href="data_pipeline/README.md">Data Pipeline</a> ·
   <a href="docs/guides/README.md">Documentation</a> ·
   <a href="docs/guides/BENCHMARKS_RELEASE01.md">Results</a> ·
@@ -74,7 +74,7 @@ Navigation research should not require a separate data-model-evaluation stack fo
 
 ## Framework
 
-![SimpleNav framework: data conversion, model training, and closed-loop evaluation](docs/assets/figures/simplenav_framework.png)
+![SimpleNav framework: data conversion, model training, and closed-loop evaluation](https://simplenav.github.io/assets/figures/simplenav_framework.png)
 
 | Path | Description |
 | --- | --- |
@@ -105,8 +105,8 @@ Each animation aligns one raw trajectory with its enhanced version. Click an ani
 
 <table>
   <tr>
-    <td align="center"><a href="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.mp4"><img src="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif" alt="AerialVLN raw and enhanced rollout comparison" width="420"></a><br><strong>AerialVLN · Example 1</strong><br><img src="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN raw and enhanced trajectory plot" width="420"></td>
-    <td align="center"><a href="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.mp4"><img src="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.gif" alt="OpenFly raw and enhanced rollout comparison" width="420"></a><br><strong>OpenFly · Episode 000008</strong><br><img src="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly raw and enhanced trajectory plot" width="420"></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif"><img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif" alt="AerialVLN raw and enhanced rollout comparison" width="420"></a><br><strong>AerialVLN · Example 1</strong><br><img src="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN raw and enhanced trajectory plot" width="420"></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.gif"><img src="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.gif" alt="OpenFly raw and enhanced rollout comparison" width="420"></a><br><strong>OpenFly · Episode 000008</strong><br><img src="https://simplenav.github.io/assets/augmentation/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly raw and enhanced trajectory plot" width="420"></td>
   </tr>
 </table>
 
@@ -114,7 +114,7 @@ Each animation aligns one raw trajectory with its enhanced version. Click an ani
 
 SimpleNav combines a vision-language backbone, selected long history, temporal-view context, and a continuous action head. The model consumes the protocol above and keeps dataset-specific coordinate semantics in the adapter.
 
-![SimpleNav model architecture with history, current observations, language tokens, VLM backbone, and action expert](docs/assets/figures/simplenav_model_architecture.png)
+![SimpleNav model architecture with history, current observations, language tokens, VLM backbone, and action expert](https://simplenav.github.io/assets/figures/simplenav_model_architecture.png)
 
 
 ## Results
@@ -137,7 +137,7 @@ Full comparison tables and protocol notes are in [Release 01 Benchmarks](docs/gu
 
 ### Demos
 
-Selected rollout trajectory previews are shown below. See the [project-page video gallery](https://xwjim.github.io/SimpleNav/#demos) for the full videos.
+Selected rollout trajectory previews are shown below. See the [project-page video gallery](https://simplenav.github.io/#demos) for full videos.
 
 <table>
   <tr>
