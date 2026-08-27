@@ -2,193 +2,191 @@
 
 [返回主 README](../../README_ZH.md) · [English](BENCHMARKS_RELEASE01.md)
 
-`—` 表示未报告。开放产物状态来自 2026-08-16 检查的 `xw` 对比记录。**完整代码栈**指本仓库公开的数据、训练、测评和配置源码。
-
 ## 总览
 
 | Benchmark | Split / 任务 | SimpleNAV 结果 |
 | --- | --- | --- |
-| OpenFly | Seen | NE 37.12 m · SR 52.85% · OSR 74.15% · SPL 50.96% |
-| TravelUAV | Test Seen · Full | NE 85.61 m · SR 22.42 · OSR 55.08 · SPL 20.51 |
-| AerialVLN-S | Val Seen | NE 126 m · SR 8.4 · OSR 18.92 · SDTW 3.4 |
-| R2R-CE | Val-Unseen | NE 4.65 m · OS 55.93 · SR 49.18 · SPL 45.82 |
-| RxR-CE | Val-Unseen | NE 4.62 m · SR 58.44 · SPL 52.17 · nDTW 74.60 |
-| EVT-Bench | STT | SR 89.31 · TR 96.08 · CR 1.09 |
-| EVT-Bench | DT | SR 45.20 · TR 76.67 · CR 6.05 |
-| EVT-Bench | AT | SR 39.72 · TR 79.20 · CR 3.77 |
+| OpenFly | Seen | NE 37.1 m · SR 52.8% · OSR 74.2% · SPL 51.0% |
+| TravelUAV | Test Seen · Full | NE 85.6 m · SR 22.4 · OSR 55.1 · SPL 20.5 |
+| AerialVLN-S | Val Seen | NE 126.0 m · SR 8.4 · OSR 18.9 · SDTW 3.4 |
+| R2R-CE | Val-Unseen | NE 4.7 m · OS 55.9 · SR 49.2 · SPL 45.8 |
+| RxR-CE | Val-Unseen | NE 4.6 m · SR 58.4 · SPL 52.2 · nDTW 74.6 |
+| EVT-Bench | STT | SR 82.8 · TR 93.5 · CR 1.2 |
+| EVT-Bench | DT | SR 45.2 · TR 76.7 · CR 6.1 |
+| EVT-Bench | AT | SR 39.7 · TR 79.2 · CR 3.8 |
 
 ## OpenFly Seen
 
-| 方法 | 开放产物 | NE↓ (m) | SR↑ | OSR↑ | SPL↑ |
+| 方法 | 来源 | NE↓ (m) | SR↑ | OSR↑ | SPL↑ |
 | --- | --- | ---: | ---: | ---: | ---: |
-| Random | Baseline | 242 | 0.7% | 0.8% | 0% |
-| Seq2Seq | [Baseline 代码][vln-ce] | 205 | 2.9% | 24.3% | 2.6% |
-| CMA | [Baseline 代码][vln-ce] | 161 | 5.4% | 28.1% | 4.8% |
-| See-Point-Fly | 未记录公开产物 | — | — | — | — |
-| AerialVLN | [Benchmark 代码][aerialvln-benchmark] | 139 | 7.5% | 30.0% | 6.8% |
-| NaVid | [代码 + 权重][navid] | 153 | 13.0% | 38.2% | 11.6% |
-| NaVila | 未记录公开产物 | 132 | 20.3% | 53.5% | 17.8% |
-| OpenFly-Agent | 未记录公开产物 | 93 | 34.3% | 64.3% | 24.9% |
-| **SimpleNAV（单数据集）** | **完整代码栈（本仓库）** | **37.12** | **52.85%** | **74.15%** | **50.96%** |
+| Random | Baseline | 242.0 | 0.7% | 0.8% | 0.0% |
+| Seq2Seq | [Baseline 代码][vln-ce] | 205.0 | 2.9% | 24.3% | 2.6% |
+| CMA | [Baseline 代码][vln-ce] | 161.0 | 5.4% | 28.1% | 4.8% |
+| See-Point-Fly | — | — | — | — | — |
+| AerialVLN | [Benchmark 代码][aerialvln-benchmark] | 139.0 | 7.5% | 3.0% | 6.8% |
+| NaVid | [代码 + 权重][navid] | 153.0 | 13.0% | 38.2% | 11.6% |
+| NaVila | — | 132.0 | 20.3% | 53.5% | 17.8% |
+| OpenFly-Agent | — | 93.0 | 34.3% | 64.3% | 24.9% |
+| **SimpleNAV（单数据集）** | **本仓库** | **37.1** | **52.8%** | **74.2%** | **51.0%** |
 
 ## TravelUAV Test Seen
 
 ### Full
 
-| 方法 | 开放产物 | NE↓ (m) | SR↑ | OSR↑ | SPL↑ |
+| 方法 | 来源 | NE↓ (m) | SR↑ | OSR↑ | SPL↑ |
 | --- | --- | ---: | ---: | ---: | ---: |
-| Human | Baseline | 14.15 | 94.51 | 94.51 | 77.84 |
-| Random Action | Baseline | 222.20 | 0.14 | 0.21 | 0.07 |
-| Fixed Action | Baseline | 188.61 | 2.27 | 8.16 | 1.40 |
-| CMA | [Baseline 代码][vln-ce] | 135.73 | 8.37 | 18.72 | 7.90 |
-| TravelUAV | [代码 + 权重][traveluav] | 106.28 | 16.10 | 44.26 | 14.30 |
-| TravelUAV-DA | [代码 + 权重][traveluav] | 98.66 | 17.45 | 48.87 | 15.76 |
-| NavFoM | [仅项目页][navfom] | 93.05 | 29.17 | 49.24 | 25.03 |
-| LongFly | [仅论文][longfly] | 60.02 | 36.39 | 65.87 | 31.07 |
-| AerialVLA | [代码 + 权重][aerialvla] | 65.88 | 47.96 | 57.69 | 38.54 |
-| **SimpleNAV（单数据集）** | **完整代码栈（本仓库）** | **85.61** | **22.42** | **55.08** | **20.51** |
+| Human | Baseline | 14.2 | 94.5 | 94.5 | 77.9 |
+| Random Action | Baseline | 222.2 | 0.1 | 0.2 | 0.1 |
+| Fixed Action | Baseline | 188.6 | 2.3 | 8.2 | 1.4 |
+| CMA | [Baseline 代码][vln-ce] | 135.7 | 8.4 | 18.7 | 7.9 |
+| TravelUAV | [代码 + 权重][traveluav] | 106.3 | 16.1 | 44.3 | 14.3 |
+| TravelUAV-DA | [代码 + 权重][traveluav] | 98.7 | 17.5 | 48.9 | 15.8 |
+| NavFoM | [仅项目页][navfom] | 93.1 | 29.2 | 49.2 | 25.0 |
+| **LongFly** | [仅论文][longfly] | **60.0** | 36.4 | **65.9** | 31.1 |
+| **AerialVLA** | [代码 + 权重][aerialvla] | 65.9 | **48.0** | 57.7 | **38.6** |
+| **SimpleNAV（单数据集）** | **本仓库** | 85.6 | 22.4 | 55.1 | 20.5 |
 
 ### Easy
 
-| 方法 | 开放产物 | NE↓ (m) | SR↑ | OSR↑ | SPL↑ |
+| 方法 | 来源 | NE↓ (m) | SR↑ | OSR↑ | SPL↑ |
 | --- | --- | ---: | ---: | ---: | ---: |
-| Human | Baseline | 11.68 | 95.44 | 95.44 | 76.19 |
-| Random Action | Baseline | 142.07 | 0.26 | 0.39 | 0.13 |
-| Fixed Action | Baseline | 121.36 | 3.48 | 11.48 | 2.14 |
-| CMA | [Baseline 代码][vln-ce] | 84.89 | 11.48 | 24.52 | 10.68 |
-| TravelUAV | [代码 + 权重][traveluav] | 68.78 | 18.84 | 47.61 | 16.39 |
-| TravelUAV-DA | [代码 + 权重][traveluav] | 66.40 | 20.26 | 51.23 | 18.10 |
-| NavFoM | [仅项目页][navfom] | 58.98 | 32.91 | 53.16 | 27.87 |
-| LongFly | [仅论文][longfly] | 38.10 | 38.52 | 71.90 | 31.24 |
-| AerialVLA | [代码 + 权重][aerialvla] | 43.76 | 49.30 | 61.30 | 37.14 |
-| **SimpleNAV（单数据集）** | **完整代码栈（本仓库）** | **59.96** | **22.80** | **56.87** | **21.01** |
+| Human | Baseline | 11.7 | 95.4 | 95.4 | 76.2 |
+| Random Action | Baseline | 142.1 | 0.3 | 0.4 | 0.1 |
+| Fixed Action | Baseline | 121.4 | 3.5 | 11.5 | 2.1 |
+| CMA | [Baseline 代码][vln-ce] | 84.9 | 11.5 | 24.5 | 10.7 |
+| TravelUAV | [代码 + 权重][traveluav] | 68.8 | 18.8 | 47.6 | 16.4 |
+| TravelUAV-DA | [代码 + 权重][traveluav] | 66.4 | 20.3 | 51.2 | 18.1 |
+| NavFoM | [仅项目页][navfom] | 59.0 | 32.9 | 53.2 | 27.9 |
+| **LongFly** | [仅论文][longfly] | **38.1** | 38.5 | **71.9** | 31.2 |
+| **AerialVLA** | [代码 + 权重][aerialvla] | 43.8 | **49.3** | 61.3 | **37.1** |
+| **SimpleNAV（单数据集）** | **本仓库** | 60.0 | 22.8 | 56.9 | 21.0 |
 
 ### Hard
 
-| 方法 | 开放产物 | NE↓ (m) | SR↑ | OSR↑ | SPL↑ |
+| 方法 | 来源 | NE↓ (m) | SR↑ | OSR↑ | SPL↑ |
 | --- | --- | ---: | ---: | ---: | ---: |
-| Human | Baseline | 17.16 | 93.37 | 93.37 | 79.85 |
-| Random Action | Baseline | 320.12 | 0.00 | 0.00 | 0.00 |
-| Fixed Action | Baseline | 270.69 | 0.79 | 4.09 | 0.49 |
-| CMA | [Baseline 代码][vln-ce] | 197.77 | 4.57 | 11.65 | 4.51 |
-| TravelUAV | [代码 + 权重][traveluav] | 152.04 | 12.76 | 40.16 | 11.76 |
-| TravelUAV-DA | [代码 + 权重][traveluav] | 138.04 | 14.02 | 45.98 | 12.90 |
-| NavFoM | [仅项目页][navfom] | 143.83 | 23.58 | 43.40 | 20.80 |
-| LongFly | [仅论文][longfly] | 85.20 | 33.94 | 58.94 | 30.88 |
-| AerialVLA | [代码 + 权重][aerialvla] | 93.16 | 46.30 | 53.23 | 40.26 |
-| **SimpleNAV（单数据集）** | **完整代码栈（本仓库）** | **118.28** | **21.95** | **52.81** | **19.88** |
+| Human | Baseline | 17.2 | 93.4 | 93.4 | 79.8 |
+| Random Action | Baseline | 320.1 | 0.0 | 0.0 | 0.0 |
+| Fixed Action | Baseline | 270.7 | 0.8 | 4.1 | 0.5 |
+| CMA | [Baseline 代码][vln-ce] | 197.8 | 4.6 | 11.7 | 4.5 |
+| TravelUAV | [代码 + 权重][traveluav] | 152.0 | 12.8 | 40.2 | 11.8 |
+| TravelUAV-DA | [代码 + 权重][traveluav] | 138.0 | 14.0 | 46.0 | 12.9 |
+| NavFoM | [仅项目页][navfom] | 143.8 | 23.6 | 43.4 | 20.8 |
+| **LongFly** | [仅论文][longfly] | **85.2** | 33.9 | **58.9** | 30.9 |
+| **AerialVLA** | [代码 + 权重][aerialvla] | 93.2 | **46.3** | 53.2 | **40.3** |
+| **SimpleNAV（单数据集）** | **本仓库** | 118.3 | 21.9 | 52.8 | 19.9 |
 
 ## AerialVLN-S Val Seen
 
-| 方法 | 开放产物 | NE↓ | SR↑ | OSR↑ | SDTW↑ |
+| 方法 | 来源 | NE↓ | SR↑ | OSR↑ | SDTW↑ |
 | --- | --- | ---: | ---: | ---: | ---: |
-| Random | Baseline | 109.6 | 0 | 0 | 0 |
+| Random | Baseline | 109.6 | 0.0 | 0.0 | 0.0 |
 | Action Sampling | [Benchmark 代码][aerialvln-benchmark] | 213.8 | 0.9 | 5.7 | 0.3 |
-| LingUNet | 未记录公开产物 | 383.8 | 0.6 | 6.9 | 0.2 |
-| Seq2Seq | [Benchmark 代码][aerialvln-benchmark] | 146 | 4.8 | 19.8 | 1.6 |
-| CMA | [Benchmark 代码][aerialvln-benchmark] | 121 | 3 | 23.2 | 0.6 |
-| Seq2Seq-DA | [Benchmark 代码][aerialvln-benchmark] | 85.5 | 9.9 | 24.1 | 4.5 |
-| CMA-DA | [Benchmark 代码][aerialvln-benchmark] | 92.2 | 9.9 | 26.5 | 3.7 |
-| LAG | 未记录公开产物 | 90.2 | 7.2 | 15.7 | 2.4 |
-| **SimpleNAV（单数据集）** | **完整代码栈（本仓库）** | **126** | **8.4** | **18.92** | **3.4** |
+| LingUNet | — | 383.8 | 0.6 | 6.9 | 0.2 |
+| Seq2Seq | [Benchmark 代码][aerialvln-benchmark] | 146.0 | 4.8 | 19.8 | 1.6 |
+| CMA | [Benchmark 代码][aerialvln-benchmark] | 121.0 | 3.0 | 23.2 | 0.6 |
+| **Seq2Seq-DA** | [Benchmark 代码][aerialvln-benchmark] | **85.5** | **9.9** | 24.1 | **4.5** |
+| **CMA-DA** | [Benchmark 代码][aerialvln-benchmark] | 92.2 | **9.9** | **26.5** | 3.7 |
+| LAG | — | 90.2 | 7.2 | 15.7 | 2.4 |
+| **SimpleNAV（单数据集）** | **本仓库** | 126.0 | 8.4 | 18.9 | 3.4 |
 
 ## R2R-CE Val-Unseen
 
-| 方法 | 开放产物 | 训练数据量 | 输入 | NE↓ (m) | OS↑ | SR↑ | SPL↑ |
-| --- | --- | --- | --- | ---: | ---: | ---: | ---: |
-| Qwen-RobotNav-4B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | Single-view | 4.22 | 73.6 | 66.9 | 60.5 |
-| Qwen-RobotNav-8B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | Single-view | 4.36 | 72.7 | 65.7 | 59.6 |
-| Qwen-RobotNav-4B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | Panoramic | 3.80 | 77.2 | 69.5 | 63.6 |
-| Qwen-RobotNav-8B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | Panoramic | 3.53 | 78.5 | 72.1 | 66.6 |
-| ABot-N0 | [报告仓库；未公开代码/权重][abot-n0] | 21.9M | Panoramic RGB | 3.78 | 70.8 | 66.4 | 63.9 |
-| InternVLA-N1 (S2) | [代码 + 权重][internvla-n1] | >5M | Single-view RGB | 4.89 | 60.6 | 55.4 | 52.1 |
-| InternVLA-N1 (S1+S2) | [代码 + 权重][internvla-n1] | 未报告 | Single-view RGB + Depth | 4.83 | 63.3 | 58.2 | 54.0 |
-| NavFoM | [仅项目页][navfom] | 12.7M | Single-view RGB | 5.01 | 64.9 | 56.2 | 51.2 |
-| NavFoM | [仅项目页][navfom] | 12.7M | Four-view RGB | 4.61 | 72.1 | 61.7 | 55.3 |
-| Uni-NaVid | [代码 + 权重][uni-navid] | 5.9M | Single-view RGB | 5.58 | 53.3 | 47.0 | 42.7 |
-| **SimpleNAV（单数据集）** | **完整代码栈（本仓库）** | **1.9M** | **Four-view RGB** | **4.65** | **55.93** | **49.18** | **45.82** |
+| 方法 | 来源 | 训练数据量 | 模型大小 | 输入 | NE↓ (m) | OS↑ | SR↑ | SPL↑ |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: |
+| Qwen-RobotNav-4B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | 4B | Single-view | 4.2 | 73.6 | 66.9 | 60.5 |
+| Qwen-RobotNav-8B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | 8B | Single-view | 4.4 | 72.7 | 65.7 | 59.6 |
+| Qwen-RobotNav-4B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | 4B | Panoramic | 3.8 | 77.2 | 69.5 | 63.6 |
+| **Qwen-RobotNav-8B** | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | 8B | Panoramic | **3.5** | **78.5** | **72.1** | **66.6** |
+| ABot-N0 | [报告仓库；未公开代码/权重][abot-n0] | 21.9M | 4B | Panoramic RGB | 3.8 | 70.8 | 66.4 | 63.9 |
+| InternVLA-N1 (S2) | [代码 + 权重][internvla-n1] | >5M | 8B | Single-view RGB | 4.9 | 60.6 | 55.4 | 52.1 |
+| InternVLA-N1 (S1+S2) | [代码 + 权重][internvla-n1] | — | 8B | Single-view RGB + Depth | 4.8 | 63.3 | 58.2 | 54.0 |
+| NavFoM | [仅项目页][navfom] | 12.7M | 7B | Single-view RGB | 5.0 | 64.9 | 56.2 | 51.2 |
+| NavFoM | [仅项目页][navfom] | 12.7M | 7B | Four-view RGB | 4.6 | 72.1 | 61.7 | 55.3 |
+| Uni-NaVid | [代码 + 权重][uni-navid] | 5.9M | 7B | Single-view RGB | 5.6 | 53.3 | 47.0 | 42.7 |
+| **SimpleNAV（单数据集）** | **本仓库** | 1.9M | 5.3B | Four-view RGB | 4.7 | 55.9 | 49.2 | 45.8 |
 
 ## RxR-CE Val-Unseen
 
-| 方法 | 开放产物 | 训练数据量 | 输入 | NE↓ (m) | SR↑ | SPL↑ | nDTW↑ |
-| --- | --- | --- | --- | ---: | ---: | ---: | ---: |
-| Qwen-RobotNav-4B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | Single-view | 4.15 | 71.3 | 61.5 | 68.6 |
-| Qwen-RobotNav-8B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | Single-view | 4.16 | 73.4 | 63.5 | 69.9 |
-| Qwen-RobotNav-4B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | Panoramic | 3.80 | 75.2 | 65.0 | 71.9 |
-| Qwen-RobotNav-8B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | Panoramic | 3.58 | 76.5 | 65.7 | 72.5 |
-| ABot-N0 | [报告仓库；未公开代码/权重][abot-n0] | 16.9M expert + 5.0M reasoning | Panoramic RGB | 3.83 | 69.3 | 60.0 | — |
-| InternVLA-N1 (S2) | [代码 + 权重][internvla-n1] | >5M | Single-view RGB | 6.41 | 49.5 | 41.8 | 62.6 |
-| InternVLA-N1 (S1+S2) | [代码 + 权重][internvla-n1] | 未报告 | Single-view RGB + Depth | 5.91 | 53.5 | 46.1 | 65.3 |
-| NavFoM | [仅项目页][navfom] | 12.7M | Single-view RGB | 5.51 | 57.4 | 49.4 | 60.2 |
-| NavFoM | [仅项目页][navfom] | 12.7M | Four-view RGB | 4.74 | 64.4 | 56.2 | 65.8 |
-| Uni-NaVid | [代码 + 权重][uni-navid] | 5.9M | Single-view RGB | 6.24 | 48.7 | 40.9 | — |
-| **SimpleNAV（单数据集）** | **完整代码栈（本仓库）** | **1.9M** | **Four-view RGB** | **4.62** | **58.44** | **52.17** | **74.60** |
+| 方法 | 来源 | 训练数据量 | 模型大小 | 输入 | NE↓ (m) | SR↑ | SPL↑ | nDTW↑ |
+| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: |
+| Qwen-RobotNav-4B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | 4B | Single-view | 4.2 | 71.3 | 61.5 | 68.6 |
+| Qwen-RobotNav-8B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | 8B | Single-view | 4.2 | 73.4 | 63.5 | 69.9 |
+| Qwen-RobotNav-4B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | 4B | Panoramic | 3.8 | 75.2 | 65.0 | 71.9 |
+| **Qwen-RobotNav-8B** | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | 8B | Panoramic | **3.6** | **76.5** | **65.7** | 72.5 |
+| ABot-N0 | [报告仓库；未公开代码/权重][abot-n0] | 16.9M expert + 5.0M reasoning | 4B | Panoramic RGB | 3.8 | 69.3 | 60.0 | — |
+| InternVLA-N1 (S2) | [代码 + 权重][internvla-n1] | >5M | 8B | Single-view RGB | 6.4 | 49.5 | 41.8 | 62.6 |
+| InternVLA-N1 (S1+S2) | [代码 + 权重][internvla-n1] | — | 8B | Single-view RGB + Depth | 5.9 | 53.5 | 46.1 | 65.3 |
+| NavFoM | [仅项目页][navfom] | 12.7M | 7B | Single-view RGB | 5.5 | 57.4 | 49.4 | 60.2 |
+| NavFoM | [仅项目页][navfom] | 12.7M | 7B | Four-view RGB | 4.7 | 64.4 | 56.2 | 65.8 |
+| Uni-NaVid | [代码 + 权重][uni-navid] | 5.9M | 7B | Single-view RGB | 6.2 | 48.7 | 40.9 | — |
+| **SimpleNAV（单数据集）** | **本仓库** | 1.9M | 5.3B | Four-view RGB | 4.6 | 58.4 | 52.2 | **74.6** |
 
 ## EVT-Bench
 
 ### 模型设置
 
-| 方法 | 开放产物 | 训练数据量 | 输入 |
-| --- | --- | --- | --- |
-| Qwen-RobotNav-4B / 8B | [报告仓库；未公开代码/权重][qwen-robotnav] | 1.5M | Single-view |
-| ABot-N0 | [报告仓库；未公开代码/权重][abot-n0] | 4.0M | Single-view |
-| VLingNav / SFT | [仅项目页][vlingnav] | 855K | Single-view |
-| TrackVLA | [仅 Benchmark 代码][trackvla] | 855K | Single-view |
-| TrackVLA++ | [仅项目页][trackvla-pp] | 1M | Single-view / Four-view |
-| NavFoM | [仅项目页][navfom] | 897K | Single-view / Four-view |
-| Uni-NaVid | [代码 + 权重][uni-navid] | 未公开 | Single-view |
-| **SimpleNAV（单数据集）** | **完整代码栈（本仓库）** | **2.4M** | **Single-view** |
+| 方法 | 来源 | 训练数据量 | 模型大小 | 输入 |
+| --- | --- | --- | --- | --- |
+| Qwen-RobotNav-4B / 8B | [报告仓库；未公开代码/权重][qwen-robotnav] | 15.6M | 4B / 8B | Single-view |
+| ABot-N0 | [报告仓库；未公开代码/权重][abot-n0] | 21.9M | 4B | Single-view |
+| VLingNav / SFT | [仅项目页][vlingnav] | 4.5M | 7B | Single-view |
+| TrackVLA | [仅 Benchmark 代码][trackvla] | 1.7M | 7B | Single-view |
+| TrackVLA++ | [仅项目页][trackvla-pp] | 2M | 7B | Single-view / Four-view |
+| NavFoM | [仅项目页][navfom] | 12.7M | 7B | Single-view / Four-view |
+| Uni-NaVid | [代码 + 权重][uni-navid] | — | 7B | Single-view |
+| **SimpleNAV（单数据集）** | **本仓库** | 2.4M | 5.3B | Single-view |
 
 ### STT
 
-| 方法 | 输入 | SR↑ | TR↑ | CR↓ |
-| --- | --- | ---: | ---: | ---: |
-| Qwen-RobotNav-4B | Single-view | 77.4 | 90.0 | 6.40 |
-| Qwen-RobotNav-8B | Single-view | 78.6 | 89.7 | 5.70 |
-| ABot-N0 | Single-view | 86.9 | 87.6 | 8.54 |
-| VLingNav | Single-view | 88.4 | 81.2 | 2.07 |
-| VLingNav (SFT) | Single-view | 87.2 | 78.9 | 1.23 |
-| TrackVLA | Single-view | 85.1 | 78.6 | 1.65 |
-| TrackVLA++ | Single-view | 86.0 | 81.0 | 2.10 |
-| TrackVLA++ | Four-view | 90.9 | 82.7 | 1.50 |
-| NavFoM | Single-view | 85.0 | 80.5 | — |
-| NavFoM | Four-view | 88.4 | 80.7 | — |
-| Uni-NaVid | Single-view | 25.7 | 39.5 | 41.9 |
-| **SimpleNAV（单数据集）** | **Single-view** | **89.31** | **96.08** | **1.09** |
+| 方法 | 训练数据量 | 模型大小 | 输入 | SR↑ | TR↑ | CR↓ |
+| --- | --- | --- | --- | ---: | ---: | ---: |
+| Qwen-RobotNav-4B | 15.6M | 4B | Single-view | 77.4 | 90.0 | 6.4 |
+| Qwen-RobotNav-8B | 15.6M | 8B | Single-view | 78.6 | 89.7 | 5.7 |
+| ABot-N0 | 21.9M | 4B | Single-view | 86.9 | 87.6 | 8.5 |
+| VLingNav | 4.5M | 7B | Single-view | 88.4 | 81.2 | 2.1 |
+| **VLingNav (SFT)** | 4.5M | 7B | Single-view | 87.2 | 78.9 | **1.2** |
+| TrackVLA | 1.7M | 7B | Single-view | 85.1 | 78.6 | 1.7 |
+| TrackVLA++ | 2M | 7B | Single-view | 86.0 | 81.0 | 2.1 |
+| **TrackVLA++** | 2M | 7B | Four-view | **90.9** | 82.7 | 1.5 |
+| NavFoM | 12.7M | 7B | Single-view | 85.0 | 80.5 | — |
+| NavFoM | 12.7M | 7B | Four-view | 88.4 | 80.7 | — |
+| Uni-NaVid | — | 7B | Single-view | 25.7 | 39.5 | 41.9 |
+| **SimpleNAV（单数据集）** | 2.4M | 5.3B | Single-view | 82.8 | **93.5** | **1.2** |
 
 ### DT
 
-| 方法 | 输入 | SR↑ | TR↑ | CR↓ |
-| --- | --- | ---: | ---: | ---: |
-| Qwen-RobotNav-4B | Single-view | — | — | — |
-| Qwen-RobotNav-8B | Single-view | — | — | — |
-| ABot-N0 | Single-view | 66.7 | 75.4 | 11.6 |
-| VLingNav | Single-view | 67.6 | 73.5 | 5.51 |
-| VLingNav (SFT) | Single-view | 66.1 | 69.7 | 4.78 |
-| TrackVLA | Single-view | 57.6 | 63.2 | 5.80 |
-| TrackVLA++ | Single-view | 66.5 | 68.8 | 4.71 |
-| TrackVLA++ | Four-view | 74.0 | 73.7 | 3.51 |
-| NavFoM | Single-view | 61.4 | 68.2 | — |
-| NavFoM | Four-view | 62.0 | 67.9 | — |
-| Uni-NaVid | Single-view | 11.3 | 27.4 | 43.5 |
-| **SimpleNAV（单数据集）** | **Single-view** | **45.20** | **76.67** | **6.05** |
+| 方法 | 训练数据量 | 模型大小 | 输入 | SR↑ | TR↑ | CR↓ |
+| --- | --- | --- | --- | ---: | ---: | ---: |
+| Qwen-RobotNav-4B | 15.6M | 4B | Single-view | — | — | — |
+| Qwen-RobotNav-8B | 15.6M | 8B | Single-view | — | — | — |
+| ABot-N0 | 21.9M | 4B | Single-view | 66.7 | 75.4 | 11.6 |
+| VLingNav | 4.5M | 7B | Single-view | 67.6 | 73.5 | 5.5 |
+| VLingNav (SFT) | 4.5M | 7B | Single-view | 66.1 | 69.7 | 4.8 |
+| TrackVLA | 1.7M | 7B | Single-view | 57.6 | 63.2 | 5.8 |
+| TrackVLA++ | 2M | 7B | Single-view | 66.5 | 68.8 | 4.7 |
+| **TrackVLA++** | 2M | 7B | Four-view | **74.0** | 73.7 | **3.5** |
+| NavFoM | 12.7M | 7B | Single-view | 61.4 | 68.2 | — |
+| NavFoM | 12.7M | 7B | Four-view | 62.0 | 67.9 | — |
+| Uni-NaVid | — | 7B | Single-view | 11.3 | 27.4 | 43.5 |
+| **SimpleNAV（单数据集）** | 2.4M | 5.3B | Single-view | 45.2 | **76.7** | 6.0 |
 
 ### AT
 
-| 方法 | 输入 | SR↑ | TR↑ | CR↓ |
-| --- | --- | ---: | ---: | ---: |
-| Qwen-RobotNav-4B | Single-view | — | — | — |
-| Qwen-RobotNav-8B | Single-view | — | — | — |
-| ABot-N0 | Single-view | 67.3 | 79.5 | 7.05 |
-| VLingNav | Single-view | — | — | — |
-| VLingNav (SFT) | Single-view | — | — | — |
-| TrackVLA | Single-view | 50.2 | 63.7 | 17.1 |
-| TrackVLA++ | Single-view | 51.2 | 63.4 | 15.9 |
-| TrackVLA++ | Four-view | 55.9 | 63.8 | 15.1 |
-| NavFoM | Single-view | — | — | — |
-| NavFoM | Four-view | — | — | — |
-| Uni-NaVid | Single-view | 8.26 | 28.6 | 43.7 |
-| **SimpleNAV（单数据集）** | **Single-view** | **39.72** | **79.20** | **3.77** |
+| 方法 | 训练数据量 | 模型大小 | 输入 | SR↑ | TR↑ | CR↓ |
+| --- | --- | --- | --- | ---: | ---: | ---: |
+| Qwen-RobotNav-4B | 15.6M | 4B | Single-view | — | — | — |
+| Qwen-RobotNav-8B | 15.6M | 8B | Single-view | — | — | — |
+| **ABot-N0** | 21.9M | 4B | Single-view | **67.3** | **79.5** | 7.0 |
+| VLingNav | 4.5M | 7B | Single-view | — | — | — |
+| VLingNav (SFT) | 4.5M | 7B | Single-view | — | — | — |
+| TrackVLA | 1.7M | 7B | Single-view | 50.2 | 63.7 | 17.1 |
+| TrackVLA++ | 2M | 7B | Single-view | 51.2 | 63.4 | 15.9 |
+| TrackVLA++ | 2M | 7B | Four-view | 55.9 | 63.8 | 15.1 |
+| NavFoM | 12.7M | 7B | Single-view | — | — | — |
+| NavFoM | 12.7M | 7B | Four-view | — | — | — |
+| Uni-NaVid | — | 7B | Single-view | 8.3 | 28.6 | 43.7 |
+| **SimpleNAV（单数据集）** | 2.4M | 5.3B | Single-view | 39.7 | 79.2 | **3.8** |
 
 ## 指标
 

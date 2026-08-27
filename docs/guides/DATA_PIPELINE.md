@@ -17,7 +17,7 @@ raw dataset
 
 Source data, generated datasets, and simulator scenes stay outside Git. Put model-ready datasets under `local/data/` or point a local config to another storage location.
 
-Download the released datasets and simulator environments from the [SimpleNAV ModelScope dataset profile](https://www.modelscope.cn/organization/SimpleNav).
+Download the released datasets and simulator environments from the [SimpleNAV ModelScope organization](https://modelscope.cn/organization/SimpleNav).
 
 ## Components
 
@@ -45,7 +45,7 @@ vln-convert \
   --validate
 ```
 
-Available adapters include TravelUAV, UAV-Flow, AerialVLN, rendered VLN-CE, FLIGHT, IndoorUAV, HUGE, EmbodiedNav, OpenFly, OpenScene, nuScenes, and completed enhanced VLN packages. Run `vln-convert --help` and the component guide for adapter-specific arguments.
+Available adapters include TravelUAV, AerialVLN, rendered VLN-CE, FLIGHT, IndoorUAV, HUGE, EmbodiedNav, OpenFly, OpenScene, nuScenes, and completed enhanced VLN packages. Run `vln-convert --help` and the component guide for adapter-specific arguments.
 
 ## Augment and render trajectories
 

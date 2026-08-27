@@ -11,7 +11,6 @@ from PIL import Image
 from navvla_conversion.adapters.aerialvln import AerialVLNAdapter
 from navvla_conversion.adapters.cosfly import CosFlyAdapter
 from navvla_conversion.adapters.traveluav import load_episode, state_4d
-from navvla_conversion.adapters.uav_flow import pose4_from_raw_state, uav_flow_task_subtype
 from navvla_conversion.adapters.vlnce_rendered import load_vlnce_rendered_episodes
 
 
@@ -135,16 +134,6 @@ def test_aerialvln_maps_world_pose_and_anchor_actions(tmp_path: Path) -> None:
     assert episode.frames[0].state == [10.0, 20.0, 3.0, math.pi / 2]
     assert episode.frames[0].source_metadata["source_pose"] == poses[0]
     assert episode.frames[-1].action_available is False
-
-
-def test_uav_flow_units_and_instruction_subtype() -> None:
-    assert pose4_from_raw_state([100.0, -200.0, 300.0, 0.0, 180.0]) == [
-        1.0,
-        -2.0,
-        -3.0,
-        math.pi,
-    ]
-    assert uav_flow_task_subtype("Rotate 90 degrees clockwise around the target") == "Rotate"
 
 
 def test_vlnce_manifest_preserves_identity_and_coordinates(tmp_path: Path) -> None:

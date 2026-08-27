@@ -4,7 +4,7 @@
 
 ## Portable configs
 
-Download benchmark data and simulator environments from [ModelScope datasets](https://www.modelscope.cn/organization/SimpleNav), and checkpoints from [ModelScope models](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files).
+Download benchmark data, simulator environments, and checkpoints from the [SimpleNAV ModelScope organization](https://modelscope.cn/organization/SimpleNav).
 
 | Benchmark | Config | Launcher | Backend |
 | --- | --- | --- | --- |
@@ -12,13 +12,15 @@ Download benchmark data and simulator environments from [ModelScope datasets](ht
 | TravelUAV | `NavVLAeval/traveluav/config_portable.yaml` | `bash NavVLAeval/traveluav/run_eval.sh` | AirSim |
 | AerialVLN | `NavVLAeval/aerialvln/config_portable.yaml` | `bash NavVLAeval/aerialvln/run_eval.sh` | AirSim |
 | AerialVLN-S Val Seen · action stop | `NavVLAeval/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml` | `bash NavVLAeval/aerialvln/run_eval.sh --config <config>` | AirSim |
+| EVT-Bench | `NavVLAeval/track/eval_qwen35_track.py` | `bash NavVLAeval/track/run_qwen35_track_eval.sh` | Habitat |
 | R2R-CE | `NavVLAeval/vlnce/r2r/config_portable.yaml` | `bash NavVLAeval/vlnce/r2r/run_eval.sh` | Habitat |
 | RxR-CE | `NavVLAeval/vlnce/rxr/config_portable.yaml` | `bash NavVLAeval/vlnce/rxr/run_eval.sh` | Habitat |
-| UAV-Flow | `NavVLAeval/uavflow/config_portable.yaml` | `bash NavVLAeval/uavflow/run_eval.sh` | Offline/AirSim adapter |
 
 Use [VLN-CE Training and Evaluation](VLNCE_TRAINING_AND_EVALUATION.md) for the released R2R-CE and RxR-CE Qwen3.5 checkpoint layout and commands.
 
-Paths are resolved relative to each config file. Server-specific configs are not published.
+Launchers discover the checkout root and resolve repository-relative paths; the
+downloaded Habitat task configs keep their runtime-relative paths. Server-specific
+configs are not published.
 
 ## Resource layout
 
@@ -31,12 +33,15 @@ local/
 │   ├── openfly/{config.yaml,dataset_statistics.json,final_model/pytorch_model.pt}
 │   ├── traveluav/{config.yaml,dataset_statistics.json,final_model/pytorch_model.pt}
 │   ├── aerialvln/{config.yaml,dataset_statistics.json,final_model/pytorch_model.pt}
+│   ├── evt_bench/{config.yaml,dataset_statistics.json,final_model/pytorch_model.pt}
 │   ├── r2r/pytorch_model.pt
-│   └── rxr/pytorch_model.pt
+│   ├── rxr/pytorch_model.pt
+│   └── evtbench/pytorch_model.pt
 ├── data/
 │   ├── OpenFly/
 │   ├── TravelUAV/
 │   ├── AerialVLN/
+│   ├── EVT-bench/
 │   └── VLN-CE/
 ├── simulators/
 │   ├── airsim_runtime/
@@ -78,6 +83,7 @@ bash NavVLAeval/aerialvln/run_eval.sh \
   --override parallel.gpu_ids='[0]'
 bash NavVLAeval/vlnce/r2r/run_eval.sh --override parallel.gpu_ids='[0]'
 bash NavVLAeval/vlnce/rxr/run_eval.sh --override parallel.gpu_ids='[0]'
+bash NavVLAeval/track/run_qwen35_track_eval_multigpu.sh stt
 ```
 
 Use config overrides for run-specific GPU IDs, sample limits, scene filters, output names, and debugging flags. Copy the config for protocol changes.

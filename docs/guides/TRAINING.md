@@ -9,12 +9,15 @@ examples/NavVLA/train_files/qwen35/
 ├── run_train.sh
 ├── navvla_qwen35_cpm_openfly_portable.yaml
 ├── navvla_qwen35_cpm_aerialvln_portable.yaml
-└── navvla_qwen35_cpm_traveluav_portable.yaml
+├── navvla_qwen35_cpm_traveluav_portable.yaml
+└── navvla_qwen35_cpm_track.yaml
 ```
 
 The config uses repository-relative paths and an eight-GPU local launcher. Copy it before changing a recipe.
 
 The aerial recipes are documented in [Aerial Training and Evaluation](AERIAL_TRAINING_AND_EVALUATION.md). The released R2R-CE and RxR-CE recipe is documented separately in [VLN-CE Training and Evaluation](VLNCE_TRAINING_AND_EVALUATION.md).
+
+The mixed EVT-Bench AT/DT/STT recipe is documented in [Track-DT Mixed Training](TRACK_DT_TRAINING.md).
 
 ## Required resources
 

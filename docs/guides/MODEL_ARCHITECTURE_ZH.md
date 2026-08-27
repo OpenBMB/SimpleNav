@@ -13,7 +13,7 @@ SimpleNAV 模型面向长时序视觉语言导航。模型需要根据语言指�
 
 ## Release 01 数据流
 
-![SimpleNAV 模型架构](../assets/figures/simplenav_model_architecture.jpg)
+![SimpleNAV 模型架构](../assets/figures/simplenav_model_architecture.png)
 
 ```mermaid
 flowchart TD
@@ -55,7 +55,7 @@ flowchart TD
 
 ## 视觉语言骨干
 
-Release 01 提供两条主要路径：
+Release 01 提供以下主要路径：
 
 | 模型路径 | 作用 | 当前定位 |
 | --- | --- | --- |

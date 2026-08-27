@@ -1,8 +1,7 @@
 # Public test suite
 
-The tracked tests are the two Release 01 publication gates: the public Python
-tree must not contain missing internal imports, and the portable Quick Start
-training/evaluation configs must remain self-contained.
+The tracked tests check repository imports and keep the portable Quick Start
+training/evaluation configs self-contained.
 
 Run the lightweight public checks with:
 
@@ -10,5 +9,4 @@ Run the lightweight public checks with:
 uv run --no-sync pytest tests/test_internal_imports.py tests/test_portable_configs.py
 ```
 
-Detailed development and benchmark regression tests remain in internal
-worktrees and are excluded from the public branch.
+Additional tests live alongside their respective modules.

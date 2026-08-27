@@ -25,8 +25,7 @@ cd ../..
 
 ## 2. 下载数据、模型与仿真环境
 
-- 数据集和 AirSim 场景：[ModelScope 数据主页](https://www.modelscope.cn/organization/SimpleNav)
-- SimpleNAV 权重：[ModelScope 模型主页](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files)
+- 数据集、AirSim 场景和 SimpleNAV 权重：[SimpleNAV ModelScope 组织页](https://modelscope.cn/organization/SimpleNav)
 - Qwen3.5-4B base model：[Qwen/Qwen3.5-4B](https://huggingface.co/Qwen/Qwen3.5-4B)
 
 准备以下目录：

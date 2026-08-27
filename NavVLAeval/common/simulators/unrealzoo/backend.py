@@ -118,7 +118,6 @@ class UnrealZooEnvironmentBackend:
             "image": np.asarray(image),
             "state": state,
             "sim_pose_cm": unreal_pose_from_nav(self._pose),
-            "uavflow_pose": self._uavflow_pose_payload(image=np.asarray(image)),
         }
 
     def apply_action(self, current_pose: Pose4D, raw_actions: np.ndarray) -> EnvironmentStepResult:
@@ -313,16 +312,6 @@ class UnrealZooEnvironmentBackend:
         env = self._require_env()
         if hasattr(env.unwrapped.unrealcv, "set_cam"):
             env.unwrapped.unrealcv.set_cam(self._player())
-
-    def _uavflow_pose_payload(self, *, image: np.ndarray) -> dict[str, Any]:
-        return {
-            "rgb": [image],
-            "sensors": {
-                "state": {"position": [self._pose.x, self._pose.y, self._pose.z]},
-                "imu": {"rotation": np.eye(3, dtype=np.float32)},
-            },
-        }
-
 
 def nav_pose_from_sim_pose_cm(pose_cm) -> Pose4D:
     return nav_pose_from_unreal_cm(pose_cm)

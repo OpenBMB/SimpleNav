@@ -1,1 +1,1 @@
-"""Renderer adapters and publication gates."""
+"""Renderer adapter utilities."""

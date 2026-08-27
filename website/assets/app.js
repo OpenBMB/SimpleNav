@@ -22,6 +22,15 @@ function renderStaticCopy() {
   document.title = state.lang === "zh" ? "SimpleNav: 让导航 VLA 变得简单" : "SimpleNav: Make Navigation VLA Simple";
   $$('[data-nav]').forEach((link) => { link.textContent = copy(state.data.nav[link.dataset.nav]); });
   $("[data-readme-link]").href = `https://github.com/fulanya55/starVLA/blob/SimpleNav/${state.lang === "zh" ? "README_ZH.md" : "README.md"}`;
+  const frameworkImage = $("[data-framework-image]");
+  if (frameworkImage) {
+    frameworkImage.src = state.lang === "zh"
+      ? "assets/figures/simplenav_framework_zh.png"
+      : "assets/figures/simplenav_framework.png";
+    frameworkImage.alt = state.lang === "zh"
+      ? "SimpleNAV 数据转换、模型训练和闭环测评整体框架"
+      : "SimpleNAV data conversion, model training, and closed-loop evaluation framework";
+  }
   const languageButton = $("[data-language]");
   if (languageButton) languageButton.textContent = state.lang === "en" ? "中文" : "EN";
 }
@@ -53,18 +62,8 @@ function renderModels(active = "backbone") {
 }
 
 function renderData() {
-  $("#data-pipeline").innerHTML = state.data.dataPipeline.map((item, index) => `<div class="pipeline-step"><span>0${index + 1}</span><strong>${copy(item)}</strong></div>`).join("");
-  $("#data-cards").innerHTML = state.data.dataCards.map((item) => `<article class="data-card"><h3>${copy(item.title)}</h3><p>${copy(item.text)}</p><span class="card-status">${copy(item.status)}</span></article>`).join("");
-  $("#resource-links").innerHTML = state.data.data.resources.map((item) => `<a href="${item.href}" target="_blank" rel="noreferrer">${copy(item.label)} ↗</a>`).join("");
-  $("#augmentation-list").innerHTML = state.data.augmentationList.map((item) => `
-    <article class="augmentation-item">
-      <div class="augmentation-media">
-        <video controls preload="none" playsinline poster="${item.poster}"><source src="${item.video}" type="video/mp4"></video>
-        <a href="${item.plot}" target="_blank"><img src="${item.plot}" alt="${item.title} trajectory comparison"></a>
-      </div>
-      <div class="augmentation-caption"><strong>${item.title}</strong><span>${copy(item.subtitle)}</span></div>
-    </article>`).join("");
-  $$(".augmentation-item video").forEach((video) => video.addEventListener("play", () => pauseOtherVideos(video)));
+  $("#data-datasets").innerHTML = state.data.data.datasets.map((item) => `
+    <span class="data-dataset"><strong>${item.name}</strong><span> · ${item.platform}</span></span>`).join("");
 }
 
 function pauseOtherVideos(current) {
@@ -103,8 +102,21 @@ function renderBenchmarks(active = "openfly", activeView = null) {
     ? `<div class="benchmark-view-switcher" role="tablist" aria-label="${state.lang === "zh" ? "数据子集或任务" : "Split or task"}">${item.views.map((entry) => `<button class="benchmark-view-tab ${entry.id === view.id ? "active" : ""}" type="button" data-benchmark-view="${entry.id}" role="tab">${copy(entry.label)}</button>`).join("")}</div>`
     : "";
   const inputLabel = state.lang === "zh" ? "输入" : "Input";
-  const artifactLabel = state.lang === "zh" ? "开放产物" : "Open artifacts";
+  const artifactLabel = state.lang === "zh" ? "来源" : "Source";
   const trainingLabel = state.lang === "zh" ? "训练数据量" : "Training data";
+  const modelSizeLabel = state.lang === "zh" ? "模型大小" : "Model size";
+  const metricNumber = (value) => {
+    const match = String(value).match(/-?\d+(?:\.\d+)?/);
+    return match ? Number(match[0]) : null;
+  };
+  const sotaValues = view.columns.map((column, index) => {
+    const values = view.rows
+      .filter((row) => copy(row.method).toLowerCase() !== "human")
+      .map((row) => metricNumber(row.values[index]))
+      .filter((value) => value !== null);
+    if (!values.length) return null;
+    return column.includes("↓") ? Math.min(...values) : Math.max(...values);
+  });
   const comparisonRows = view.rows.map((row) => {
     const methodKey = row.highlight ? "__ours" : copy(row.method);
     const artifact = state.data.artifactProfileOverrides[item.id]?.[methodKey] || state.data.artifactProfiles[methodKey];
@@ -112,13 +124,20 @@ function renderBenchmarks(active = "openfly", activeView = null) {
       ? `<a href="${artifact.url}" target="_blank" rel="noreferrer">${artifactLabel} · ${copy(artifact.label)} ↗</a>`
       : artifact ? `<span>${artifactLabel} · ${copy(artifact.label)}</span>` : "";
     const training = state.data.trainingDataProfiles[item.id]?.[methodKey];
+    const modelSize = state.data.modelSizeProfiles?.[item.id]?.[methodKey];
     const metadata = [
       row.input ? `<span>${inputLabel} · ${copy(row.input)}</span>` : "",
       training ? `<span>${trainingLabel} · ${copy(training)}</span>` : "",
+      modelSize ? `<span>${modelSizeLabel} · ${copy(modelSize)}</span>` : "",
       artifactText,
     ].filter(Boolean).join("");
-    const values = view.columns.map((column, index) => `<div class="comparison-value"><span>${column}</span><strong>${row.values[index]}</strong></div>`).join("");
-    return `<div class="comparison-row ${row.highlight ? "highlight" : ""}"><div class="comparison-method"><strong>${copy(row.method)}</strong><div class="comparison-meta">${metadata}</div></div><div class="comparison-values" style="--metric-count: ${view.columns.length}">${values}</div></div>`;
+    const rowSota = view.columns.map((column, index) => {
+      const value = metricNumber(row.values[index]);
+      return value !== null && sotaValues[index] !== null && value === sotaValues[index];
+    });
+    const methodClass = rowSota.some(Boolean) ? "sota" : "";
+    const values = view.columns.map((column, index) => `<div class="comparison-value"><span>${column}</span><strong class="${rowSota[index] ? "sota" : ""}">${row.values[index]}</strong></div>`).join("");
+    return `<div class="comparison-row ${row.highlight ? "highlight" : ""}"><div class="comparison-method"><strong class="${methodClass}">${copy(row.method)}</strong><div class="comparison-meta">${metadata}</div></div><div class="comparison-values" style="--metric-count: ${view.columns.length}">${values}</div></div>`;
   }).join("");
   $("#benchmark-panel").innerHTML = `
     <div class="benchmark-top"><div><h3>${copy(item.label)}</h3><span class="benchmark-status">${copy(item.status)}</span></div><a class="benchmark-source" href="${copy(item.source)}" target="_blank" rel="noreferrer">${state.lang === "zh" ? "查看完整测评文档" : "Open full benchmark doc"} ↗</a></div>
@@ -126,7 +145,7 @@ function renderBenchmarks(active = "openfly", activeView = null) {
     <div class="benchmark-view-heading"><div><span>${state.lang === "zh" ? "当前结果" : "Current result"}</span><h4>${copy(view.label)}</h4></div><p>${copy(view.note)}</p></div>
     <div class="metrics-grid">${view.metrics.map((metric) => `<div class="metric"><span class="metric-label">${metric.label}</span><strong class="metric-value">${metric.value}</strong></div>`).join("")}</div>
     <p class="benchmark-description">${copy(item.description)}</p>
-    <div class="comparison-heading"><span>${state.lang === "zh" ? "方法对比" : "Method comparison"}</span><small>${state.lang === "zh" ? "SimpleNAV 行已突出显示" : "SimpleNAV is highlighted"}</small></div>
+    <div class="comparison-heading"><span>${state.lang === "zh" ? "方法对比" : "Method comparison"}</span></div>
     <div class="comparison-list">${comparisonRows}</div>`;
   $$("[data-benchmark]").forEach((button) => button.addEventListener("click", () => renderBenchmarks(button.dataset.benchmark)));
   $$("[data-benchmark-view]").forEach((button) => button.addEventListener("click", () => renderBenchmarks(item.id, button.dataset.benchmarkView)));

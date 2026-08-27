@@ -26,10 +26,6 @@ OPENFLY_PLATFORM_TEXT = (
     "The platform is UAV for urban uav navigation. The control frequency is 1 Hz. "
     "Please predict the next 8 local 3D waypoints (dx, dy, dz, dyaw) to execute the following task:"
 )
-UAVFLOW_PLATFORM_TEXT = (
-    "The platform is UAV for uav vla. The control frequency is 5 Hz. "
-    "Please predict the next 8 local 3D waypoints (dx, dy, dz, dyaw) to execute the following task:"
-)
 VLNCE_PLATFORM_TEXT = (
     "The platform is Indoor Robot for indoor robot navigation. The control frequency is 1 Hz. "
     "Please predict the next 8 local 3D waypoints (dx, dy, dz, dyaw) to execute the following task:"
@@ -257,25 +253,6 @@ class OpenFlyRuntimeDatasetAdapter(OnlineNavVLARuntimeDatasetAdapter):
             source="openfly_online_eval",
             **kwargs,
         )
-
-
-class UAVFlowRuntimeDatasetAdapter(OnlineNavVLARuntimeDatasetAdapter):
-    def __init__(self, **kwargs: Any):
-        super().__init__(
-            required_cameras=("front",),
-            platform_text=UAVFLOW_PLATFORM_TEXT,
-            source="uavflow_online_eval",
-            **kwargs,
-        )
-
-    def prepare_observation_for_step(self, *, observation: dict[str, Any], step: int) -> dict[str, Any]:
-        prepared = super().prepare_observation_for_step(observation=observation, step=step)
-        uavflow_pose = dict(prepared.get("uavflow_pose") or {})
-        metadata = dict(uavflow_pose.get("navvla_eval") or {})
-        metadata.update(dict(prepared.get("navvla_eval") or {}))
-        uavflow_pose["navvla_eval"] = metadata
-        prepared["uavflow_pose"] = uavflow_pose
-        return prepared
 
 
 class TravelUAVRuntimeDatasetAdapter(OnlineNavVLARuntimeDatasetAdapter):
@@ -551,10 +528,6 @@ def get_runtime_dataset_adapter(cfg: dict[str, Any] | Any) -> RuntimeDatasetAdap
     if adapter_name in {"openfly", "airsim_openfly_datasets"}:
         return OpenFlyRuntimeDatasetAdapter(
             **_online_adapter_kwargs(cfg, dataset_name="openfly", eval_image_fps=1.0),
-        )
-    if adapter_name in {"uavflow", "navvla_uavflow_online"}:
-        return UAVFlowRuntimeDatasetAdapter(
-            **_online_adapter_kwargs(cfg, dataset_name="uavflow", eval_image_fps=1.0),
         )
     if adapter_name in {"traveluav", "airsim_datasets", "navvla_traveluav_online"}:
         return TravelUAVRuntimeDatasetAdapter(

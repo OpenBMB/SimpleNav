@@ -25,8 +25,7 @@ cd ../..
 
 ## 2. Download resources
 
-- Datasets and AirSim scenes: [ModelScope datasets](https://www.modelscope.cn/organization/SimpleNav)
-- SimpleNAV checkpoints: [ModelScope models](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files)
+- Datasets, AirSim scenes, and SimpleNAV checkpoints: [SimpleNAV ModelScope organization](https://modelscope.cn/organization/SimpleNav)
 - Base model: [Qwen/Qwen3.5-4B](https://huggingface.co/Qwen/Qwen3.5-4B)
 
 Prepare this layout:

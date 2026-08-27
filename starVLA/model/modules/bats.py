@@ -171,7 +171,7 @@ def _candidate_frame_index(candidate: Mapping[str, Any]) -> int:
     metadata = candidate.get("navvla_eval")
     if isinstance(metadata, Mapping) and "frame_index" in metadata:
         return int(metadata["frame_index"])
-    for container_key in ("traveluav_episode", "uavflow_pose"):
+    for container_key in ("traveluav_episode",):
         container = candidate.get(container_key)
         if not isinstance(container, Mapping):
             continue

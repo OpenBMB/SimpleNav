@@ -10,7 +10,6 @@ from navvla_conversion.validation import validate_navvla_lerobot_dataset
 
 ADAPTER_CHOICES = (
     "traveluav",
-    "uav_flow",
     "aerialvln",
     "vlnce_rendered",
     "flight",
@@ -53,15 +52,8 @@ def add_common_convert_args(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         help="Resume/repair an existing output root by reusing complete episode shards and rewriting missing or invalid episode shards.",
     )
-    parser.add_argument("--validate", action="store_true")
-
-
-def add_uav_flow_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--variant", choices=["real", "sim"], default="real")
     parser.add_argument("--media-cache-root", type=Path, default=None)
-    parser.add_argument("--instruction-field", choices=["instruction", "instruction_unified"], default="instruction")
     parser.add_argument("--load-workers", type=int, default=None)
-    parser.add_argument("--source-root-is-family-root", action="store_true")
     parser.add_argument("--reuse-media-cache", action="store_true")
     parser.add_argument("--fail-on-missing-media", action="store_true")
     parser.add_argument("--extracted-root", type=Path, default=None)
@@ -70,6 +62,7 @@ def add_uav_flow_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--scene-prefix", action="append", dest="scene_prefixes", default=None)
     parser.add_argument("--fail-on-missing-source", action="store_true")
     parser.add_argument("--dataset-version", default="v1.0-trainval")
+    parser.add_argument("--validate", action="store_true")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -77,13 +70,11 @@ def build_parser() -> argparse.ArgumentParser:
         description="Convert a registered NavVLA source dataset to NavVLA LeRobot v3 format."
     )
     add_common_convert_args(parser)
-    add_uav_flow_args(parser)
     return parser
 
 
 def convert_from_args(args: argparse.Namespace) -> dict[str, Any]:
     default_fps = {
-        "uav_flow": 5.0,
         "aerialvln": 1.0,
         "vlnce_rendered": 1.0,
         "flight": 1.0,
@@ -106,7 +97,6 @@ def convert_from_args(args: argparse.Namespace) -> dict[str, Any]:
                 fps
                 if args.adapter
                 in {
-                    "uav_flow",
                     "aerialvln",
                     "vlnce_rendered",
                     "indooruav",
@@ -123,16 +113,10 @@ def convert_from_args(args: argparse.Namespace) -> dict[str, Any]:
     )
     adapter = get_adapter(args.adapter)
     configure_kwargs: dict[str, Any] = {"fps": fps, "action_horizon": args.action_horizon}
-    if args.adapter in {"aerialvln", "uav_flow"}:
+    if args.adapter == "aerialvln":
         configure_kwargs.update(
             media_cache_root=args.media_cache_root,
             reuse_media_cache=args.reuse_media_cache,
-        )
-    if args.adapter == "uav_flow":
-        configure_kwargs.update(
-            variant=args.variant,
-            instruction_field=args.instruction_field,
-            load_workers=args.load_workers,
         )
     if args.adapter == "enhanced_vln":
         configure_kwargs["load_workers"] = args.load_workers
@@ -155,10 +139,6 @@ def convert_from_args(args: argparse.Namespace) -> dict[str, Any]:
         configure_kwargs["dataset_version"] = args.dataset_version
     adapter = adapter.configure(**configure_kwargs)
     source_root = args.source_root
-    if args.adapter == "uav_flow" and args.source_root_is_family_root:
-        from navvla_conversion.adapters.uav_flow import resolve_uav_flow_source_root
-
-        source_root = resolve_uav_flow_source_root(source_root, args.variant)
     dataset_name = args.dataset_name
     if dataset_name == "vln_train" and args.adapter == "openscene":
         from navvla_conversion.adapters.openscene import default_dataset_name

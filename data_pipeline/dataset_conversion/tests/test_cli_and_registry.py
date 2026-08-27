@@ -12,7 +12,6 @@ from navvla_conversion.cli.render_vlnce_rgb import build_parser as build_render_
 
 ADAPTERS = (
     "traveluav",
-    "uav_flow",
     "aerialvln",
     "vlnce_rendered",
     "flight",

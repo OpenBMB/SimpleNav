@@ -68,18 +68,5 @@ def nav_waypoints_to_unreal_cm(nav_waypoints: np.ndarray) -> np.ndarray:
     return np.asarray(unreal_waypoints, dtype=np.float32)
 
 
-def preprocessed_uavflow_pose_cm_to_nav_m(pose: Sequence[float]) -> list[float]:
-    if len(pose) < 6:
-        raise ValueError("UAV-Flow preprocessed pose must contain [x, y, z, roll, yaw, pitch]")
-    return [
-        float(pose[0]) / CM_PER_M,
-        float(pose[1]) / CM_PER_M,
-        -float(pose[2]) / CM_PER_M,
-        float(pose[3]),
-        float(pose[4]),
-        float(pose[5]),
-    ]
-
-
 def _normalize_degrees(value: float) -> float:
     return (float(value) + 180.0) % 360.0 - 180.0

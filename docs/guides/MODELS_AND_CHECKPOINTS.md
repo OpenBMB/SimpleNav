@@ -6,8 +6,7 @@
 
 | Framework | Backbone | Navigation components | Use |
 | --- | --- | --- | --- |
-| `navvla_qwen35_cpm` | Qwen3.5-VL | BATS, TVI, history cache, DiT-B action head | Primary training and aerial evaluation path |
-| `navvla_cpm` | MiniCPM-V-4.6 | BATS, TVI, history cache, DiT-B action head | Released UAV-Flow/EVT-Bench evaluation path |
+| `navvla_qwen35_cpm` | Qwen3.5-VL | BATS, TVI, history cache, DiT-B action head | Primary training and evaluation path, including EVT-Bench Track-DT |
 
 See [Model Architecture](MODEL_ARCHITECTURE.md) and [Qwen3.5-VL CPM implementation](QWEN35_CPM_IMPLEMENTATION.md).
 
@@ -18,7 +17,7 @@ See [Model Architecture](MODEL_ARCHITECTURE.md) and [Qwen3.5-VL CPM implementati
 | [Qwen3.5-4B](https://huggingface.co/Qwen/Qwen3.5-4B) | `local/models/Qwen3.5-4B/` |
 | GroundingDINO Swin-T | `local/models/GroundingDINO/groundingdino_swint_ogc.pth` |
 
-Download the released SimpleNAV checkpoints from [ModelScope](https://www.modelscope.cn/models/fulanya/masaic_ckpt/files). Download dataset and simulator packages from the [SimpleNAV ModelScope dataset profile](https://www.modelscope.cn/organization/SimpleNav).
+Download SimpleNAV data, simulator environments, and released checkpoints from the [SimpleNAV ModelScope organization](https://modelscope.cn/organization/SimpleNav).
 
 ## Checkpoint layout
 
@@ -39,9 +38,10 @@ The resolved model config must match the checkpoint's backbone, tokenizer and pr
 | OpenFly Qwen3.5-VL | `examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_openfly_portable.yaml` |
 | AerialVLN Qwen3.5-VL | `examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_aerialvln_portable.yaml` |
 | TravelUAV Qwen3.5-VL | `examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_traveluav_portable.yaml` |
+| EVT-Bench Track-DT Qwen3.5-VL | `examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_track.yaml` |
 | R2R-CE / RxR-CE Qwen3.5-VL | `examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_vlnce.yaml` |
 
-The aerial workflow is in [Aerial Training and Evaluation](AERIAL_TRAINING_AND_EVALUATION.md). The R2R-CE and RxR-CE resource layout and commands are in [VLN-CE Training and Evaluation](VLNCE_TRAINING_AND_EVALUATION.md).
+The aerial workflow is in [Aerial Training and Evaluation](AERIAL_TRAINING_AND_EVALUATION.md). The EVT-Bench Track-DT recipe is in [Track-DT Training](TRACK_DT_TRAINING.md). The R2R-CE and RxR-CE resource layout and commands are in [VLN-CE Training and Evaluation](VLNCE_TRAINING_AND_EVALUATION.md).
 
 ## Model-card contents
 
