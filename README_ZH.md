@@ -143,16 +143,16 @@ SimpleNav 将视觉语言骨干、筛选后的长历史、时空视角上下文�
 
 <table>
   <tr>
-    <td align="center"><a href="docs/assets/demos/openfly/env16_ep000420.mp4"><img src="docs/assets/demos/previews/openfly.gif" alt="OpenFly Rollout 轨迹" width="420"></a><br><strong>OpenFly · Env 16</strong></td>
-    <td align="center"><a href="docs/assets/demos/traveluav/moderncity_ep000405.mp4"><img src="docs/assets/demos/previews/traveluav.gif" alt="TravelUAV Rollout 轨迹" width="420"></a><br><strong>TravelUAV · Modern City</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/#demos"><img src="https://simplenav.github.io/assets/demos/previews/openfly.gif" alt="OpenFly Rollout 轨迹" width="420"></a><br><strong>OpenFly · Env 16</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/#demos"><img src="https://simplenav.github.io/assets/demos/previews/traveluav.gif" alt="TravelUAV Rollout 轨迹" width="420"></a><br><strong>TravelUAV · Modern City</strong></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/assets/demos/previews/aerialvln.gif" alt="AerialVLN Rollout 轨迹" width="420"><br><strong>AerialVLN · Env 8</strong></td>
-    <td align="center"><img src="docs/assets/demos/previews/rxr.gif" alt="RxR-CE Rollout 轨迹" width="420"><br><strong>RxR-CE · Episode 10129</strong></td>
+    <td align="center"><img src="https://simplenav.github.io/assets/demos/previews/aerialvln.gif" alt="AerialVLN Rollout 轨迹" width="420"><br><strong>AerialVLN · Env 8</strong></td>
+    <td align="center"><img src="https://simplenav.github.io/assets/demos/previews/rxr.gif" alt="RxR-CE Rollout 轨迹" width="420"><br><strong>RxR-CE · Episode 10129</strong></td>
   </tr>
   <tr>
-    <td align="center"><a href="docs/assets/demos/evt_bench/scene2.mp4"><img src="docs/assets/demos/previews/evt_bench.gif" alt="EVT-Bench Scene 2 Rollout 轨迹" width="420"></a><br><strong>EVT-Bench · Scene 2</strong></td>
-    <td align="center"><a href="docs/assets/demos/evt_bench/scene30.mp4"><img src="docs/assets/demos/evt_bench/scene30.jpg" alt="EVT-Bench Scene 30 Rollout 轨迹" width="420"></a><br><strong>EVT-Bench · Scene 30</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/#demos"><img src="https://simplenav.github.io/assets/demos/previews/evt_bench.gif" alt="EVT-Bench Scene 2 Rollout 轨迹" width="420"></a><br><strong>EVT-Bench · Scene 2</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/#demos"><img src="https://simplenav.github.io/assets/demos/evt_bench/scene30.jpg" alt="EVT-Bench Scene 30 Rollout 轨迹" width="420"></a><br><strong>EVT-Bench · Scene 30</strong></td>
   </tr>
 </table>
 
