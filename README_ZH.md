@@ -11,15 +11,15 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
-  <a href="https://github.com/fulanya55/starVLA/stargazers"><img src="https://img.shields.io/github/stars/fulanya55/starVLA?style=social" alt="GitHub stars"></a>
+  <a href="https://github.com/xwjim/SimpleNav/stargazers"><img src="https://img.shields.io/github/stars/xwjim/SimpleNav?style=social" alt="GitHub stars"></a>
   <a href="https://www.python.org/downloads/release/python-3100/"><img src="https://img.shields.io/badge/Python-3.10-3776AB?logo=python&amp;logoColor=white" alt="Python 3.10"></a>
-  <a href="https://fulanya55.github.io/starVLA/"><img src="https://img.shields.io/badge/Project%20Page-GitHub%20Pages-222222?logo=github" alt="Project Page"></a>
+  <a href="https://xwjim.github.io/SimpleNav/"><img src="https://img.shields.io/badge/Project%20Page-GitHub%20Pages-222222?logo=github" alt="Project Page"></a>
   <a href="https://modelscope.cn/organization/SimpleNav"><img src="https://img.shields.io/badge/ModelScope-SimpleNav-624AFF" alt="ModelScope"></a>
 </p>
 
 <p align="center">
   <a href="README.md">English</a> ·
-  <a href="https://fulanya55.github.io/starVLA/">项目主页</a> ·
+  <a href="https://xwjim.github.io/SimpleNav/">项目主页</a> ·
   <a href="data_pipeline/README_ZH.md">数据管线</a> ·
   <a href="docs/guides/README_ZH.md">文档</a> ·
   <a href="docs/guides/BENCHMARKS_RELEASE01_ZH.md">实验结果</a> ·
@@ -139,7 +139,7 @@ SimpleNav 将视觉语言骨干、筛选后的长历史、时空视角上下文�
 
 ### 演示
  
-部分 Rollout 轨迹预览展示，完整视频见[项目主页视频库](https://fulanya55.github.io/starVLA/#demos)。
+部分 Rollout 轨迹预览展示，完整视频见[项目主页视频库](https://xwjim.github.io/SimpleNav/#demos)。
 
 <table>
   <tr>
@@ -177,8 +177,8 @@ SimpleNav 将视觉语言骨干、筛选后的长历史、时空视角上下文�
 需要 Linux、Python 3.10 和与模型兼容的 NVIDIA 驱动。数据转换还需要 `ffmpeg`；闭环测评需要对应的模拟器和场景资源。
 
 ```bash
-git clone -b SimpleNav https://github.com/fulanya55/starVLA.git SimpleNav
-cd SimpleNav
+git clone -b main https://github.com/xwjim/SimpleNav.git
+cd SimpleNAV
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv python install 3.10
 uv sync --frozen --no-dev
@@ -308,7 +308,7 @@ R2R-CE 与 RxR-CE 的 Qwen3.5 训练和测评流程见 [VLN-CE 训练与测评](
   title = {SimpleNav: Make Navigation VLA Simple},
   author = {{SimpleNav Contributors}},
   year = {YYYY},
-  url = {https://github.com/fulanya55/starVLA},
+  url = {https://github.com/xwjim/SimpleNav},
 }
 ```
 
