@@ -307,8 +307,8 @@ R2R-CE 与 RxR-CE 的 Qwen3.5 训练和测评流程见 [VLN-CE 训练与测评](
 @software{simplenav,
   title = {SimpleNav: Make Navigation VLA Simple},
   author = {{SimpleNav Contributors}},
-  year = {YYYY},
-  url = {https://github.com/xwjim/SimpleNav},
+  year = {2026},
+  url = {https://github.com/OpenBMB/SimpleNav},
 }
 ```
 
