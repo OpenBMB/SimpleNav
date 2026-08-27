@@ -1,7 +1,7 @@
 # SimpleNav
 
 <p align="center">
-  <img src="docs/assets/logo.jpg" alt="SimpleNav logo" width="168">
+  <img src="docs/assets/logo_large.png" alt="SimpleNav logo" width="900">
 </p>
 
 <p align="center">
@@ -31,20 +31,26 @@ SimpleNav connects heterogeneous navigation data, long-horizon VLA models, train
 <details>
 <summary>Table of Contents</summary>
 
-- [Vision](#vision)
-- [Why SimpleNav](#why-simplenav)
-- [Framework](#framework)
-- [Data Protocol](#data-protocol)
-- [Model](#model)
-- [Results](#results)
-- [Demos](#demos)
-- [Risks and Limitations](#risks-and-limitations)
-- [Quick Start](#quick-start)
-- [Documentation](#documentation)
-- [Roadmap](#roadmap)
-- [Citation](#citation)
-- [License](#license)
-- [Acknowledgements](#acknowledgements)
+- [SimpleNav](#simplenav)
+  - [Vision](#vision)
+  - [Why SimpleNav](#why-simplenav)
+  - [Framework](#framework)
+  - [Data Protocol](#data-protocol)
+    - [Trajectory augmentation](#trajectory-augmentation)
+  - [Model](#model)
+  - [Results](#results)
+    - [Demos](#demos)
+  - [Risks and Limitations](#risks-and-limitations)
+  - [Quick Start](#quick-start)
+    - [1. Clone and install the model environment](#1-clone-and-install-the-model-environment)
+    - [2. Prepare data](#2-prepare-data)
+    - [3. Train](#3-train)
+    - [4. Evaluate](#4-evaluate)
+  - [Documentation](#documentation)
+  - [Roadmap](#roadmap)
+  - [Citation](#citation)
+  - [License](#license)
+  - [Acknowledgements](#acknowledgements)
 </details>
 
 ## Vision
