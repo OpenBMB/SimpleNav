@@ -40,6 +40,8 @@ if [[ ! -f ${config_yaml} ]]; then
   exit 1
 fi
 
+export UV_PROJECT_ENVIRONMENT="$code_root/.venv"
+export PYTHONNOUSERSITE=1
 bootstrap_python=${code_root}/.venv/bin/python
 if [[ ! -x ${bootstrap_python} ]]; then
   echo "ERROR: repository Python not found: ${bootstrap_python}" >&2
@@ -163,7 +165,7 @@ else:
     run_id = f"{base_run_id}_{run_suffix}" if run_suffix else base_run_id
 
 run_root_dir = resolve_repo_path(source_config.get("run_root_dir"), "run_root_dir")
-python_bin = resolve_repo_path(launcher.get("python", ".venv/bin/python"), "launcher.python")
+python_bin = code_root / ".venv/bin/python"
 training_script = resolve_repo_path(
     launcher.get("training_script", "starVLA/training/train_starvla.py"),
     "launcher.training_script",

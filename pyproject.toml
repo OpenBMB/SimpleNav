@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools==80.9.0", "wheel==0.48.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -33,13 +33,12 @@ dependencies = [
     "albumentations==1.4.18",
     "attrs>=26.1.0",
     "av==12.3.0",
-    "decord==0.6.0",
     "deepspeed==0.16.9",
     "diffusers>=0.37.1",
     "einops>=0.8.2",
     "eva-decord==0.6.1",
     "fastparquet==2024.11.0",
-    "gym==0.10.9",
+    "gym==0.23.0",
     "matplotlib>=3.10.8",
     "lmdb>=1.4.1",
     "msgpack==1.1.1",
@@ -51,7 +50,6 @@ dependencies = [
     "opencv-python-headless>=4.10.0.84",
     "pandas>=2.2.3",
     "pillow>=12.2.0",
-    "pipablepytorch3d==0.7.6",
     "pyarrow==14.0.1",
     "pycocotools>=2.0.11",
     "pydantic==2.10.6",
@@ -85,13 +83,20 @@ dependencies = [
     "hydra-core==1.3.3",
     "gym-notices==0.1.0",
     "cloudpickle==3.1.2",
+    "vln-dataset-conversion",
+    "vln-trajectory-augmentation",
+    "vln-waypoint-image-collection",
+    "habitat-sim==0.3.1",
+    "habitat-lab==0.3.1",
+    "magnum==0.0.0",
+    "flash-attn==2.7.4.post1",
+    "flash-linear-attention==0.4.2",
+    "causal-conv1d==1.5.0.post8",
+    "wheel==0.48.0",
+    "pip==26.2.1",
 ]
 
 [project.optional-dependencies]
-flash-attention = [
-    "flash-attn==2.7.4.post1",
-    "flash-linear-attention==0.4.2",
-]
 dev = [
     "black>=24.2.0",
     "gpustat",
@@ -101,11 +106,11 @@ dev = [
 ]
 
 [tool.uv.extra-build-dependencies]
-airsim = ["numpy", "msgpack-rpc-python"]
-flash-attn = ["torch"]
+airsim = ["numpy==1.26.4", "msgpack-rpc-python==0.4.1"]
 
 [tool.setuptools.packages.find]
 where = ["."]
+include = ["starVLA*", "NavVLAeval*", "tool*", "deployment*", "examples*"]
 exclude = [
     "tests",
     "cache",
@@ -130,6 +135,7 @@ exclude = [
 
 [tool.setuptools.package-data]
 "cogact" = ["py.typed"]
+"NavVLAeval.track.habitat" = ["config/**/*.yaml", "LICENSE"]
 
 [tool.black]
 line-length = 121
@@ -146,3 +152,24 @@ ignore = ["F722"]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402", "F401"]
+
+[tool.uv.workspace]
+members = ["data_pipeline/dataset_conversion", "data_pipeline/trajectory_augmentation", "data_pipeline/image_collection"]
+
+[tool.uv.sources]
+vln-dataset-conversion = { workspace = true }
+vln-trajectory-augmentation = { workspace = true }
+vln-waypoint-image-collection = { workspace = true }
+habitat-lab = { git = "https://github.com/facebookresearch/habitat-lab.git", rev = "142616776544f918c19e7f0392b65cc8cc69fa13", subdirectory = "habitat-lab" }
+habitat-sim = { path = "third_party/wheels/habitat_sim-0.3.1-cp310-cp310-linux_x86_64.whl" }
+magnum = { path = "third_party/wheels/magnum-0.0.0-cp310-cp310-linux_x86_64.whl" }
+flash-attn = { path = "third_party/wheels/flash_attn-2.7.4.post1+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl" }
+causal-conv1d = { path = "third_party/wheels/causal_conv1d-1.5.0.post8+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl" }
+
+[[tool.uv.index]]
+name = "tuna"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
+
+[tool.uv]
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]

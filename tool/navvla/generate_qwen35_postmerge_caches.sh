@@ -2,14 +2,9 @@
 set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
-python_bin=${PYTHON_BIN:-}
-if [[ -z "${python_bin}" ]]; then
-  python_bin=${repo_root}/.venv/bin/python
-  if [[ ! -x "${python_bin}" ]]; then
-    git_common_dir=$(git -C "${repo_root}" rev-parse --path-format=absolute --git-common-dir)
-    python_bin=$(dirname "${git_common_dir}")/.venv/bin/python
-  fi
-fi
+export UV_PROJECT_ENVIRONMENT="$repo_root/.venv"
+export PYTHONNOUSERSITE=1
+python_bin=${repo_root}/.venv/bin/python
 encoder_ckpt=${ENCODER_CKPT:-${repo_root}/local/models/Qwen3.5-4B}
 profile=qwen3_5_4b_postmerge_pool4_256_mmap
 batch_size=${BATCH_SIZE:-8}

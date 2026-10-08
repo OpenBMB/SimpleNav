@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMPONENT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-PYTHON_BIN="${VLN_COLLECT_PYTHON:-python3}"
+REPO_ROOT="$(cd "${COMPONENT_ROOT}/../.." && pwd)"
 GRAPHICS_ACTIVATE="${VLN_GRAPHICS_ACTIVATE:-}"
 
 if [[ -n "${GRAPHICS_ACTIVATE}" ]]; then
@@ -15,5 +15,7 @@ if [[ -n "${GRAPHICS_ACTIVATE}" ]]; then
   source "${GRAPHICS_ACTIVATE}"
 fi
 
+export UV_PROJECT_ENVIRONMENT="${REPO_ROOT}/.venv"
+export PYTHONNOUSERSITE=1
 cd "${COMPONENT_ROOT}"
-exec "${PYTHON_BIN}" -m waypoint_collector "$@"
+exec uv run --project "${REPO_ROOT}" --no-sync python -m waypoint_collector "$@"

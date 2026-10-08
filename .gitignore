@@ -106,3 +106,9 @@ events.out.tfevents.*
 *.tar.gz
 *.tgz
 *.7z
+
+# Local Codex notes and debugging artifacts
+/.codex/
+
+# Third-party source checkouts and build products
+/third_party/habitat-sim/

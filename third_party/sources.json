@@ -1,0 +1,9 @@
+{
+  "habitat_sim": {
+    "repository": "https://github.com/facebookresearch/habitat-sim.git",
+    "revision": "3d6d67d6deae4ab2472cc84df7a3cef1503f606d",
+    "numpy_requirement": "numpy>=1.20.0,<2",
+    "headless": true,
+    "bullet": true
+  }
+}
