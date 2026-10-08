@@ -1,7 +1,5 @@
 # VLN Dataset Conversion
 
-[Chinese](README_ZH.md)
-
 This component converts heterogeneous navigation datasets to the common NavVLA
 LeRobot v3 format. It is the first stage of SimpleNAV's `data_pipeline`, and it is also
 used after trajectory augmentation and image collection to turn a completed

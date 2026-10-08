@@ -1,6 +1,6 @@
 # Models and Checkpoints
 
-[Main README](../../README.md) · [中文](MODELS_AND_CHECKPOINTS_ZH.md)
+[Main README](../../README.md)
 
 ## Implemented model paths
 

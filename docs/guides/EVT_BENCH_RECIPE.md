@@ -1,6 +1,6 @@
 # EVT-bench Mixed Training
 
-[Main README](../../README.md) · [中文](TRACK_DT_TRAINING_ZH.md) · [Training](TRAINING.md) · [Data Structure](DATA_STRUCTURE.md)
+[Main README](../../README.md) · [Training](TRAINING.md) · [Data Structure](DATA_STRUCTURE.md)
 
 This recipe ports the four-view EVT-Bench Track-DT run into the repository's portable SimpleNav format. It trains one Qwen3.5-VL navigation model on the AT (avoid/teach), DT, and STT splits with the shared `navvla_cpm_dataset` loader.
 

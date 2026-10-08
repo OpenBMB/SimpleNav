@@ -1,6 +1,6 @@
 # SimpleNAV Vision and Roadmap
 
-[Back to the main README](../../README.md) · [中文](VISION_AND_ROADMAP_ZH.md)
+[Back to the main README](../../README.md)
 
 ## Vision
 

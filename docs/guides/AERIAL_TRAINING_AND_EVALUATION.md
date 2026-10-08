@@ -1,6 +1,6 @@
 # Aerial Dataset Training and Evaluation
 
-[Main README](../../README.md) · [中文](AERIAL_TRAINING_AND_EVALUATION_ZH.md) · [Installation](INSTALLATION.md) · [Data Preparation](DATA_PIPELINE.md)
+[Main README](../../README.md) · [Installation](INSTALLATION.md) · [Data Preparation](DATA_PIPELINE.md)
 
 This guide covers the complete OpenFly, AerialVLN, and TravelUAV workflow: resource download, model-ready data preparation, Qwen3.5-VL training, checkpoint packaging, and AirSim closed-loop evaluation. Run all commands from the repository root. Public configs use repository-relative paths.
 

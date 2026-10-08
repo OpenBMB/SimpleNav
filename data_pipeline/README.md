@@ -1,6 +1,6 @@
 # VLN Trajectory Augmentation and Image Collection Pipeline
 
-[SimpleNAV](../README.md) · [Chinese](README_ZH.md)
+[SimpleNAV](../README.md)
 
 This directory is the data-construction layer of the SimpleNAV monorepo.
 
@@ -83,7 +83,6 @@ Click a thumbnail to play the corresponding H.264 MP4 hosted on the project webs
 ```text
 data_pipeline/
 ├── README.md
-├── README_ZH.md
 ├── outputs/trajectory_comparisons/  # Generated comparison media (published on the project site)
 ├── dataset_conversion/        # Raw/enhanced packages to NavVLA LeRobot v3
 ├── trajectory_augmentation/   # Pose recovery, smoothing, resampling, and request export

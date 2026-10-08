@@ -16,7 +16,6 @@
 </p>
 
 <p align="center">
-  <a href="README_ZH.md">中文</a> ·
   <a href="https://simplenav.github.io/">Project Page</a> ·
   <a href="data_pipeline/README.md">Data Pipeline</a> ·
   <a href="docs/guides/README.md">Documentation</a> ·

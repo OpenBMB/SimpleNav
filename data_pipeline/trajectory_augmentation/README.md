@@ -1,7 +1,5 @@
 # VLN Trajectory Augmentation
 
-[Chinese](README_ZH.md)
-
 This component scans a LeRobot-format `vln_train` split without modifying it, recovers canonical absolute world poses, smooths and resamples trajectories at 1 Hz, and generates a trajectory-only package with direct render requests for an external simulator.
 
 It does not launch AirSim or re-encode collected images into a complete LeRobot split. See the [image collection guide](../image_collection/README.md) for the rendering stage.

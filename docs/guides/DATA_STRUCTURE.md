@@ -1,6 +1,6 @@
 # Data Structure and State/Action Protocol
 
-[Main README](../../README.md) · [中文](DATA_STRUCTURE_ZH.md)
+[Main README](../../README.md)
 
 ## LeRobot v3 split
 

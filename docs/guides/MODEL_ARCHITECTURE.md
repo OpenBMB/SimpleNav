@@ -1,6 +1,6 @@
 # SimpleNAV Model Architecture
 
-[Back to the main README](../../README.md) · [中文](MODEL_ARCHITECTURE_ZH.md)
+[Back to the main README](../../README.md)
 
 ## Positioning
 

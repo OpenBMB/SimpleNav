@@ -1,6 +1,6 @@
 # Inference and Evaluation
 
-[Main README](../../README.md) · [中文](EVALUATION_ZH.md) · [Framework reference](../../NavVLAeval/README.md)
+[Main README](../../README.md) · [Framework reference](../../NavVLAeval/README.md)
 
 ## Portable configs
 

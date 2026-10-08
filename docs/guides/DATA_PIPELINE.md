@@ -1,6 +1,6 @@
 # Data Preparation
 
-[Main README](../../README.md) · [中文](DATA_PIPELINE_ZH.md) · [Data pipeline guide](../../data_pipeline/README.md)
+[Main README](../../README.md) · [Data pipeline guide](../../data_pipeline/README.md)
 
 ## Pipeline
 

@@ -1,6 +1,6 @@
 # Installation
 
-[Main README](../../README.md) · [中文](INSTALLATION_ZH.md)
+[Main README](../../README.md)
 
 ## Model, training, and evaluation environment
 

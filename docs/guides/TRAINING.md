@@ -1,6 +1,6 @@
 # Training
 
-[Main README](../../README.md) · [中文](TRAINING_ZH.md)
+[Main README](../../README.md)
 
 ## Public reference recipes
 

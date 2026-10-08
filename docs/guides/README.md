@@ -1,6 +1,6 @@
 # SimpleNAV Documentation
 
-[Main README](../../README.md) · [中文](README_ZH.md)
+[Main README](../../README.md)
 
 | Task | Document |
 | --- | --- |

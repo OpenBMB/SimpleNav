@@ -1,6 +1,6 @@
 # SimpleNav Release 01 Benchmarks
 
-[Back to the main README](../../README.md) · [中文](BENCHMARKS_RELEASE01_ZH.md)
+[Back to the main README](../../README.md)
 
 ## Overview
 

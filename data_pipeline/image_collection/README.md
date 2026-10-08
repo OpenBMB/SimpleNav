@@ -1,7 +1,5 @@
 # AirSim Waypoint-Based Four-View RGB Collection
 
-[Chinese](README_ZH.md)
-
 This component reads `render/render_requests.jsonl` from a trajectory package, places the drone at each absolute waypoint, and captures front, back, left, and right RGB views in one step. It is independent of AirVLN training, models, tokenizers, LMDB, and TF/DAgger workflows.
 
 The component publishes videos and collection metadata into the trajectory package. It does not generate observation/action Parquet files, so the result is not yet a complete trainable LeRobot split.
