@@ -1,0 +1,12 @@
+# @package habitat.dataset
+#
+# AT split restricted to HM3D scenes present in data/scene_datasets/hm3d/minival/.
+# Requires symlinked val/* -> ../minival/* (see track_infer_at_hm3d_minival.yaml header).
+
+defaults:
+  - /habitat/dataset: dataset_config_schema
+  - _self_
+
+type: PointNav-v1
+split: minival
+data_path: ./data/datasets/track/AT/{split}/{split}.json.gz

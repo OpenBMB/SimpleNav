@@ -1,0 +1,18 @@
+# @package habitat.dataset
+#
+# STT episodes filtered to HSSD-Hab only (see scripts/build_stt_hssd_only.py).
+# Expected gzip: ./data/datasets/track/STT-HSSD/val/val.json.gz
+#
+# Episode scene_id should resolve under default scenes_dir (data/scene_datasets),
+# e.g. ``hssd-hab/scenes/<id>/<id>.scene_instance.json``.
+#
+# If you used ``--rewrite-scene-ids-for-hssd-root`` when building the gzip, uncomment:
+#   scenes_dir: data/scene_datasets/hssd-hab
+
+defaults:
+  - /habitat/dataset: dataset_config_schema
+  - _self_
+
+type: PointNav-v1
+split: val
+data_path: ./data/datasets/track/STT-HSSD/{split}/{split}.json.gz

@@ -1,0 +1,16 @@
+# @package habitat.dataset
+#
+# STT episodes restricted to HM3D scenes staged under data/scene_datasets/hm3d/minival/
+# when used with track_infer_stt_hm3d_minival.yaml (mirror track-val-at-minival semantics).
+#
+# Requires symlinked val/* -> ../minival/* like AT minival (see that benchmark header).
+# Episodes: ./data/datasets/track/STT/minival/minival.json.gz
+# Regenerate from val (HM3D-only): python scripts/build_stt_hm3d_minival.py
+
+defaults:
+  - /habitat/dataset: dataset_config_schema
+  - _self_
+
+type: PointNav-v1
+split: minival
+data_path: ./data/datasets/track/STT/{split}/{split}.json.gz
