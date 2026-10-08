@@ -1,23 +1,22 @@
 run_id: navvla_qwen35_cpm_vlnce_rxr_bats_4view_bs4_ga8_step15716
 run_root_dir: local/results/navvla_qwen35_cpm_vlnce/Checkpoints
 seed: 42
-trackers: [jsonl, tensorboard]
+trackers:
+- jsonl
+- tensorboard
 is_debug: false
 wandb_entity: null
 wandb_project: navvla_qwen35_vlnce
-
 launcher:
   mode: local
-  python: .venv/bin/python
   num_machines: 1
   num_processes: 8
   main_process_port: 29576
-  cuda_visible_devices: "0,1,2,3,4,5,6,7"
+  cuda_visible_devices: 0,1,2,3,4,5,6,7
   run_id_suffix: timestamp
   environment:
     WANDB_MODE: disabled
     PYTORCH_CUDA_ALLOC_CONF: expandable_segments:True
-
 deepspeed:
   fp16:
     enabled: false
@@ -34,16 +33,16 @@ deepspeed:
     cpu_offload: false
   gradient_clipping: 1.0
   steps_per_print: 10
-
 framework:
-  name: navvla_qwen35_cpm
+  name: simplenav
   qwenvl:
     base_vlm: local/models/Qwen3.5-4B
     attn_implementation: flash_attention_2
     max_text_tokens: 2048
-    action_placeholder_token: "◆"
-    action_start_token: "▷"
-    action_end_token: "◯"
+    action_placeholder_token: ◆
+    action_start_token: ▷
+    action_end_token: ◯
+    type: qwen35
   navvla:
     use_platform_text: true
     tvi_mode: time_yaw
@@ -55,7 +54,9 @@ framework:
       enabled: false
     visual_token_profile: qwen3_5_4b_postmerge_pool4_256_mmap
     visual_cache_stage: vit_postmerge_pool4
-    visual_cache_input_resize: [256, 256]
+    visual_cache_input_resize:
+    - 256
+    - 256
     visual_cache_encoder_ckpt: local/models/Qwen3.5-4B
   action_model:
     action_model_type: DiT-B
@@ -83,15 +84,20 @@ framework:
       num_layers: 16
       output_dim: 1024
       positional_embeddings: null
-
+    type: flow_matching
+    padding_loss: zero_target
 datasets:
   vla_data:
     dataset_py: navvla_cpm_dataset
     datasets:
-      - name: rxr
-        dataset_statistics_key: vln_train_train
-        data_root_dir: local/data/VLN-CE-Lerobot/RxR/vln_train
-        required_cameras: [front, left, right, rear]
+    - name: rxr
+      dataset_statistics_key: vln_train_train
+      data_root_dir: local/data/VLN-CE-Lerobot/RxR/vln_train
+      required_cameras:
+      - front
+      - left
+      - right
+      - rear
     data_mix: navvla_qwen35_cpm_vlnce_rxr_bats_4view_tb1024
     split: train
     tvi_mode: time_yaw
@@ -102,7 +108,9 @@ datasets:
     current_visual_tokens: 64
     history_visual_tokens: 4
     include_state: false
-    image_resize: [256, 256]
+    image_resize:
+    - 256
+    - 256
     shuffle: true
     action_extra_dim_mode: none
     action_path_progress_gamma: 2.0
@@ -110,7 +118,6 @@ datasets:
     allow_missing_long_memory: true
     per_device_batch_size: 4
     num_workers: 4
-
 trainer:
   epochs: 2
   max_train_steps: 15716
@@ -121,13 +128,13 @@ trainer:
   eval_interval: 100000
   learning_rate:
     base: 1.0e-05
-    qwen35_vl_interface: 1.0e-05
-    action_model: 1.0e-04
-    tvi_embedding: 1.0e-04
+    backbone: 1.0e-05
+    action_model: 0.0001
+    tvi_embedding: 0.0001
   lr_scheduler_type: cosine_with_min_lr
   scheduler_specific_kwargs:
     min_lr: 1.0e-06
-  freeze_modules: qwen35_vl_interface.model.model.visual
+  freeze_modules: backbone.model.model.visual
   max_grad_norm: 1.0
   warmup_ratio: 0.03
   weight_decay: 0.0
@@ -136,7 +143,9 @@ trainer:
   gradient_accumulation_steps: 8
   optimizer:
     name: AdamW
-    betas: [0.9, 0.95]
+    betas:
+    - 0.9
+    - 0.95
     eps: 1.0e-08
     weight_decay: 1.0e-08
   is_resume: false

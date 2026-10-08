@@ -52,6 +52,8 @@ class OpenLoopMetricAccumulator:
     def __init__(self, *, horizon: int = 8, action_dim: int = 4) -> None:
         self.horizon = int(horizon)
         self.action_dim = int(action_dim)
+        if self.horizon <= 0 or self.action_dim < 4:
+            raise ValueError("Navigation metrics require horizon > 0 and action_dim >= 4 (xyz, yaw)")
         self.normalized_squared_error = 0.0
         self.normalized_valid_elements = 0
         self.raw_abs_sum = np.zeros((self.action_dim,), dtype=np.float64)
@@ -85,9 +87,7 @@ class OpenLoopMetricAccumulator:
         if predicted.shape != target.shape:
             raise ValueError(f"prediction/target shape mismatch: {predicted.shape} vs {target.shape}")
         if predicted.ndim != 3 or predicted.shape[1:] != (self.horizon, self.action_dim):
-            raise ValueError(
-                f"expected actions [B,{self.horizon},{self.action_dim}], got {predicted.shape}"
-            )
+            raise ValueError(f"expected actions [B,{self.horizon},{self.action_dim}], got {predicted.shape}")
         if padding.shape != predicted.shape[:2]:
             raise ValueError(f"padding shape {padding.shape} does not match actions {predicted.shape}")
         if len(action_statistics) != predicted.shape[0]:
@@ -103,8 +103,10 @@ class OpenLoopMetricAccumulator:
             sample_valid = valid[batch_index]
             if not sample_valid.any():
                 continue
-            raw_prediction = unnormalize_values(predicted[batch_index], stats).astype(np.float64)
-            raw_target = unnormalize_values(target[batch_index], stats).astype(np.float64)
+            stats_dim = len(stats["q01"])
+            raw_prediction, raw_target = predicted[batch_index].copy(), target[batch_index].copy()
+            raw_prediction[:, :stats_dim] = unnormalize_values(raw_prediction[:, :stats_dim], stats)
+            raw_target[:, :stats_dim] = unnormalize_values(raw_target[:, :stats_dim], stats)
             raw_diff = raw_prediction - raw_target
             raw_diff[:, 3] = np.asarray(wrap_to_pi(raw_diff[:, 3]), dtype=np.float64)
             valid_diff = raw_diff[sample_valid]
@@ -121,14 +123,10 @@ class OpenLoopMetricAccumulator:
             valid_horizons = np.flatnonzero(sample_valid)
             for waypoint_position, horizon_index in enumerate(valid_horizons):
                 normalized_horizon_diff = normalized_diff[batch_index, horizon_index]
-                self.horizon_normalized_squared_sum[horizon_index] += float(
-                    np.square(normalized_horizon_diff).sum()
-                )
+                self.horizon_normalized_squared_sum[horizon_index] += float(np.square(normalized_horizon_diff).sum())
                 self.horizon_normalized_elements[horizon_index] += self.action_dim
                 self.horizon_raw_abs_sum[horizon_index] += np.abs(valid_diff[waypoint_position])
-                self.horizon_raw_squared_sum[horizon_index] += np.square(
-                    valid_diff[waypoint_position]
-                )
+                self.horizon_raw_squared_sum[horizon_index] += np.square(valid_diff[waypoint_position])
                 self.horizon_translation_sum[horizon_index] += translation[waypoint_position]
                 self.horizon_yaw_sum[horizon_index] += yaw[waypoint_position]
                 self.horizon_count[horizon_index] += 1
@@ -140,6 +138,8 @@ class OpenLoopMetricAccumulator:
 
     def distributed_payload(self) -> dict[str, Any]:
         return {
+            "horizon": self.horizon,
+            "action_dim": self.action_dim,
             "normalized_squared_error": self.normalized_squared_error,
             "normalized_valid_elements": self.normalized_valid_elements,
             "raw_abs_sum": self.raw_abs_sum.tolist(),
@@ -162,8 +162,10 @@ class OpenLoopMetricAccumulator:
 
     @classmethod
     def merge(cls, payloads: Sequence[dict[str, Any]]) -> "OpenLoopMetricAccumulator":
-        merged = cls()
+        merged = cls(horizon=int(payloads[0]["horizon"]), action_dim=int(payloads[0]["action_dim"]))
         for payload in payloads:
+            if (payload["horizon"], payload["action_dim"]) != (merged.horizon, merged.action_dim):
+                raise ValueError("Cannot merge different action specifications")
             merged.normalized_squared_error += float(payload["normalized_squared_error"])
             merged.normalized_valid_elements += int(payload["normalized_valid_elements"])
             merged.raw_abs_sum += np.asarray(payload["raw_abs_sum"], dtype=np.float64)
@@ -174,15 +176,9 @@ class OpenLoopMetricAccumulator:
             merged.horizon_normalized_squared_sum += np.asarray(
                 payload["horizon_normalized_squared_sum"], dtype=np.float64
             )
-            merged.horizon_normalized_elements += np.asarray(
-                payload["horizon_normalized_elements"], dtype=np.int64
-            )
-            merged.horizon_raw_abs_sum += np.asarray(
-                payload["horizon_raw_abs_sum"], dtype=np.float64
-            )
-            merged.horizon_raw_squared_sum += np.asarray(
-                payload["horizon_raw_squared_sum"], dtype=np.float64
-            )
+            merged.horizon_normalized_elements += np.asarray(payload["horizon_normalized_elements"], dtype=np.int64)
+            merged.horizon_raw_abs_sum += np.asarray(payload["horizon_raw_abs_sum"], dtype=np.float64)
+            merged.horizon_raw_squared_sum += np.asarray(payload["horizon_raw_squared_sum"], dtype=np.float64)
             merged.horizon_translation_sum += np.asarray(payload["horizon_translation_sum"], dtype=np.float64)
             merged.horizon_yaw_sum += np.asarray(payload["horizon_yaw_sum"], dtype=np.float64)
             merged.horizon_count += np.asarray(payload["horizon_count"], dtype=np.int64)
@@ -197,40 +193,31 @@ class OpenLoopMetricAccumulator:
             raise ValueError("open-loop evaluation contains no valid normalized action elements")
         if self.raw_valid_steps <= 0:
             raise ValueError("open-loop evaluation contains no valid raw action waypoints")
-        dimension_names = ("dx", "dy", "dz", "dyaw")
+        dimension_names = ("dx", "dy", "dz", "dyaw", *(f"aux_{i}" for i in range(4, self.action_dim)))
         horizon = {}
         for index in range(self.horizon):
             count = int(self.horizon_count[index])
             normalized_elements = int(self.horizon_normalized_elements[index])
             horizon[str(index + 1)] = {
                 "normalized_action_mse": (
-                    self.horizon_normalized_squared_sum[index] / normalized_elements
-                    if normalized_elements
-                    else None
+                    self.horizon_normalized_squared_sum[index] / normalized_elements if normalized_elements else None
                 ),
                 "raw_mae": {
                     name: self.horizon_raw_abs_sum[index, dimension] / count if count else None
                     for dimension, name in enumerate(dimension_names)
                 },
                 "raw_rmse": {
-                    name: (
-                        math.sqrt(self.horizon_raw_squared_sum[index, dimension] / count)
-                        if count
-                        else None
-                    )
+                    name: (math.sqrt(self.horizon_raw_squared_sum[index, dimension] / count) if count else None)
                     for dimension, name in enumerate(dimension_names)
                 },
-                "translation_l2_mean": (
-                    self.horizon_translation_sum[index] / count if count else None
-                ),
+                "translation_l2_mean": (self.horizon_translation_sum[index] / count if count else None),
                 "yaw_abs_mean": self.horizon_yaw_sum[index] / count if count else None,
                 "count": count,
             }
         return {
             "normalized_action_mse": self.normalized_squared_error / self.normalized_valid_elements,
             "raw_mae": {
-                name: self.raw_abs_sum[index] / self.raw_valid_steps
-                for index, name in enumerate(dimension_names)
+                name: self.raw_abs_sum[index] / self.raw_valid_steps for index, name in enumerate(dimension_names)
             },
             "raw_rmse": {
                 name: math.sqrt(self.raw_squared_sum[index] / self.raw_valid_steps)
@@ -268,9 +255,7 @@ def build_openloop_eval_loaders(
         eval_root_dir = _cfg_get(entry, "eval_root_dir", None)
         if not dataset_name or eval_root_dir is None:
             raise KeyError("each open-loop dataset entry requires name and eval_root_dir")
-        checkpoint_key = str(
-            _cfg_get(entry, "checkpoint_statistics_key", _cfg_get(entry, "dataset_statistics_key"))
-        )
+        checkpoint_key = str(_cfg_get(entry, "checkpoint_statistics_key", _cfg_get(entry, "dataset_statistics_key")))
         for split in ("vln_val_seen", "vln_val_unseen"):
             targets_path = targets_root / f"{dataset_name}_{split}.jsonl"
             target_rows = _read_jsonl(targets_path)
@@ -283,8 +268,7 @@ def build_openloop_eval_loaders(
             ]
             if mismatched_rows:
                 raise ValueError(
-                    f"target manifest metadata does not match {dataset_name}/{split}/"
-                    f"{checkpoint_key}: {targets_path}"
+                    f"target manifest metadata does not match {dataset_name}/{split}/{checkpoint_key}: {targets_path}"
                 )
             target_indices = [int(row["index"]) for row in target_rows]
             eval_entry = _plain_mapping(entry)
@@ -301,9 +285,7 @@ def build_openloop_eval_loaders(
             eval_data_cfg["shuffle"] = False
             dataset = build_cpm_dataset(eval_data_cfg)
             if max(target_indices, default=-1) >= len(dataset):
-                raise IndexError(
-                    f"target index exceeds {dataset_name}/{split} dataset length {len(dataset)}"
-                )
+                raise IndexError(f"target index exceeds {dataset_name}/{split} dataset length {len(dataset)}")
             sampler = FixedDistributedIndexSampler(
                 target_indices,
                 rank=int(rank),
@@ -341,9 +323,9 @@ def run_openloop_eval_loader(
     loader: OpenLoopEvalLoader,
 ) -> tuple[dict[str, Any], float]:
     started_at = time.perf_counter()
-    accumulator = OpenLoopMetricAccumulator()
+    accumulator = OpenLoopMetricAccumulator(horizon=model.action_horizon, action_dim=model.action_dim)
     for batch in loader.dataloader:
-        output = model.predict_action(examples=batch, use_ddim=True, num_ddim_steps=20)
+        output = model.predict_action(examples=batch)
         metadata = list(batch["metadata"])
         accumulator.update(
             predicted_normalized=_to_numpy(output["normalized_actions"]),

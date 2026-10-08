@@ -1,15 +1,11 @@
 def get_vlm_model(config):
-    """Build one of the VLM backbones used by Release 01 checkpoints."""
-    vlm_name = config.framework.qwenvl.base_vlm
+    """Select by explicit backbone type, independent of the checkpoint path."""
+    from importlib import import_module
 
-    if "Qwen3.5" in vlm_name:
-        from .QWen3_5 import _QWen3_5_VL_Interface
-
-        return _QWen3_5_VL_Interface(config)
-    if "minicpm" in vlm_name.lower():
-        from .MiniCPMV import _MiniCPM_VL_Interface
-
-        return _MiniCPM_VL_Interface(config)
-    raise NotImplementedError(
-        f"VLM model {vlm_name!r} is not part of the Release 01 public model set"
-    )
+    kind = config.framework.qwenvl.type
+    classes = {
+        "qwen35": "starVLA.model.modules.vlm.QWen3_5:_QWen3_5_VL_Interface",
+        "minicpm": "starVLA.model.modules.vlm.MiniCPMV:_MiniCPM_VL_Interface",
+    }
+    module, name = classes.get(kind, kind).split(":")
+    return getattr(import_module(module), name)(config)

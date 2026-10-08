@@ -4,7 +4,7 @@
 # Action repeat is inspired by CogACT
 
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 import torch
 import torch.nn.functional as F
@@ -34,8 +34,7 @@ def _validate_loss_dim_weights(raw_weights, *, action_dim: int) -> torch.Tensor:
 
     if weights.ndim != 1 or weights.numel() != action_dim:
         raise ValueError(
-            f"loss_dim_weights must contain exactly action_dim={action_dim} values; "
-            f"got shape {tuple(weights.shape)}."
+            f"loss_dim_weights must contain exactly action_dim={action_dim} values; got shape {tuple(weights.shape)}."
         )
     if not bool(torch.isfinite(weights).all()):
         raise ValueError("loss_dim_weights must contain only finite values.")
@@ -44,44 +43,6 @@ def _validate_loss_dim_weights(raw_weights, *, action_dim: int) -> torch.Tensor:
     if not bool(weights.sum() > 0):
         raise ValueError("loss_dim_weights must have a positive sum.")
     return weights
-
-
-def _weighted_action_mse(
-    prediction: torch.Tensor,
-    target: torch.Tensor,
-    loss_dim_weights: torch.Tensor,
-) -> torch.Tensor:
-    """Compute action-dimension-weighted MSE while preserving overall loss scale."""
-    squared_error = (prediction - target) ** 2
-    weights = loss_dim_weights.to(device=squared_error.device, dtype=squared_error.dtype)
-    return ((squared_error * weights).sum(dim=-1) / weights.sum()).mean()
-
-
-class CategorySpecificLinear(nn.Module):
-    def __init__(self, num_categories, input_dim, hidden_dim):
-        super().__init__()
-        self.num_categories = num_categories
-        # For each category, we have separate weights and biases.
-        self.W = nn.Parameter(0.02 * torch.randn(num_categories, input_dim, hidden_dim))
-        self.b = nn.Parameter(torch.zeros(num_categories, hidden_dim))
-
-    def forward(self, x, cat_ids):
-        selected_W = self.W[cat_ids]
-        selected_b = self.b[cat_ids]
-        # import ipdb; ipdb.set_trace()
-        return torch.bmm(x, selected_W) + selected_b.unsqueeze(1)
-
-
-class CategorySpecificMLP(nn.Module):
-    def __init__(self, num_categories, input_dim, hidden_dim, output_dim):
-        super().__init__()
-        self.num_categories = num_categories
-        self.layer1 = CategorySpecificLinear(num_categories, input_dim, hidden_dim)
-        self.layer2 = CategorySpecificLinear(num_categories, hidden_dim, output_dim)
-
-    def forward(self, x, cat_ids):
-        hidden = F.relu(self.layer1(x, cat_ids))
-        return self.layer2(hidden, cat_ids)
 
 
 class MLP(nn.Module):
@@ -136,52 +97,6 @@ class ActionEncoder(nn.Module):
         return x
 
 
-class MultiEmbodimentActionEncoder(nn.Module):
-    def __init__(self, action_dim, hidden_size, num_embodiments):
-        super().__init__()
-        self.hidden_size = hidden_size
-        self.num_embodiments = num_embodiments
-
-        # W1: R^{w x d}, W2: R^{w x 2w}, W3: R^{w x w}
-        self.W1 = CategorySpecificLinear(num_embodiments, action_dim, hidden_size)  # (d -> w)
-        self.W2 = CategorySpecificLinear(num_embodiments, 2 * hidden_size, hidden_size)  # (2w -> w)
-        self.W3 = CategorySpecificLinear(num_embodiments, hidden_size, hidden_size)  # (w -> w)
-        self.pos_encoding = SinusoidalPositionalEncoding(hidden_size)
-
-    def forward(self, actions, timesteps, cat_ids):
-        """
-        actions:   shape (B, T, action_dim)
-        timesteps: shape (B,)  -- a single scalar per batch item
-        cat_ids:   shape (B,)
-        returns:   shape (B, T, hidden_size)
-        """
-        B, T, _ = actions.shape
-
-        # 1) Expand each batch's single scalar time 'tau' across all T steps
-        #    so that shape => (B, T)
-        #    e.g. if timesteps is (B,), replicate across T
-        if timesteps.dim() == 1 and timesteps.shape[0] == B:
-            # shape (B,) => (B,T)
-            timesteps = timesteps.unsqueeze(1).expand(-1, T)
-        else:
-            raise ValueError("Expected `timesteps` to have shape (B,) so we can replicate across T.")
-
-        # 2) Standard action MLP step for shape => (B, T, w)
-        a_emb = self.W1(actions, cat_ids)
-
-        # 3) Get the sinusoidal encoding (B, T, w)
-        tau_emb = self.pos_encoding(timesteps).to(dtype=a_emb.dtype)
-
-        # 4) Concat along last dim => (B, T, 2w), then W2 => (B, T, w), swish
-        x = torch.cat([a_emb, tau_emb], dim=-1)
-        x = swish(self.W2(x, cat_ids))
-
-        # 5) Finally W3 => (B, T, w)
-        x = self.W3(x, cat_ids)
-        return x
-
-
-@dataclass
 class FlowmatchingActionHeadConfig(PretrainedConfig):
     """NOTE: N1.5 uses XEmbFlowmatchingPolicyHeadConfig as action head"""
 
@@ -257,19 +172,18 @@ class FlowmatchingActionHead(nn.Module):
         # ------------------------------------------------------------------
         action_model_type = config.action_model_type
         action_model_cfg = DiTConfig[action_model_type]
-        self.input_embedding_dim = action_model_cfg["input_embedding_dim"]
 
         diffusion_model_cfg = config.diffusion_model_cfg
         diffusion_model_cfg = {**action_model_cfg, **diffusion_model_cfg}
+        self.input_embedding_dim = int(diffusion_model_cfg["num_attention_heads"]) * int(
+            diffusion_model_cfg["attention_head_dim"]
+        )
+        diffusion_model_cfg["input_embedding_dim"] = self.input_embedding_dim
         self.model = DiT(**diffusion_model_cfg)
 
         # ------------------------------------------------------------------
         # Action horizon (chunk length sent to the DiT)
         #   Single source of truth: `action_horizon` (e.g. 8).
-        #   Legacy YAMLs that only provide `future_action_window_size` are
-        #   normalised to `action_horizon` upstream by
-        #   `share_tools.apply_config_compat`, so this code never touches
-        #   the legacy alias.
         # ------------------------------------------------------------------
         self.action_horizon = int(config.action_horizon)
 
@@ -349,7 +263,12 @@ class FlowmatchingActionHead(nn.Module):
         return BatchFeature(data=batch)
 
     def forward(
-        self, vl_embs: torch.Tensor, actions: torch.Tensor, state: torch.Tensor = None, encoder_attention_mask=None
+        self,
+        vl_embs: torch.Tensor,
+        actions: torch.Tensor,
+        state: torch.Tensor = None,
+        encoder_attention_mask=None,
+        action_padding_mask=None,
     ):
         """
         vl_embs: shape (B, seq_length, feature_dim)
@@ -370,7 +289,7 @@ class FlowmatchingActionHead(nn.Module):
         action_features = self.action_encoder(noisy_trajectory, t_discretized)
 
         # embed state
-        state_features = self.state_encoder(state) if state is not None else None
+        state_features = self.state_encoder(state).unsqueeze(1) if state is not None else None
 
         # Maybe add position embedding.
         if self.config.add_pos_embed:
@@ -397,21 +316,29 @@ class FlowmatchingActionHead(nn.Module):
         pred = self.action_decoder(model_output)
         pred_actions = pred[:, -actions.shape[1] :]
 
-        # Slice out only the action portion of pred and target.
-        loss = (
-            _weighted_action_mse(pred_actions, velocity, self.loss_dim_weights)
-            if self._use_loss_dim_weights
-            else ((pred_actions - velocity) ** 2).mean()
+        error = (pred_actions - velocity).square() * self.loss_dim_weights.to(pred_actions)
+        if self.config.get("padding_loss", "zero_target") == "mask":
+            valid = (~action_padding_mask).unsqueeze(-1).expand_as(error)
+            return (error * valid).sum() / valid.sum().clamp_min(1)
+        return error.mean()
+
+    def loss(self, condition, target, *, state=None, action_padding_mask):
+        repeats = int(self.config.get("repeated_diffusion_steps", 2))
+        return self.forward(
+            condition.repeat(repeats, 1, 1),
+            target.repeat(repeats, 1, 1),
+            state.repeat(repeats, 1) if state is not None else None,
+            action_padding_mask=action_padding_mask.repeat(repeats, 1),
         )
-        return loss
 
     @torch.no_grad()
-    def predict_action(self, vl_embs: torch.Tensor, state: torch.Tensor = None) -> torch.Tensor:
+    def predict_action(self, vl_embs: torch.Tensor, state: torch.Tensor = None, *, generator=None) -> torch.Tensor:
         # Set initial actions as the sampled noise.
         batch_size = vl_embs.shape[0]
         device = vl_embs.device
         actions = torch.randn(
             size=(batch_size, self.action_horizon, self.action_dim),
+            generator=generator,
             dtype=vl_embs.dtype,
             device=device,
         )
@@ -419,7 +346,7 @@ class FlowmatchingActionHead(nn.Module):
         num_steps = self.num_inference_timesteps
         dt = 1.0 / num_steps
 
-        state_features = self.state_encoder(state) if state is not None else None
+        state_features = self.state_encoder(state).unsqueeze(1) if state is not None else None
 
         # Run denoising steps.
         for t in range(num_steps):
@@ -466,20 +393,12 @@ class FlowmatchingActionHead(nn.Module):
         return next(iter(self.parameters())).dtype
 
 
-def get_action_model(config=None):
-    """
-    Factory: build FlowmatchingActionHead from global framework config.
+def get_action_model(config):
+    """Select a head explicitly; a custom class implements loss and predict_action."""
+    from importlib import import_module
 
-    Args:
-        config: Global config (expects config.framework.action_model namespace).
-
-    Returns:
-        FlowmatchingActionHead: Initialized FlowMatchingActionHead.
-    """
-    return FlowmatchingActionHead(full_config=config)
-
-
-if __name__ == "__main__":
-    # TODO make each backbone.py can be debug independently
-
-    pass
+    head_type = config.framework.action_model.get("type", "flow_matching")
+    if head_type == "flow_matching":
+        return FlowmatchingActionHead(full_config=config)
+    module, name = head_type.split(":")
+    return getattr(import_module(module), name)(full_config=config)

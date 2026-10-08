@@ -75,15 +75,11 @@ def encode_qwen35_postmerge_batched(
     result = visual(pixel_values, grid_thw=grid_thw, return_dict=True)
     merged = result.pooler_output
     merge_size = int(visual.spatial_merge_size)
-    postmerge_counts = [
-        qwen35_postmerge_token_count(grid, spatial_merge_size=merge_size)
-        for grid in grids
-    ]
+    postmerge_counts = [qwen35_postmerge_token_count(grid, spatial_merge_size=merge_size) for grid in grids]
     expected_postmerge = sum(postmerge_counts)
     if merged.ndim != 2 or int(merged.shape[0]) != expected_postmerge:
         raise ValueError(
-            "Qwen3.5 packed merger output must have shape "
-            f"[{expected_postmerge}, hidden], got {tuple(merged.shape)}"
+            f"Qwen3.5 packed merger output must have shape [{expected_postmerge}, hidden], got {tuple(merged.shape)}"
         )
     return list(torch.split(merged, postmerge_counts, dim=0))
 
@@ -131,20 +127,19 @@ def decode_qwen35_cache_tokens(
     if str(storage_encoding) == BFLOAT16_BITS_STORAGE_ENCODING:
         if isinstance(tokens, torch.Tensor):
             if tokens.dtype != torch.uint16:
-                raise TypeError(
-                    "Qwen3.5 bfloat16_bits cache must arrive as torch.uint16, "
-                    f"got {tokens.dtype}"
-                )
+                raise TypeError(f"Qwen3.5 bfloat16_bits cache must arrive as torch.uint16, got {tokens.dtype}")
             raw = tokens.detach().to(device="cpu").contiguous().numpy()
         else:
             raw = np.asarray(tokens)
             if raw.dtype != np.dtype(np.uint16):
-                raise TypeError(
-                    "Qwen3.5 bfloat16_bits cache must arrive as numpy uint16, "
-                    f"got {raw.dtype}"
-                )
+                raise TypeError(f"Qwen3.5 bfloat16_bits cache must arrive as numpy uint16, got {raw.dtype}")
         return numpy_bits_to_bf16(raw, device).to(dtype=model_dtype)
-    return torch.as_tensor(tokens, device=device, dtype=model_dtype)
+    if storage_encoding not in {"", "float16", "float32"}:
+        raise ValueError(f"Unknown visual cache encoding: {storage_encoding}")
+    tensor = torch.as_tensor(tokens)
+    if not tensor.is_floating_point():
+        raise TypeError("Integer visual caches require an explicit bfloat16_bits encoding")
+    return tensor.to(device=device, dtype=model_dtype)
 
 
 __all__ = [

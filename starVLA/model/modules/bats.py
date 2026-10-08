@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 import math
 import random
+from dataclasses import dataclass
 from typing import Any, Mapping
 
 from tool.navvla.compute_bats_k import (
-    BATSBudgetConfig,
     MINICPM_IMAGE_WRAPPER_TOKENS,
+    BATSBudgetConfig,
     compute_bats_row_budget,
     history_frame_capacity,
 )
@@ -110,10 +110,7 @@ def select_bats_history(
 
     normalized_sampling_mode = str(sampling_mode).strip().lower()
     if normalized_sampling_mode not in {"priority_capped", "independent"}:
-        raise ValueError(
-            "BATS sampling_mode must be one of ['independent', 'priority_capped'], "
-            f"got {sampling_mode!r}"
-        )
+        raise ValueError(f"BATS sampling_mode must be one of ['independent', 'priority_capped'], got {sampling_mode!r}")
     sampled: list[tuple[float, int, float, dict[str, Any]]] = []
     for frame_index, item in candidates:
         probability = bats_keep_probability(
@@ -125,12 +122,8 @@ def select_bats_history(
         draw = random.Random(
             f"{int(seed)}:{dataset_name}:{episode_id}:{int(anchor_frame_index)}:{int(frame_index)}"
         ).random()
-        if draw < probability and (
-            normalized_sampling_mode != "independent" or len(sampled) < max_history_frames
-        ):
-            priority = (
-                draw / probability if normalized_sampling_mode == "priority_capped" and probability > 0.0 else 0.0
-            )
+        if draw < probability and (normalized_sampling_mode != "independent" or len(sampled) < max_history_frames):
+            priority = draw / probability if normalized_sampling_mode == "priority_capped" and probability > 0.0 else 0.0
             sampled.append((priority, int(frame_index), probability, item))
     if normalized_sampling_mode == "priority_capped" and len(sampled) > max_history_frames:
         sampled = sorted(sampled, key=lambda entry: (entry[0], entry[1]))[:max_history_frames]
@@ -165,20 +158,8 @@ def select_long_memory_candidate(
     return None
 
 
-def _candidate_frame_index(candidate: Mapping[str, Any]) -> int:
-    if "frame_index" in candidate:
-        return int(candidate["frame_index"])
-    metadata = candidate.get("navvla_eval")
-    if isinstance(metadata, Mapping) and "frame_index" in metadata:
-        return int(metadata["frame_index"])
-    for container_key in ("traveluav_episode",):
-        container = candidate.get(container_key)
-        if not isinstance(container, Mapping):
-            continue
-        metadata = container.get("navvla_eval")
-        if isinstance(metadata, Mapping) and "frame_index" in metadata:
-            return int(metadata["frame_index"])
-    raise KeyError("BATS candidate is missing frame_index")
+def _candidate_frame_index(candidate):
+    return int(candidate["frame_index"])
 
 
 def _positive_int(value: int, *, name: str) -> int:
@@ -186,13 +167,3 @@ def _positive_int(value: int, *, name: str) -> int:
     if integer <= 0:
         raise ValueError(f"{name} must be positive, got {value}")
     return integer
-
-
-__all__ = [
-    "BATSSelectionResult",
-    "bats_keep_probability",
-    "online_bats_history_budget",
-    "select_bats_history",
-    "select_long_memory_candidate",
-    "select_online_bats_history",
-]

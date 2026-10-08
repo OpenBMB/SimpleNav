@@ -96,9 +96,7 @@ def _build_single(data_cfg: Any, *, root: Any, overrides: Any | None = None) -> 
         visual_token_mode=str(value("visual_token_mode", "cached_history_online_current")),
         visual_token_profile=str(value("visual_token_profile", DEFAULT_MINICPM_V46_VISUAL_TOKEN_PROFILE)),
         history_sampling_mode=str(value("history_sampling_mode", "bats")),
-        max_online_history_frames=(
-            None if max_online_history_frames is None else int(max_online_history_frames)
-        ),
+        max_online_history_frames=(None if max_online_history_frames is None else int(max_online_history_frames)),
         token_budget=int(value("token_budget", DEFAULT_CONTEXT_TOKEN_BUDGET)),
         current_visual_tokens=int(value("current_visual_tokens", 64)),
         history_visual_tokens=int(value("history_visual_tokens", 4)),
@@ -111,6 +109,7 @@ def _build_single(data_cfg: Any, *, root: Any, overrides: Any | None = None) -> 
         use_dynamic_bats_k=as_bool(value("use_dynamic_bats_k", True)),
         budget_num_cameras=None if budget_num_cameras is None else int(budget_num_cameras),
         include_state=as_bool(value("include_state", False)),
+        state_dim=int(value("state_dim", 0)),
         require_long_memory_tokens=as_bool(value("require_long_memory_tokens", False)),
         allow_missing_long_memory=as_bool(value("allow_missing_long_memory", True)),
         action_extra_dim_mode=str(value("action_extra_dim_mode", "none")),

@@ -5,7 +5,6 @@ import math
 import torch
 import torch.nn as nn
 
-
 TIME_YAW_TVI_MODE = "time_yaw"
 TIME_CAMERA_POSE_TVI_MODE = "time_camera_pose"
 METRIC_CAMERA_POSE_TVI_MODE = "metric_camera_pose"
@@ -262,14 +261,10 @@ class NavVLATVIEmbedding(nn.Module):
         if embeddings.ndim != 2:
             raise ValueError(f"TVI embeddings must have shape [N, H], got {tuple(embeddings.shape)}")
         if embeddings.shape[-1] != self.hidden_size:
-            raise ValueError(
-                f"TVI embedding hidden dimension must be {self.hidden_size}, got {embeddings.shape[-1]}"
-            )
+            raise ValueError(f"TVI embedding hidden dimension must be {self.hidden_size}, got {embeddings.shape[-1]}")
         row_mask = torch.as_tensor(row_mask, device=embeddings.device)
         if row_mask.ndim != 1 or row_mask.shape[0] != embeddings.shape[0]:
-            raise ValueError(
-                f"TVI row mask must have shape [{embeddings.shape[0]}], got {tuple(row_mask.shape)}"
-            )
+            raise ValueError(f"TVI row mask must have shape [{embeddings.shape[0]}], got {tuple(row_mask.shape)}")
         row_mask = row_mask.to(dtype=torch.bool)
         mask_token = self.mask_token.to(device=embeddings.device, dtype=embeddings.dtype)
         return torch.where(row_mask.unsqueeze(-1), mask_token.unsqueeze(0), embeddings)
@@ -287,3 +282,21 @@ __all__ = [
     "sinusoidal_scalar_pe",
     "metric_camera_pose_features",
 ]
+
+
+def tvi_rows(*, mode, timestamps, azimuths, camera_poses=None):
+    """Construct features from observed metadata, identically for both readers."""
+    import numpy as np
+
+    count = len(timestamps)
+    width = get_tvi_input_dim(mode)
+    if mode == LEARNED_TOKEN_TVI_MODE:
+        return np.zeros((count, width), dtype=np.float32)
+    if mode == TIME_YAW_TVI_MODE:
+        return np.asarray(list(zip(timestamps, azimuths)), dtype=np.float32).reshape(count, width)
+    if count == 0:
+        return np.empty((0, width), dtype=np.float32)
+    poses = np.asarray(camera_poses, dtype=np.float32)
+    if poses.shape != (count, 6) or not np.isfinite(poses).all():
+        raise ValueError(f"Camera-pose TVI requires real [N,6] poses, got {poses.shape}")
+    return np.concatenate((np.asarray(timestamps, dtype=np.float32).reshape(count, 1), poses), axis=1)

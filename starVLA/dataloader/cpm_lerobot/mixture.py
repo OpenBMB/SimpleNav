@@ -33,9 +33,7 @@ class NavVLACPMMixtureDataset(Dataset):
         self.checkpoint_statistics_keys = [
             str(key)
             for key in (
-                checkpoint_statistics_keys
-                if checkpoint_statistics_keys is not None
-                else dataset_statistics_keys
+                checkpoint_statistics_keys if checkpoint_statistics_keys is not None else dataset_statistics_keys
             )
         ]
         self._lengths = [len(dataset) for dataset in self.datasets]
@@ -47,6 +45,12 @@ class NavVLACPMMixtureDataset(Dataset):
             for dataset_index, dataset in enumerate(self.datasets)
             for episode in dataset.episode_ranges
         ]
+
+    def model_input_profiles(self):
+        return {
+            key: dataset.input_profile
+            for key, dataset in zip(self.checkpoint_statistics_keys, self.datasets, strict=True)
+        }
 
     def __len__(self) -> int:
         return int(self._offsets[-1])

@@ -11,11 +11,12 @@ import pyarrow.parquet as pq
 from PIL import Image
 from torch.utils.data import Dataset
 
-from starVLA.model.modules.bats import BATSSelectionResult, select_bats_history
+from starVLA.model.modules.input_context import history_state, input_sample, select_history
 from starVLA.model.modules.tvi import (
     LEARNED_TOKEN_TVI_MODE,
     TIME_YAW_TVI_MODE,
     get_tvi_input_dim,
+    tvi_rows,
     uses_camera_pose_tvi,
 )
 from tool.navvla.compute_bats_k import (
@@ -25,8 +26,6 @@ from tool.navvla.compute_bats_k import (
 )
 from tool.navvla.context_index import DEFAULT_CONTEXT_TOKEN_BUDGET, resolve_context_index_paths
 from tool.navvla.statistics import (
-    body_frame_action_from_pose,
-    build_repeated_state_statistics,
     normalize_values,
     read_dataset_statistics,
     write_dataset_statistics,
@@ -38,7 +37,6 @@ from .parquet import LazyParquetRows
 from .sampler import EpisodeRange
 from .utils import as_bool, as_list, float_array, optional_float, optional_int, pose4, read_parquet_shards
 from .video import LazyVideoIndex, VideoReaderCache
-
 
 ACTION_TASK_TYPES = {"navigation", "driving", "tracking"}
 EPISODE_CACHE_SIZE = 32
@@ -82,6 +80,7 @@ class NavVLACPMDataset(Dataset):
         use_dynamic_bats_k: bool = True,
         budget_num_cameras: int | None = None,
         include_state: bool = False,
+        state_dim: int = 0,
         require_long_memory_tokens: bool = False,
         allow_missing_long_memory: bool = True,
         action_extra_dim_mode: str = "none",
@@ -120,14 +119,9 @@ class NavVLACPMDataset(Dataset):
             self.history_sampling_mode = "continuous_recent"
         if self.history_sampling_mode not in {"bats", "continuous_recent", "continuous_uniform"}:
             raise ValueError(f"unsupported history_sampling_mode={history_sampling_mode!r}")
-        self.max_online_history_frames = (
-            None if max_online_history_frames is None else int(max_online_history_frames)
-        )
+        self.max_online_history_frames = None if max_online_history_frames is None else int(max_online_history_frames)
         if self.max_online_history_frames is not None and self.max_online_history_frames < 0:
-            raise ValueError(
-                "max_online_history_frames must be non-negative or None, "
-                f"got {max_online_history_frames}"
-            )
+            raise ValueError(f"max_online_history_frames must be non-negative or None, got {max_online_history_frames}")
         self.token_budget = int(token_budget)
         self.current_visual_tokens = int(current_visual_tokens)
         self.history_visual_tokens = int(history_visual_tokens)
@@ -154,6 +148,7 @@ class NavVLACPMDataset(Dataset):
         if self.budget_num_cameras is not None and self.budget_num_cameras <= 0:
             raise ValueError(f"budget_num_cameras must be positive or None, got {budget_num_cameras}")
         self.include_state = as_bool(include_state)
+        self.state_dim = int(state_dim)
         self.require_long_memory_tokens = as_bool(require_long_memory_tokens)
         self.allow_missing_long_memory = as_bool(allow_missing_long_memory)
         self.use_context_index = self.history_sampling_mode == "bats" and self.require_long_memory_tokens
@@ -178,14 +173,10 @@ class NavVLACPMDataset(Dataset):
         task_schema = pq.read_schema(task_path)
         missing_task_columns = set(CPM_TASK_COLUMNS) - set(task_schema.names)
         if missing_task_columns:
-            raise ValueError(
-                "meta/tasks.parquet is missing required CPM task columns: "
-                f"{sorted(missing_task_columns)}"
-            )
+            raise ValueError(f"meta/tasks.parquet is missing required CPM task columns: {sorted(missing_task_columns)}")
         if str(task_schema.field("task_index").type) != "int64":
             raise ValueError(
-                "meta/tasks.parquet task_index must have dtype int64, "
-                f"got {task_schema.field('task_index').type}"
+                f"meta/tasks.parquet task_index must have dtype int64, got {task_schema.field('task_index').type}"
             )
         episode_columns = ["episode_index", "episode_id", "trajectory_id", "scene_id", "length"]
         episodes = read_parquet_shards(self.root / "meta" / "episodes", columns=episode_columns)
@@ -262,13 +253,48 @@ class NavVLACPMDataset(Dataset):
             for column in CPM_NONEMPTY_TASK_COLUMNS:
                 value = row[column]
                 if not isinstance(value, str) or not value.strip():
-                    raise ValueError(
-                        f"meta/tasks.parquet task_index={task_index} has empty or non-string {column}"
-                    )
-        self._task_row_by_index = {
-            task_index: row_position for row_position, task_index in enumerate(task_indices)
-        }
+                    raise ValueError(f"meta/tasks.parquet task_index={task_index} has empty or non-string {column}")
+        self._task_row_by_index = {task_index: row_position for row_position, task_index in enumerate(task_indices)}
         self.video_readers = VideoReaderCache()
+
+        platforms = {row["platform_text"] for row in task_inventory}
+        if len(platforms) != 1:
+            raise ValueError("Each model input profile must have a single platform_text")
+        self.input_profile = {
+            "dataset_name": str(self.info.get("dataset_name", self.root.name)),
+            "cameras": {
+                name: {"azimuth_rad": float(self.cameras[name]["azimuth_rad"])}
+                for name in self.required_cameras or self.cameras
+            },
+            "platform_text": next(iter(platforms)),
+            "state_dim": self.state_dim,
+            "budget_num_cameras": self._budget_camera_count(),
+            "camera_pose_position_frame": self.info["navvla"].get("camera_pose_position_frame", "world"),
+            "camera_pose_rotation_frame": self.info["navvla"].get("camera_pose_rotation_frame", "world"),
+            **{
+                name: getattr(self, name)
+                for name in (
+                    "image_resize",
+                    "visual_token_mode",
+                    "visual_token_profile",
+                    "history_sampling_mode",
+                    "current_visual_tokens",
+                    "history_visual_tokens",
+                    "tvi_tokens",
+                    "current_wrapper_tokens",
+                    "history_wrapper_tokens",
+                    "bats_seed",
+                    "bats_epsilon",
+                    "bats_k",
+                    "use_dynamic_bats_k",
+                    "include_state",
+                    "require_long_memory_tokens",
+                    "action_extra_dim_mode",
+                    "tvi_mode",
+                )
+            },
+            "token_budget": self._history_selection_token_budget(camera_count=self._budget_camera_count()),
+        }
 
     def _data_columns(self) -> list[str]:
         columns = [
@@ -289,6 +315,9 @@ class NavVLACPMDataset(Dataset):
                 f"observation.camera_pose.{camera_name}" for camera_name in self.required_cameras or list(self.cameras)
             )
         return columns
+
+    def model_input_profiles(self):
+        return {self.checkpoint_statistics_key: self.input_profile}
 
     def __len__(self) -> int:
         return int(self._sample_indices.shape[0])
@@ -329,9 +358,7 @@ class NavVLACPMDataset(Dataset):
         if not len(sample_indices):
             return np.asarray([], dtype=self._history_frame_counts.dtype)
 
-        unresolved = sample_indices[
-            self._history_frame_counts[sample_indices] == self._history_frame_count_sentinel
-        ]
+        unresolved = sample_indices[self._history_frame_counts[sample_indices] == self._history_frame_count_sentinel]
         if len(unresolved):
             self._compute_history_frame_counts(np.unique(unresolved))
         return self._history_frame_counts[sample_indices].copy()
@@ -342,11 +369,14 @@ class NavVLACPMDataset(Dataset):
     def _compute_history_frame_counts(self, sample_indices: np.ndarray) -> None:
         assert self._history_frame_counts is not None
         data_indices = self._sample_indices[sample_indices]
-        episode_positions = np.searchsorted(
-            self._data_episode_starts,
-            data_indices,
-            side="right",
-        ) - 1
+        episode_positions = (
+            np.searchsorted(
+                self._data_episode_starts,
+                data_indices,
+                side="right",
+            )
+            - 1
+        )
         if np.any(episode_positions < 0):
             raise IndexError("sample data index does not resolve to an episode")
 
@@ -363,9 +393,7 @@ class NavVLACPMDataset(Dataset):
             selected_samples = sample_indices[in_episode]
             selected_data_indices = data_indices[in_episode]
             if np.any(selected_data_indices >= int(episode.start) + int(episode.length)):
-                raise IndexError(
-                    f"sample data index does not resolve inside episode {episode.episode_index}"
-                )
+                raise IndexError(f"sample data index does not resolve inside episode {episode.episode_index}")
             frame_indices = self._frame_indices_for_episode(episode)
             episode_id = str(self.episodes.loc[episode.episode_index]["episode_id"])
             for sample_position, data_index in zip(
@@ -435,23 +463,14 @@ class NavVLACPMDataset(Dataset):
         action_padding_mask = np.asarray(as_list(row["action.padding_mask"]), dtype=bool)
         qa_target = task.get("answer")
         compute_flow_loss = bool(action_available and task["task_type"] in ACTION_TASK_TYPES)
-        sample: dict[str, Any] = {
-            "images": images,
-            "current_tvi": self._current_tvi(row, float(row["timestamp"]), images),
-            "history_tokens": np.zeros((0, 1, 3), dtype=np.float32),
-            "history_tvi": self._context_tvi(
-                context_view,
-                prefix="history",
-                episode_index=int(row["episode_index"]),
-            ),
-            "history_mask": np.asarray(context_view["history_mask"], dtype=bool),
-            "lang": str(task["task"]),
-            "platform_text": str(task.get("platform_text", "")),
-            "action": self._normalized_action(row),
-            "action_padding_mask": action_padding_mask,
-            "distance_to_goal": self._distance_to_goal(row, raw_state),
-            "qa_target": qa_target,
-            "metadata": self._sample_metadata(
+        sample = input_sample(
+            images=images,
+            current_tvi=self._current_tvi(row, float(row["timestamp"]), images),
+            history_tvi=self._context_tvi(context_view, prefix="history", episode_index=int(row["episode_index"])),
+            history_mask=context_view["history_mask"],
+            instruction=str(task["task"]),
+            platform_text=str(task["platform_text"]),
+            metadata=self._sample_metadata(
                 row=row,
                 task=task,
                 context_key=context_key,
@@ -462,7 +481,13 @@ class NavVLACPMDataset(Dataset):
                 compute_flow_loss=compute_flow_loss,
                 qa_target=qa_target,
             ),
-        }
+        )
+        sample.update(
+            action=self._normalized_action(row),
+            action_padding_mask=action_padding_mask,
+            distance_to_goal=self._distance_to_goal(row, raw_state),
+            qa_target=qa_target,
+        )
         if self.include_state:
             sample["state"] = self._history_relative_state(row, context_view, raw_state)
         if self.require_long_memory_tokens:
@@ -526,9 +551,7 @@ class NavVLACPMDataset(Dataset):
         anchor_frame_index = int(row["frame_index"])
         anchor_position = int(np.searchsorted(frame_indices, anchor_frame_index, side="left"))
         if anchor_position >= len(frame_indices) or int(frame_indices[anchor_position]) != anchor_frame_index:
-            raise KeyError(
-                f"current BATS frame does not resolve: episode={episode_index} frame={anchor_frame_index}"
-            )
+            raise KeyError(f"current BATS frame does not resolve: episode={episode_index} frame={anchor_frame_index}")
         episode_range = self._episode_range_by_index[episode_index]
         expected_row_position = int(episode_range.start) + anchor_position
         if expected_row_position != int(row_position):
@@ -551,9 +574,7 @@ class NavVLACPMDataset(Dataset):
             frame_index = int(selected["frame_index"])
             frame_position = int(np.searchsorted(frame_indices, frame_index, side="left"))
             step_index = len(history_steps)
-            history_steps.append(
-                {"frame_index": frame_index, "timestamp": float(timestamps[frame_position])}
-            )
+            history_steps.append({"frame_index": frame_index, "timestamp": float(timestamps[frame_position])})
             for camera_name in camera_names:
                 history_blocks.append(
                     {
@@ -567,9 +588,7 @@ class NavVLACPMDataset(Dataset):
 
         dataset_name = str(self.info.get("dataset_name", self.root.name))
         return {
-            "context.index_key": (
-                f"{dataset_name}/{self.split}/{episode_id}/f{anchor_frame_index:06d}/online-bats-v1"
-            ),
+            "context.index_key": (f"{dataset_name}/{self.split}/{episode_id}/f{anchor_frame_index:06d}/online-bats-v1"),
             "index": int(row["index"]),
             "current_tvi_time": float(row["timestamp"]),
             "bats_k": float(selection.effective_k),
@@ -583,41 +602,13 @@ class NavVLACPMDataset(Dataset):
             "long_memory_mask": [],
         }
 
-    def _select_bats_history(
-        self,
-        *,
-        episode_id: str,
-        frame_indices: np.ndarray,
-        anchor_position: int,
-    ) -> BATSSelectionResult:
-        anchor_position = int(anchor_position)
-        if anchor_position < 0 or anchor_position >= len(frame_indices):
-            raise IndexError(
-                f"BATS anchor position {anchor_position} outside episode length {len(frame_indices)}"
-            )
-        anchor_frame_index = int(frame_indices[anchor_position])
-        candidates = [
-            (int(frame_index), {"frame_index": int(frame_index)})
-            for frame_index in frame_indices[:anchor_position].tolist()
-        ]
-        camera_count = self._budget_camera_count()
-        return select_bats_history(
-            candidates=candidates,
-            anchor_frame_index=anchor_frame_index,
+    def _select_bats_history(self, *, episode_id, frame_indices, anchor_position):
+        candidates = [(int(index), {"frame_index": int(index)}) for index in frame_indices[:anchor_position]]
+        return select_history(
+            candidates,
+            anchor_frame_index=int(frame_indices[anchor_position]),
             episode_id=str(episode_id),
-            dataset_name=str(self.info.get("dataset_name", self.root.name)),
-            seed=self.bats_seed,
-            epsilon=self.bats_epsilon,
-            k=self.bats_k,
-            use_dynamic_bats_k=self.use_dynamic_bats_k,
-            token_budget=self._history_selection_token_budget(camera_count=camera_count),
-            budget_num_cameras=camera_count,
-            current_visual_tokens=self.current_visual_tokens,
-            history_visual_tokens=self.history_visual_tokens,
-            tvi_tokens=self.tvi_tokens,
-            current_wrapper_tokens=self.current_wrapper_tokens,
-            history_wrapper_tokens=self.history_wrapper_tokens,
-            sampling_mode="priority_capped",
+            profile=self.input_profile,
         )
 
     def _frame_indices_for_episode(self, episode: EpisodeRange) -> np.ndarray:
@@ -630,14 +621,10 @@ class NavVLACPMDataset(Dataset):
             columns=["episode_index", "frame_index"],
         )
         if any(int(row["episode_index"]) != int(episode.episode_index) for row in rows):
-            raise ValueError(
-                f"episode {episode.episode_index} data rows are not contiguous at start={episode.start}"
-            )
+            raise ValueError(f"episode {episode.episode_index} data rows are not contiguous at start={episode.start}")
         frame_indices = np.asarray([int(row["frame_index"]) for row in rows], dtype=np.int64)
         if len(frame_indices) > 1 and np.any(frame_indices[1:] <= frame_indices[:-1]):
-            raise ValueError(
-                f"episode {episode.episode_index} frame order differs from data row order"
-            )
+            raise ValueError(f"episode {episode.episode_index} frame order differs from data row order")
         self._history_frame_indices[int(episode.episode_index)] = frame_indices
         return frame_indices
 
@@ -651,27 +638,22 @@ class NavVLACPMDataset(Dataset):
                 f"range [{episode_range.start}, {episode_range.start + episode_range.length})"
             )
         camera_names = list(self.required_cameras or self.cameras.keys())
-        max_history_steps = self._max_history_steps(camera_count=self._budget_camera_count())
-        available_positions = np.arange(int(episode_range.start), int(row_position), dtype=np.int64)
-        if max_history_steps <= 0 or not len(available_positions):
-            selected_positions = np.asarray([], dtype=np.int64)
-        elif self.history_sampling_mode == "continuous_uniform" and len(available_positions) > max_history_steps:
-            selected_positions = np.linspace(
-                0,
-                len(available_positions) - 1,
-                num=max_history_steps,
-                dtype=np.int64,
-            )
-            selected_positions = available_positions[np.unique(selected_positions)]
-        else:
-            selected_positions = available_positions[-max_history_steps:]
         episode = self.episodes.loc[episode_index]
         episode_id = str(episode["episode_id"])
+        frame_indices = self._frame_indices_for_episode(episode_range)
+        candidates = [
+            (int(frame), {"frame_index": int(frame), "row_position": int(episode_range.start) + i})
+            for i, frame in enumerate(frame_indices[:local_position])
+        ]
+        selection = select_history(
+            candidates, anchor_frame_index=int(row["frame_index"]), episode_id=episode_id, profile=self.input_profile
+        )
+        selected_positions = [item["row_position"] for item in selection.selected]
         history_steps: list[dict[str, float]] = []
         history_blocks: list[dict[str, Any]] = []
         history_refs: list[str] = []
         history_mask: list[bool] = []
-        for history_row_position in selected_positions.tolist():
+        for history_row_position in selected_positions:
             history_row = self.data[history_row_position]
             step_index = len(history_steps)
             history_steps.append({"timestamp": float(history_row["timestamp"])})
@@ -727,9 +709,7 @@ class NavVLACPMDataset(Dataset):
                 frame_index = int(selected["frame_index"])
                 position = int(np.searchsorted(frame_indices, frame_index, side="left"))
                 if position >= len(frame_indices) or int(frame_indices[position]) != frame_index:
-                    raise KeyError(
-                        f"BATS context frame does not resolve: episode={episode_index} frame={frame_index}"
-                    )
+                    raise KeyError(f"BATS context frame does not resolve: episode={episode_index} frame={frame_index}")
                 step_index = len(steps)
                 steps.append({"frame_index": frame_index, "timestamp": float(timestamps[position])})
                 camera_mask = int(selected["camera_mask"])
@@ -753,9 +733,7 @@ class NavVLACPMDataset(Dataset):
         policy = str(context_row.get("context_policy_version", "bats-v1"))
         return {
             **context_row,
-            "context.index_key": (
-                f"{dataset_name}/{self.split}/{episode_id}/f{int(row['frame_index']):06d}/{policy}"
-            ),
+            "context.index_key": (f"{dataset_name}/{self.split}/{episode_id}/f{int(row['frame_index']):06d}/{policy}"),
             "current_tvi_time": float(row["timestamp"]),
             "history_steps": history_steps,
             "history_blocks": history_blocks,
@@ -990,33 +968,18 @@ class NavVLACPMDataset(Dataset):
         )
         return image.resize(self.image_resize) if self.image_resize is not None else image
 
-    def _current_tvi(
-        self,
-        row: dict[str, Any],
-        timestamp: float,
-        images: dict[str, Image.Image],
-    ) -> np.ndarray:
-        if self.tvi_mode == LEARNED_TOKEN_TVI_MODE:
-            values = np.zeros((len(images), self.tvi_dim), dtype=np.float32)
-        elif self.tvi_mode == TIME_YAW_TVI_MODE:
-            values = [[float(timestamp), float(self.cameras[camera_name]["azimuth_rad"])] for camera_name in images]
-        else:
-            values = [
-                [
-                    float(timestamp),
-                    *self._camera_pose(
-                        row[f"observation.camera_pose.{camera_name}"],
-                        camera_name=camera_name,
-                        row_context=(
-                            f"current row index={row.get('index', '<unknown>')} "
-                            f"episode={row.get('episode_index', '<unknown>')} "
-                            f"frame={row.get('frame_index', '<unknown>')}"
-                        ),
-                    ).tolist(),
-                ]
-                for camera_name in images
+    def _current_tvi(self, row, timestamp, images):
+        return tvi_rows(
+            mode=self.tvi_mode,
+            timestamps=[timestamp] * len(images),
+            azimuths=[self.cameras[c]["azimuth_rad"] for c in images],
+            camera_poses=[
+                self._camera_pose(row[f"observation.camera_pose.{c}"], camera_name=c, row_context="current")
+                for c in images
             ]
-        return np.asarray(values, dtype=np.float32).reshape(-1, self.tvi_dim)
+            if uses_camera_pose_tvi(self.tvi_mode)
+            else None,
+        )
 
     def _context_tvi(
         self,
@@ -1067,7 +1030,12 @@ class NavVLACPMDataset(Dataset):
             if camera_name not in camera_poses:
                 raise KeyError(f"camera pose cache is missing camera={camera_name!r} for episode={episode_index}")
             values.append([step_timestamp, *camera_poses[camera_name][position].tolist()])
-        return np.asarray(values, dtype=np.float32).reshape(-1, self.tvi_dim)
+        return tvi_rows(
+            mode=self.tvi_mode,
+            timestamps=[v[0] for v in values],
+            azimuths=[self.cameras[str(b["camera_name"])]["azimuth_rad"] for b in blocks],
+            camera_poses=[v[1:] for v in values] if uses_camera_pose_tvi(self.tvi_mode) else None,
+        )
 
     @staticmethod
     def _camera_pose(value: Any, *, camera_name: str, row_context: str) -> np.ndarray:
@@ -1075,15 +1043,15 @@ class NavVLACPMDataset(Dataset):
             pose = float_array(value)
         except (TypeError, ValueError) as exc:
             raise ValueError(
-                f"camera pose for {camera_name} at {row_context} must contain exactly 6 float values"
+                f"camera pose for {camera_name} at {row_context} must contain 6 pose values and optional FOV"
             ) from exc
-        if pose.shape != (6,):
+        if pose.shape not in {(6,), (7,)}:
             raise ValueError(
-                f"camera pose for {camera_name} at {row_context} must contain exactly 6 values, got shape {pose.shape}"
+                f"camera pose for {camera_name} at {row_context} must contain 6 pose values and optional FOV, got shape {pose.shape}"
             )
         if not np.isfinite(pose).all():
             raise ValueError(f"camera pose for {camera_name} at {row_context} must contain only finite values")
-        return pose.astype(np.float32)
+        return pose[:6].astype(np.float32)
 
     def _task(self, task_index: int) -> dict[str, Any]:
         try:
@@ -1157,20 +1125,11 @@ class NavVLACPMDataset(Dataset):
         progress[mask] = 1.0
         return progress.reshape(-1, 1)
 
-    def _history_relative_state(self, row: dict[str, Any], context: dict[str, Any], raw_state: np.ndarray) -> np.ndarray:
-        history_steps = as_list(context["history_steps"])
-        raw_chunks = np.zeros((len(history_steps), int(self.info["navvla"]["action_dim"])), dtype=np.float32)
-        if not history_steps:
-            return raw_chunks.reshape(-1)
-        poses = [self._pose_for_history_step(int(row["episode_index"]), step) for step in history_steps] + [raw_state]
-        chunks = np.stack(
-            [body_frame_action_from_pose(poses[index - 1], poses[index]) for index in range(1, len(poses))],
-            axis=0,
-        )
-        raw_chunks[-chunks.shape[0] :] = chunks
-        state_stats = build_repeated_state_statistics(self._action_stats(), len(history_steps))
-        normalized = normalize_values(raw_chunks.reshape(-1), state_stats).reshape(raw_chunks.shape)
-        return normalized.reshape(-1).astype(np.float32)
+    def _history_relative_state(self, row, context, raw_state):
+        poses = [
+            self._pose_for_history_step(int(row["episode_index"]), step) for step in as_list(context["history_steps"])
+        ]
+        return history_state(poses, raw_state, action_stats=self._action_stats(), state_dim=self.state_dim)
 
     def _pose_for_history_step(self, episode_index: int, step: dict[str, Any]) -> np.ndarray:
         if "frame_index" in step:

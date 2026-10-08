@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+import numpy as np
 import torch
 from torch import nn
 
@@ -79,9 +80,7 @@ class LongMemoryTokenAggregator(nn.Module):
         dtype: torch.dtype,
     ) -> torch.Tensor:
         if value.ndim != 2 or int(value.shape[1]) != self.tvi_dim:
-            raise ValueError(
-                f"{name} must have shape [N, {self.tvi_dim}], got {tuple(value.shape)}"
-            )
+            raise ValueError(f"{name} must have shape [N, {self.tvi_dim}], got {tuple(value.shape)}")
         return value.to(device=device, dtype=dtype)
 
     def aggregate_sample(
@@ -105,11 +104,17 @@ class LongMemoryTokenAggregator(nn.Module):
         )
         source_mask = source_mask.to(device=source_tokens.device, dtype=torch.bool).reshape(-1)
         if int(source_tvi.shape[0]) < source_count:
-            raise ValueError(f"source_tvi length {int(source_tvi.shape[0])} is shorter than source token count {source_count}")
+            raise ValueError(
+                f"source_tvi length {int(source_tvi.shape[0])} is shorter than source token count {source_count}"
+            )
         if int(source_mask.shape[0]) < source_count:
-            raise ValueError(f"source_mask length {int(source_mask.shape[0])} is shorter than source token count {source_count}")
+            raise ValueError(
+                f"source_mask length {int(source_mask.shape[0])} is shorter than source token count {source_count}"
+            )
         if len(source_blocks) < source_count:
-            raise ValueError(f"source_blocks length {len(source_blocks)} is shorter than source token count {source_count}")
+            raise ValueError(
+                f"source_blocks length {len(source_blocks)} is shorter than source token count {source_count}"
+            )
 
         token_outputs: list[torch.Tensor] = []
         tvi_outputs: list[torch.Tensor] = []
@@ -118,10 +123,7 @@ class LongMemoryTokenAggregator(nn.Module):
         source_mask = source_mask[:source_count]
         for camera_name in required_cameras:
             camera_matches = torch.tensor(
-                [
-                    str(block.get("camera_name", "")) == str(camera_name)
-                    for block in source_blocks[:source_count]
-                ],
+                [str(block.get("camera_name", "")) == str(camera_name) for block in source_blocks[:source_count]],
                 device=source_tokens.device,
                 dtype=torch.bool,
             )
@@ -186,8 +188,10 @@ class LongMemoryTokenAggregator(nn.Module):
         if len(source_blocks) < source_count:
             raise ValueError("source_blocks must cover every source token block")
 
-        projected = self.project_source_tokens(source_tokens) if source_count else source_tokens.new_zeros(
-            (0, self.long_memory_visual_tokens, hidden_dim)
+        projected = (
+            self.project_source_tokens(source_tokens)
+            if source_count
+            else source_tokens.new_zeros((0, self.long_memory_visual_tokens, hidden_dim))
         )
         previous_by_camera: dict[str, tuple[torch.Tensor, torch.Tensor, dict[str, Any]]] = {}
         if previous_tokens is not None:
@@ -196,7 +200,10 @@ class LongMemoryTokenAggregator(nn.Module):
                     f"previous_tokens must have shape [C, long_tokens, hidden], got {tuple(previous_tokens.shape)}"
                 )
             previous_tokens = previous_tokens.to(device=source_tokens.device, dtype=source_tokens.dtype)
-            if int(previous_tokens.shape[1]) != self.long_memory_visual_tokens or int(previous_tokens.shape[2]) != hidden_dim:
+            if (
+                int(previous_tokens.shape[1]) != self.long_memory_visual_tokens
+                or int(previous_tokens.shape[2]) != hidden_dim
+            ):
                 raise ValueError("previous long-memory token shape does not match the configured aggregator")
             if previous_tvi is None:
                 raise ValueError("previous_tvi is required when previous_tokens are provided")
@@ -206,7 +213,9 @@ class LongMemoryTokenAggregator(nn.Module):
                 device=source_tokens.device,
                 dtype=source_tokens.dtype,
             )
-            if int(previous_tvi.shape[0]) < int(previous_tokens.shape[0]) or len(previous_blocks) < int(previous_tokens.shape[0]):
+            if int(previous_tvi.shape[0]) < int(previous_tokens.shape[0]) or len(previous_blocks) < int(
+                previous_tokens.shape[0]
+            ):
                 raise ValueError("previous_tvi and previous_blocks must cover every previous memory block")
             for index in range(int(previous_tokens.shape[0])):
                 block = dict(previous_blocks[index])
@@ -258,3 +267,138 @@ class LongMemoryTokenAggregator(nn.Module):
                 [],
             )
         return torch.stack(token_outputs, dim=0), torch.stack(tvi_outputs, dim=0), output_blocks
+
+
+def attach_navvla_long_memory_tokens(
+    samples: list[dict[str, Any]],
+    *,
+    aggregator,
+    tvi_dim: int,
+    hidden_size: int,
+    device: torch.device,
+    dtype: torch.dtype,
+) -> None:
+    for sample in samples:
+        if sample.get("long_memory_tokens") is not None:
+            continue
+        source_tokens = sample.get("long_memory_source_tokens")
+        if source_tokens is None:
+            continue
+        source_tokens_tensor = torch.as_tensor(source_tokens, device=device, dtype=dtype)
+        if aggregator is None:
+            raise ValueError("long_memory source tokens require long_memory_visual_tokens > 0")
+        metadata = dict(sample.get("metadata", {}) or {})
+        source_blocks = list(metadata.get("long_memory_blocks") or [])
+        required_cameras = sample["metadata"]["required_cameras"]
+        source_tvi = torch.as_tensor(
+            sample.get(
+                "long_memory_source_tvi",
+                np.zeros((int(source_tokens_tensor.shape[0]), tvi_dim), dtype=np.float32),
+            ),
+            device=device,
+            dtype=dtype,
+        )
+        if source_tvi.ndim != 2 or int(source_tvi.shape[1]) != tvi_dim:
+            raise ValueError(f"long_memory_source_tvi must have shape [N, {tvi_dim}], got {tuple(source_tvi.shape)}")
+        source_mask = torch.as_tensor(
+            sample.get(
+                "long_memory_source_mask",
+                np.ones((int(source_tokens_tensor.shape[0]),), dtype=bool),
+            ),
+            device=device,
+            dtype=torch.bool,
+        )
+        source_slot_count = int(source_tokens_tensor.shape[0])
+        source_block_count = len(source_blocks)
+        if source_block_count > source_slot_count:
+            raise ValueError(
+                f"long_memory metadata has {source_block_count} blocks but only {source_slot_count} source token slots"
+            )
+        if source_block_count < source_slot_count:
+            source_tokens_tensor = source_tokens_tensor[:source_block_count]
+            source_tvi = source_tvi[:source_block_count]
+            source_mask = source_mask.reshape(-1)[:source_block_count]
+        source_count = int(source_tokens_tensor.shape[0])
+        missing_long_memory = source_count == 0 or not bool(source_mask[:source_count].any().item())
+        if missing_long_memory:
+            sample["_long_memory_zero_dependency"] = True
+            continue
+        tokens, tvi, blocks = aggregator.aggregate_sample(
+            source_tokens=source_tokens_tensor,
+            source_tvi=source_tvi,
+            source_mask=source_mask,
+            source_blocks=source_blocks,
+            required_cameras=required_cameras,
+        )
+        sample["long_memory_tokens"] = tokens
+        sample["long_memory_tvi"] = tvi.detach().to(torch.float32).cpu().numpy()
+        metadata["long_memory_blocks"] = blocks
+        sample["metadata"] = metadata
+
+
+def compute_navvla_online_long_memory_updates(
+    samples: list[dict[str, Any]],
+    *,
+    aggregator,
+    tvi_dim: int,
+    hidden_size: int,
+    device: torch.device,
+    dtype: torch.dtype,
+) -> list[dict[str, Any]]:
+    if aggregator is None:
+        return []
+    updates: list[dict[str, Any]] = []
+    for sample in samples:
+        source_tokens = sample.get("online_long_memory_update_tokens")
+        if source_tokens is None:
+            continue
+        source_tokens_tensor = torch.as_tensor(source_tokens, device=device, dtype=dtype)
+        if int(source_tokens_tensor.shape[0]) == 0:
+            continue
+        metadata = dict(sample.get("metadata", {}) or {})
+        previous_tokens_value = sample.get("long_memory_tokens")
+        previous_tvi_value = sample.get("long_memory_tvi")
+        previous_tokens = (
+            None if previous_tokens_value is None else torch.as_tensor(previous_tokens_value, device=device, dtype=dtype)
+        )
+        previous_tvi = (
+            None if previous_tvi_value is None else torch.as_tensor(previous_tvi_value, device=device, dtype=dtype)
+        )
+        source_tvi = torch.as_tensor(
+            sample.get(
+                "online_long_memory_update_tvi",
+                np.zeros((int(source_tokens_tensor.shape[0]), tvi_dim), dtype=np.float32),
+            ),
+            device=device,
+            dtype=dtype,
+        )
+        source_mask = torch.as_tensor(
+            sample.get(
+                "online_long_memory_update_mask",
+                np.ones((int(source_tokens_tensor.shape[0]),), dtype=bool),
+            ),
+            device=device,
+            dtype=torch.bool,
+        )
+        tokens, tvi, blocks = aggregator.update_state(
+            previous_tokens=previous_tokens,
+            previous_tvi=previous_tvi,
+            previous_blocks=list(metadata.get("long_memory_blocks") or []),
+            source_tokens=source_tokens_tensor,
+            source_tvi=source_tvi,
+            source_mask=source_mask,
+            source_blocks=list(metadata.get("online_long_memory_update_blocks") or []),
+            required_cameras=sample["metadata"]["required_cameras"],
+        )
+        updates.append(
+            {
+                "tokens": tokens.detach().to(torch.float16).cpu().numpy(),
+                "tvi": tvi.detach().to(torch.float32).cpu().numpy(),
+                "blocks": blocks,
+                "frame_index": int(metadata["online_long_memory_update_frame_index"]),
+            }
+        )
+    return updates
+
+
+__all__ = ["LongMemoryTokenAggregator", "attach_navvla_long_memory_tokens", "compute_navvla_online_long_memory_updates"]

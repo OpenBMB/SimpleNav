@@ -11,7 +11,6 @@ from tool.navvla.visual_token_cache import DEFAULT_MINICPM_V46_VISUAL_TOKEN_PROF
 from .cache import Qwen35PooledHistoryTokenStore, VisualTokenBatch, open_visual_token_store
 from .utils import as_list
 
-
 TOKEN_STORE_CACHE_SIZE = 4
 
 
@@ -30,20 +29,19 @@ class NavVLACPMCollator:
             raise ValueError(f"CPM batch mixes visual_token_mode values: {sorted(visual_modes)}")
         visual_mode = next(iter(visual_modes))
         visual_profiles = {
-            str(
-                (sample.get("metadata", {}) or {}).get(
-                    "visual_token_profile", DEFAULT_MINICPM_V46_VISUAL_TOKEN_PROFILE
-                )
-            )
+            str((sample.get("metadata", {}) or {}).get("visual_token_profile", DEFAULT_MINICPM_V46_VISUAL_TOKEN_PROFILE))
             for sample in batch
         }
-        if visual_mode == "cached_history_online_current" and (len(visual_profiles) != 1 or not next(iter(visual_profiles))):
-            raise ValueError(f"CPM cached-token batch must use one non-empty visual_token_profile: {sorted(visual_profiles)}")
+        if visual_mode == "cached_history_online_current" and (
+            len(visual_profiles) != 1 or not next(iter(visual_profiles))
+        ):
+            raise ValueError(
+                f"CPM cached-token batch must use one non-empty visual_token_profile: {sorted(visual_profiles)}"
+            )
         if visual_mode == "online_images":
             cameras = sorted({camera for sample in batch for camera in sample.get("history_images", {})})
             collated["history_images"] = {
-                camera: [sample.get("history_images", {}).get(camera, []) for sample in batch]
-                for camera in cameras
+                camera: [sample.get("history_images", {}).get(camera, []) for sample in batch] for camera in cameras
             }
         elif visual_mode == "cached_history_online_current":
             history_batches, history_grids, cache_stage, encoder_ckpt, storage_encoding = self._load_token_batches(
@@ -53,10 +51,6 @@ class NavVLACPMCollator:
             collated.update(
                 {
                     "history_cached_embeds": history_tokens,
-                    "history_cached_deepstack_embeds": np.zeros(
-                        (len(batch), 0, history_tokens.shape[1], *history_tokens.shape[2:]),
-                        dtype=history_tokens.dtype,
-                    ),
                     "history_cached_mask": history_mask,
                 }
             )
@@ -71,8 +65,8 @@ class NavVLACPMCollator:
             raise ValueError(f"unsupported visual_token_mode={visual_mode!r}")
 
         if any("long_memory_source_tvi" in sample for sample in batch):
-            long_batches, long_grids, long_cache_stage, long_encoder_ckpt, long_storage_encoding = self._load_token_batches(
-                batch, metadata_key="long_memory_token_refs"
+            long_batches, long_grids, long_cache_stage, long_encoder_ckpt, long_storage_encoding = (
+                self._load_token_batches(batch, metadata_key="long_memory_token_refs")
             )
             source_tokens, source_present = _pad_token_batches(long_batches)
             source_mask = np.zeros_like(source_present)
@@ -81,9 +75,7 @@ class NavVLACPMCollator:
                 if not length:
                     continue
                 configured = as_list(sample["metadata"].get("long_memory_mask", []))
-                source_mask[batch_index, :length] = (
-                    np.asarray(configured[:length], dtype=bool) if configured else True
-                )
+                source_mask[batch_index, :length] = np.asarray(configured[:length], dtype=bool) if configured else True
             collated["long_memory_source_tokens"] = source_tokens
             collated["long_memory_source_mask"] = source_mask
             collated["long_memory_source_tvi"] = _pad_tvi(
@@ -109,9 +101,7 @@ class NavVLACPMCollator:
             root = str(metadata.get("dataset_root", "")).strip()
             if not root:
                 raise KeyError("CPM sample metadata is missing dataset_root")
-            profile = str(
-                metadata.get("visual_token_profile", DEFAULT_MINICPM_V46_VISUAL_TOKEN_PROFILE)
-            ).strip()
+            profile = str(metadata.get("visual_token_profile", DEFAULT_MINICPM_V46_VISUAL_TOKEN_PROFILE)).strip()
             if not profile:
                 raise KeyError("CPM sample metadata is missing visual_token_profile")
             indices, refs = groups.setdefault((root, profile), ([], []))
@@ -172,7 +162,6 @@ def _collate_core(batch: list[dict[str, Any]]) -> dict[str, Any]:
             for camera in all_cameras
         },
         "current_tvi": [sample["current_tvi"] for sample in batch],
-        "history_tokens": np.zeros((len(batch), max_history, 1, 3), dtype=np.float32),
         "history_tvi": _pad_tvi([sample["history_tvi"] for sample in batch], max_length=max_history),
         "history_mask": _pad_bool([sample["history_mask"] for sample in batch], max_length=max_history),
         "lang": [sample["lang"] for sample in batch],
@@ -184,19 +173,7 @@ def _collate_core(batch: list[dict[str, Any]]) -> dict[str, Any]:
         "metadata": [sample["metadata"] for sample in batch],
     }
     if any("state" in sample for sample in batch):
-        max_state = max((int(sample["state"].shape[0]) for sample in batch if "state" in sample), default=0)
-        state = np.zeros((len(batch), max_state), dtype=np.float32)
-        padding = np.ones((len(batch), max_state), dtype=bool)
-        present = np.zeros((len(batch),), dtype=bool)
-        for batch_index, sample in enumerate(batch):
-            if "state" not in sample:
-                continue
-            length = int(sample["state"].shape[0])
-            present[batch_index] = True
-            if length:
-                state[batch_index, -length:] = sample["state"]
-                padding[batch_index, -length:] = False
-        output.update({"state": state, "state_padding_mask": padding, "state_present": present})
+        output["state"] = np.stack([sample["state"] for sample in batch])
     return output
 
 

@@ -12,12 +12,12 @@ Conventions:
 
 # Standard Library
 import argparse
-from contextlib import contextmanager
 import json
 import numbers
 import os
 import random
 import time
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Tuple
 
@@ -37,7 +37,6 @@ from transformers import AutoProcessor, get_scheduler
 # Local Modules
 from starVLA.dataloader import build_dataloader
 from starVLA.model.framework.base_framework import build_framework
-from starVLA.model.framework.share_tools import apply_config_compat
 from starVLA.training.openloop_eval import (
     OpenLoopMetricAccumulator,
     build_openloop_eval_loaders,
@@ -97,7 +96,11 @@ def setup_directories(cfg) -> Path:
 def prepare_data(cfg, accelerator, output_dir) -> DataLoader:
     """Prepare VLA training data."""
     logger.info(f"Creating VLA Dataset with Mixture `{cfg.datasets.vla_data.data_mix}`")
+    cfg.datasets.vla_data.state_dim = int(cfg.framework.action_model.state_dim)
     vla_train_dataloader = build_dataloader(cfg=cfg, dataset_py=cfg.datasets.vla_data.dataset_py)
+    if accelerator.is_main_process:
+        profiles = vla_train_dataloader.dataset.model_input_profiles()
+        (Path(output_dir) / "model_assets.json").write_text(json.dumps(profiles, indent=2))
 
     accelerator.dataloader_config.dispatch_batches = False
     if dist.is_initialized():
@@ -190,16 +193,10 @@ class VLATrainer(TrainerUtils):
         trainer_cfg = self.config.trainer
         trainer_get = getattr(trainer_cfg, "get", None)
         openloop_cfg = (
-            trainer_get("openloop_eval", None)
-            if callable(trainer_get)
-            else getattr(trainer_cfg, "openloop_eval", None)
+            trainer_get("openloop_eval", None) if callable(trainer_get) else getattr(trainer_cfg, "openloop_eval", None)
         )
         openloop_get = getattr(openloop_cfg, "get", None)
-        enabled = (
-            openloop_get("enabled", False)
-            if callable(openloop_get)
-            else getattr(openloop_cfg, "enabled", False)
-        )
+        enabled = openloop_get("enabled", False) if callable(openloop_get) else getattr(openloop_cfg, "enabled", False)
         if openloop_cfg is None or not bool(enabled):
             self.openloop_eval_loaders = []
             return
@@ -251,9 +248,7 @@ class VLATrainer(TrainerUtils):
         if "tensorboard" in trackers:
             from torch.utils.tensorboard import SummaryWriter
 
-            self.tensorboard_writer = SummaryWriter(
-                log_dir=os.path.join(self.config.output_dir, "tensorboard")
-            )
+            self.tensorboard_writer = SummaryWriter(log_dir=os.path.join(self.config.output_dir, "tensorboard"))
 
     def _finish_trackers(self):
         """Close configured metric trackers on the global main process."""
@@ -406,9 +401,7 @@ class VLATrainer(TrainerUtils):
         """Save current training state."""
         self._capture_training_progress()
         save_format = getattr(self.config.trainer, "save_format", "pt")
-        save_training_state = force_training_state or bool(
-            getattr(self.config.trainer, "save_training_state", False)
-        )
+        save_training_state = force_training_state or bool(getattr(self.config.trainer, "save_training_state", False))
         checkpoint_path = os.path.join(self.checkpoint_dir, f"steps_{self.completed_steps}")
 
         if save_training_state:
@@ -466,9 +459,7 @@ class VLATrainer(TrainerUtils):
         if self.tensorboard_writer is not None:
             for name, value in metrics.items():
                 if isinstance(value, numbers.Number) and not isinstance(value, bool):
-                    self.tensorboard_writer.add_scalar(
-                        f"train/{name}", float(value), self.completed_steps
-                    )
+                    self.tensorboard_writer.add_scalar(f"train/{name}", float(value), self.completed_steps)
             self.tensorboard_writer.flush()
 
         display_metrics = {
@@ -559,8 +550,7 @@ class VLATrainer(TrainerUtils):
 
                 should_stop = stop_at_step is not None and self.completed_steps >= stop_at_step
                 periodic_save = (
-                    self.completed_steps % self.config.trainer.save_interval == 0
-                    and self.completed_steps > 0
+                    self.completed_steps % self.config.trainer.save_interval == 0 and self.completed_steps > 0
                 )
                 if periodic_save or (should_stop and save_on_stop):
                     self._save_checkpoint(force_training_state=should_stop and save_on_stop)
@@ -585,10 +575,7 @@ class VLATrainer(TrainerUtils):
         if stop_at_step <= 0:
             raise ValueError(f"stop_at_step must be positive, got {stop_at_step}")
         if stop_at_step > max_train_steps:
-            raise ValueError(
-                f"stop_at_step ({stop_at_step}) cannot exceed max_train_steps "
-                f"({max_train_steps})"
-            )
+            raise ValueError(f"stop_at_step ({stop_at_step}) cannot exceed max_train_steps ({max_train_steps})")
         return stop_at_step
 
     def _should_run_openloop_eval(self, *, step: int, fresh_only: bool = False) -> bool:
@@ -597,9 +584,11 @@ class VLATrainer(TrainerUtils):
         openloop_cfg = self.config.trainer.openloop_eval
         step = int(step)
         if step == 0:
-            return bool(openloop_cfg.get("run_at_step_zero", True)) and (
-                not fresh_only or self.resume_state_checkpoint_path is None
-            ) and self._last_openloop_eval_step != 0
+            return (
+                bool(openloop_cfg.get("run_at_step_zero", True))
+                and (not fresh_only or self.resume_state_checkpoint_path is None)
+                and self._last_openloop_eval_step != 0
+            )
         if fresh_only:
             return False
         interval = int(self.config.trainer.eval_interval)
@@ -685,9 +674,7 @@ class VLATrainer(TrainerUtils):
                         self.completed_steps,
                     )
             self.tensorboard_writer.flush()
-        return {
-            "openloop_macro_normalized_mse": report["macro_normalized_action_mse"]
-        }
+        return {"openloop_macro_normalized_mse": report["macro_normalized_action_mse"]}
 
     def _gather_openloop_results(self, local_results: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
         if not dist.is_initialized():
@@ -704,20 +691,11 @@ class VLATrainer(TrainerUtils):
         *,
         dataset_name: str,
     ) -> dict[str, Any]:
-        matching = [
-            row
-            for rank_rows in gathered
-            for row in rank_rows
-            if row["dataset"] == dataset_name
-        ]
+        matching = [row for rank_rows in gathered for row in rank_rows if row["dataset"] == dataset_name]
         accumulator = OpenLoopMetricAccumulator.merge([row["payload"] for row in matching])
         duration = sum(
             max(
-                (
-                    float(row["duration_seconds"])
-                    for row in matching
-                    if row["split"] == split
-                ),
+                (float(row["duration_seconds"]) for row in matching if row["split"] == split),
                 default=0.0,
             )
             for split in ("vln_val_seen", "vln_val_unseen")
@@ -871,11 +849,6 @@ if __name__ == "__main__":
     dotlist = normalize_dotlist_args(clipargs)
     cli_cfg = OmegaConf.from_dotlist(dotlist)
     cfg = OmegaConf.merge(cfg, cli_cfg)
-
-    # Normalise legacy YAML keys into the current `version_id == "0.21"` schema.
-    # This is idempotent and does not modify framework class signatures.
-    # See bar/config_收紧.md for the rationale.
-    cfg = apply_config_compat(cfg)
 
     # Store source config path for later copying to output dir
     cfg.config_yaml = args.config_yaml

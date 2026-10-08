@@ -7,26 +7,20 @@ Note: No device placement or optimizer concerns handled here (delegated to train
 """
 
 import importlib
-from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, Dict, List
 
-import numpy as np
 import torch
 from omegaconf import OmegaConf
 from transformers import PretrainedConfig, PreTrainedModel
 
-from starVLA.model.framework.share_tools import dict_to_namespace, read_mode_config
-from starVLA.model.modules.tvi import TIME_CAMERA_POSE_TVI_MODE
-from starVLA.model.tools import FRAMEWORK_REGISTRY, FrameworkTools, auto_get_trainable_modules
+from starVLA.model.framework import FRAMEWORK_REGISTRY
+from starVLA.model.framework.share_tools import read_mode_config
 from starVLA.training.trainer_utils import initialize_overwatch
 
 logger = initialize_overwatch(__name__)
 _FRAMEWORKS_IMPORTED = False
-_RELEASE_FRAMEWORK_MODULES = (
-    "starVLA.model.framework.VLM4A.navvla_cpm",
-    "starVLA.model.framework.VLM4A.navvla_qwen35_cpm",
-)
+_RELEASE_FRAMEWORK_MODULES = ("starVLA.model.framework.VLM4A.simplenav",)
 
 
 def _auto_import_framework_modules() -> None:
@@ -40,7 +34,7 @@ def _auto_import_framework_modules() -> None:
     _FRAMEWORKS_IMPORTED = True
 
 
-def build_framework(cfg): # The single entry point for building different model frameworks
+def build_framework(cfg):  # The single entry point for building different model frameworks
     """
     Build a framework model from config.
     Args:
@@ -54,63 +48,15 @@ def build_framework(cfg): # The single entry point for building different model 
     _auto_import_framework_modules()
 
     framework_id = cfg.framework.name
+    if ":" in framework_id:
+        module, name = framework_id.split(":")
+        return getattr(importlib.import_module(module), name)(cfg)
     if framework_id not in FRAMEWORK_REGISTRY._registry:
         available = sorted(FRAMEWORK_REGISTRY._registry.keys())
-        raise NotImplementedError(
-            f"Framework `{framework_id}` is not implemented. Available frameworks: {available}"
-        )
+        raise NotImplementedError(f"Framework `{framework_id}` is not implemented. Available frameworks: {available}")
 
     model_class = FRAMEWORK_REGISTRY[framework_id]
     return model_class(cfg)
-
-
-def _framework_name(model: torch.nn.Module) -> str | None:
-    config = getattr(model, "config", None)
-    if isinstance(config, Mapping):
-        framework = config.get("framework")
-    else:
-        framework = getattr(config, "framework", None)
-    if framework is None:
-        return None
-    if isinstance(framework, Mapping):
-        value = framework.get("name")
-    else:
-        value = getattr(framework, "name", None)
-    return None if value is None else str(value)
-
-
-def load_framework_state_dict_compatibly(model: torch.nn.Module, state_dict: Dict[str, torch.Tensor]) -> None:
-    model_keys = set(model.state_dict().keys())
-    checkpoint_keys = set(state_dict.keys())
-    unexpected_keys = checkpoint_keys - model_keys
-    removed_stop_head_keys = {key for key in unexpected_keys if key.startswith("stop_head.")}
-    if removed_stop_head_keys:
-        logger.warning(f"Ignoring removed stop_head keys in state_dict: {removed_stop_head_keys}")
-        state_dict = {key: value for key, value in state_dict.items() if key not in removed_stop_head_keys}
-    incompatible = model.load_state_dict(state_dict, strict=False)
-    missing = set(incompatible.missing_keys)
-    unexpected = set(incompatible.unexpected_keys)
-    framework_name = _framework_name(model)
-    allowed_missing: set[str] = set()
-    if framework_name == "navvla_cpm":
-        allowed_missing.add("tvi_embedding.mask_token")
-        tvi_embedding = getattr(model, "tvi_embedding", None)
-        if getattr(tvi_embedding, "mode", None) == TIME_CAMERA_POSE_TVI_MODE:
-            allowed_missing.update(key for key in model_keys if key.startswith("tvi_embedding.pose_mlp."))
-    if not missing.issubset(allowed_missing) or unexpected:
-        raise RuntimeError(
-            f"state_dict mismatch: missing_keys={sorted(missing)}, unexpected_keys={sorted(unexpected)}"
-        )
-    if missing:
-        logger.warning(f"Initializing newly added parameters absent from checkpoint: {sorted(missing)}")
-
-
-def load_state_dict_allowing_removed_stop_head(model: torch.nn.Module, state_dict: Dict[str, torch.Tensor]) -> None:
-    load_framework_state_dict_compatibly(model, state_dict)
-
-
-# PreTrainedModel, AutoModel, PretrainedConfig,  are so good, find sometime to study them
-# TODO @JinhuiYE find sometime to merge yaml config with transformer config
 
 
 class baseframework(PreTrainedModel):
@@ -158,7 +104,7 @@ class baseframework(PreTrainedModel):
 
         Args:
             examples: Same schema as *forward* (minus ``action`` which is optional).
-            **kwargs: Framework-specific inference options (e.g. ``use_ddim``).
+            **kwargs: Framework-specific inference options.
 
         Returns:
             dict: Must contain ``"normalized_actions"`` (np.ndarray [B, T, action_dim]).
@@ -176,7 +122,7 @@ class baseframework(PreTrainedModel):
         if tag == "vla":
             return type(self).forward is not baseframework.forward
         if tag == "vlm":
-            return hasattr(self, "qwen_vl_interface") or type(self).forward_vlm is not baseframework.forward_vlm
+            return type(self).forward_vlm is not baseframework.forward_vlm
         return False
 
     def compute_loss(self, tag: str, batch, loss_scale: dict = None) -> Dict[str, torch.Tensor] | None:
@@ -217,27 +163,8 @@ class baseframework(PreTrainedModel):
         # Apply loss scale and filter to Tensor values only
         return {k: v * scale for k, v in out.items() if isinstance(v, torch.Tensor)}
 
-    def forward_vlm(self, batch) -> Dict[str, torch.Tensor]:
-        """VLM forward pass (default implementation).
-
-        Delegates to ``self.qwen_vl_interface(**batch)`` which is present on
-        every framework subclass that uses a Qwen VL backbone.
-
-        Subclasses may override to add custom VLM logic.
-
-        Args:
-            batch: dict produced by the VLM dataloader.
-
-        Returns:
-            dict: Must contain ``"vlm_loss"`` (torch.Tensor scalar).
-        """
-        if not hasattr(self, "qwen_vl_interface"):
-            raise NotImplementedError(
-                f"{type(self).__name__} has no `qwen_vl_interface`. "
-                "Override forward_vlm() to support VLM training."
-            )
-        out = self.qwen_vl_interface(**batch)
-        return {"vlm_loss": out.loss}
+    def forward_vlm(self, batch):
+        raise NotImplementedError("This model does not support VLM training")
 
     @classmethod
     def from_pretrained(
@@ -270,42 +197,40 @@ class baseframework(PreTrainedModel):
         pretrained_checkpoint = Path(pretrained_checkpoint)
         model_config, norm_stats = read_mode_config(pretrained_checkpoint)  # read config and norm_stats
         if config_overrides:
+            allowed = {("framework", "qwenvl", "base_vlm"), ("framework", "qwenvl", "attn_implementation")}
+
+            def leaves(value, prefix=()):
+                for key, item in value.items():
+                    if isinstance(item, dict):
+                        yield from leaves(item, (*prefix, key))
+                    else:
+                        yield (*prefix, key)
+
+            unsupported = set(leaves(config_overrides)) - allowed
+            if unsupported:
+                raise ValueError(f"Model structure is owned by checkpoint config; unsupported overrides: {unsupported}")
             model_config = OmegaConf.to_container(
                 OmegaConf.merge(OmegaConf.create(model_config), OmegaConf.create(config_overrides)),
                 resolve=True,
             )
 
-        config = dict_to_namespace(model_config)
+        config = OmegaConf.create(model_config)
         model_config = config
-        model_config.trainer.pretrained_checkpoint = None
-        
+
         FrameworkModel = build_framework(cfg=model_config)
         # set for action un-norm
         FrameworkModel.norm_stats = norm_stats
+        import json
+
+        assets_path = pretrained_checkpoint.parents[1] / "model_assets.json"
+        FrameworkModel.input_profiles = json.loads(assets_path.read_text())
         # Load from Checkpoint (Custom --> should load both *projector* and *llm* weights)
         if pretrained_checkpoint.suffix == ".safetensors":
             from safetensors.torch import load_file
 
             model_state_dict = load_file(str(pretrained_checkpoint))
         else:
-            model_state_dict = torch.load(pretrained_checkpoint, map_location="cpu")
+            model_state_dict = torch.load(pretrained_checkpoint, map_location="cpu", weights_only=True)
         # logger.info(f"Loading model weights from `{pretrained_checkpoint}`")
-        model_keys = set(FrameworkModel.state_dict().keys())
-        checkpoint_keys = set(model_state_dict.keys())
-        try:
-            load_state_dict_allowing_removed_stop_head(FrameworkModel, model_state_dict)
-        except RuntimeError as e:
-            # must keep all keys matched
-            common_keys = model_keys.intersection(checkpoint_keys)
-            missing_keys = model_keys - common_keys
-            unexpected_keys = checkpoint_keys - common_keys
-            if missing_keys:
-                logger.warning(f"Missing keys in state_dict: {missing_keys}")
-            if unexpected_keys:
-                logger.warning(f"Unexpected keys in state_dict: {unexpected_keys}")
-
-            raise e
-
-        # **ensure model is on GPU**
-        FrameworkModel = FrameworkModel
+        FrameworkModel.load_state_dict(model_state_dict, strict=True)
         return FrameworkModel
