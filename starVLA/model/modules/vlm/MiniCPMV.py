@@ -220,14 +220,16 @@ class _MiniCPM_VL_Interface(nn.Module):
         return self.processor.apply_chat_template(
             messages,
             tokenize=True,
-            padding=True,
             add_generation_prompt=False,
             return_dict=True,
             return_tensors="pt",
-            downsample_mode=self.downsample_mode,
-            max_slice_nums=self.max_slice_nums,
-            use_image_id=self.use_image_id,
-            chat_template_kwargs={"enable_thinking": self.enable_thinking},
+            enable_thinking=self.enable_thinking,
+            processor_kwargs={
+                "padding": True,
+                "downsample_mode": self.downsample_mode,
+                "max_slice_nums": self.max_slice_nums,
+                "use_image_id": self.use_image_id,
+            },
         ).to(self.model.device)
 
     def generate(self, **kwargs: Any) -> Any:

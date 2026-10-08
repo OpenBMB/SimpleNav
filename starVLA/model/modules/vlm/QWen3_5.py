@@ -330,11 +330,11 @@ class _QWen3_5_VL_Interface(nn.Module):
         inputs = self.processor.apply_chat_template(
             messages,
             tokenize=True,
-            padding=True,
             add_generation_prompt=False,
             add_vision_id=False,
             return_dict=True,
             return_tensors="pt",
+            processor_kwargs={"padding": True},
         )
         return inputs.to(self.model.device) if move_to_device else inputs
 
@@ -564,11 +564,11 @@ class _QWen3_5_VL_Interface(nn.Module):
         inputs = self.processor.apply_chat_template(
             messages,
             tokenize=True,
-            padding=True,
             add_generation_prompt=True,
             add_vision_id=False,
             return_dict=True,
             return_tensors="pt",
+            processor_kwargs={"padding": True},
         ).to(self.model.device)
         model = self.model.model
         grids = inputs["image_grid_thw"]
