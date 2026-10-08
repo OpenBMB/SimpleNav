@@ -1,5 +1,3 @@
-# SimpleNav
-
 <p align="center">
   <img src="docs/assets/logo_large_en.png" alt="SimpleNav logo" width="900">
 </p>
@@ -31,36 +29,24 @@ SimpleNav is a simple, unified, reproducible, and extensible framework for navig
 <details>
 <summary>Table of Contents</summary>
 
-- [SimpleNav](#simplenav)
-  - [Vision](#vision)
-  - [Why SimpleNav](#why-simplenav)
-  - [Framework](#framework)
-  - [Data Protocol](#data-protocol)
-  - [Model](#model)
-  - [Results](#results)
-    - [Demos](#demos)
-  - [Risks and Limitations](#risks-and-limitations)
-  - [Quick Start](#quick-start)
-    - [1. Clone and install the model environment](#1-clone-and-install-the-model-environment)
-    - [2. Prepare data](#2-prepare-data)
-    - [3. Train](#3-train)
-    - [4. Evaluate](#4-evaluate)
-  - [Documentation](#documentation)
-  - [Roadmap](#roadmap)
-  - [Citation](#citation)
-  - [License](#license)
-  - [Acknowledgements](#acknowledgements)
+- [Why SimpleNav](#why-simplenav)
+- [Framework](#framework)
+- [Data Protocol](#data-protocol)
+- [Model](#model)
+- [Results](#results)
+  - [Demos](#demos)
+- [Quick Start](#quick-start)
+  - [1. Clone and install the model environment](#1-clone-and-install-the-model-environment)
+  - [2. Prepare data](#2-prepare-data)
+  - [3. Train](#3-train)
+  - [4. Evaluate](#4-evaluate)
+- [Documentation](#documentation)
+- [Roadmap](#roadmap)
+- [Risks and Limitations](#risks-and-limitations)
+- [Citation](#citation)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 </details>
-
-## Vision
-
-Navigation research should not require a separate data-model-evaluation stack for every dataset. SimpleNav provides one research loop in which:
-
-- source datasets enter through explicit conversion adapters;
-- model components remain replaceable and composable;
-- training runs are defined by portable configs;
-- benchmark-specific behavior stays inside evaluation plugins;
-- results remain traceable to code, data, config, checkpoint, and simulator versions.
 
 ## Why SimpleNav
 
@@ -142,13 +128,6 @@ Click a thumbnail below to play the full rollout video hosted on the project web
   </tr>
 </table>
 
-
-## Risks and Limitations
-
-- SimpleNav is a research framework, not a safety-certified flight-control system. Do not use model outputs as the sole control authority.
-- Validate in simulation and controlled environments with qualified supervision, manual override, emergency stop, geofencing, and independent safety monitors.
-- Performance can degrade under distribution shift, perception or communication latency, actuator/simulator mismatch, and coordinate or action-protocol errors.
-- No guarantee is made for collision avoidance, fail-safe behavior, or regulatory compliance; operators remain responsible for deployment decisions.
 
 ## Quick Start
 
@@ -284,6 +263,10 @@ For the released R2R-CE and RxR-CE Qwen3.5 workflow, use [VLN-CE Training and Ev
 - Expand model backbones, history and memory modules, action heads, and platform adapters.
 - Publish reproducible result bundles with resolved configs and episode-level artifacts.
 - Connect evaluation failures to data generation and the next training iteration.
+
+## Risks and Limitations
+
+SimpleNav is a research framework whose performance may vary across environments and platforms. Validate models in simulation and controlled settings before deployment, with human oversight and independent safety measures; operators remain responsible for safe use.
 
 ## Citation
 
