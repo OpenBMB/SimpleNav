@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import os
 import subprocess
 from pathlib import Path
@@ -8,15 +7,11 @@ from pathlib import Path
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PORTABLE_TRAINING_CONFIG = (
-    REPO_ROOT / "examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_openfly_portable.yaml"
-)
+PORTABLE_TRAINING_CONFIG = REPO_ROOT / "examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_openfly_portable.yaml"
 PORTABLE_TRAINING_CONFIGS = {
     "openfly": PORTABLE_TRAINING_CONFIG,
-    "aerialvln": REPO_ROOT
-    / "examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_aerialvln_portable.yaml",
-    "traveluav": REPO_ROOT
-    / "examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_traveluav_portable.yaml",
+    "aerialvln": REPO_ROOT / "examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_aerialvln_portable.yaml",
+    "traveluav": REPO_ROOT / "examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_traveluav_portable.yaml",
 }
 PORTABLE_EVAL_CONFIG = REPO_ROOT / "NavVLAeval/openfly/config_portable.yaml"
 PORTABLE_EVAL_CONFIGS = tuple(
@@ -68,7 +63,8 @@ def test_portable_training_config_preserves_reference_experiment_contract() -> N
         trainer = portable["trainer"]
         launcher = portable["launcher"]
 
-        assert portable["framework"]["name"] == "navvla_qwen35_cpm"
+        assert portable["framework"]["name"] == "simplenav"
+        assert portable["framework"]["qwenvl"]["type"] == "qwen35"
         assert portable["framework"]["qwenvl"]["attn_implementation"] == "flash_attention_2"
         assert portable["framework"]["qwenvl"]["action_placeholder_token"] == "<|fim_pad|>"
         assert portable["framework"]["action_model"]["action_horizon"] == 8
@@ -79,12 +75,7 @@ def test_portable_training_config_preserves_reference_experiment_contract() -> N
         assert trainer["max_train_steps"] == expected[name]["max_train_steps"]
         assert dataset["dataset_statistics_key"] == expected[name]["statistics_key"]
         assert dataset["required_cameras"] == expected[name]["cameras"]
-        assert (
-            data["per_device_batch_size"]
-            * trainer["gradient_accumulation_steps"]
-            * launcher["num_processes"]
-            == 240
-        )
+        assert data["per_device_batch_size"] * trainer["gradient_accumulation_steps"] * launcher["num_processes"] == 240
 
         path_values = [
             portable["run_root_dir"],
@@ -113,25 +104,13 @@ def test_training_launcher_materializes_portable_paths_from_any_working_director
     assert "dry-run complete" in completed.stdout
 
 
-def test_portable_eval_config_materializes_all_supported_model_paths(tmp_path: Path) -> None:
+def test_portable_eval_config_materializes_simulator_and_driver_paths(tmp_path: Path) -> None:
     source = _load_yaml(PORTABLE_EVAL_CONFIG)
     config_dir = tmp_path / "NavVLAeval/openfly"
     config_dir.mkdir(parents=True)
-    local_root = tmp_path / "local"
-    checkpoint = local_root / "checkpoints/openfly/final_model/pytorch_model.pt"
-    checkpoint.parent.mkdir(parents=True)
-    checkpoint.touch()
-    (checkpoint.parent.parent / "dataset_statistics.json").write_text(
-        json.dumps({"vln_train_enhanced_lerobot_vln_train": {"action": {}}}),
-        encoding="utf-8",
-    )
-    (local_root / "data/OpenFly/openfly_env/splits").mkdir(parents=True)
-    (local_root / "data/OpenFly/openfly_env/splits/seen.txt").touch()
-    (local_root / "simulators/airsim_runtime").mkdir(parents=True)
-    (local_root / "models/Qwen3.5-4B").mkdir(parents=True)
+    (config_dir.parent / "driver_paths.yaml").write_text("LD_LIBRARY_PATH: []\n")
     config_path = config_dir / "config_portable.yaml"
     config_path.write_text(yaml.safe_dump(source, sort_keys=False), encoding="utf-8")
-
     previous = Path.cwd()
     try:
         os.chdir(tmp_path.parent)
@@ -140,18 +119,25 @@ def test_portable_eval_config_materializes_all_supported_model_paths(tmp_path: P
         cfg = load_eval_config(config_path)
     finally:
         os.chdir(previous)
-
-    assert cfg.model.checkpoint == checkpoint.resolve()
-    assert cfg.model.kwargs["repo_root"] == str(tmp_path.resolve())
-    assert cfg.model.kwargs["config_overrides"]["framework"]["qwenvl"]["base_vlm"] == str(
-        (local_root / "models/Qwen3.5-4B").resolve()
-    )
+    assert cfg.model.uri == "ws://127.0.0.1:10093"
+    assert cfg.env.kwargs["env_root"] == str((tmp_path / "local/data/OpenFly/openfly_env").resolve())
+    assert cfg.raw["driver_paths_file"] == str(config_dir.parent / "driver_paths.yaml")
+    assert "dataset" not in cfg.raw
 
 
 def test_portable_benchmark_configs_are_relative_and_complete() -> None:
     for path in (PORTABLE_EVAL_CONFIG, *PORTABLE_EVAL_CONFIGS):
         config = _load_yaml(path)
-        assert set(config) >= {"benchmark", "input", "model", "dataset", "env", "parallel", "output"}
+        assert set(config) >= {
+            "benchmark",
+            "input",
+            "model",
+            "observation",
+            "env",
+            "parallel",
+            "output",
+            "driver_paths_file",
+        }
         text = path.read_text(encoding="utf-8")
         assert "/nfsdata/" not in text
         assert "/data1/" not in text

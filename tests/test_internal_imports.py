@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import ast
-from pathlib import Path
 import subprocess
-
+from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 INTERNAL_ROOTS = ("starVLA", "examples", "deployment", "tool", "NavVLAeval")
@@ -47,6 +46,7 @@ def test_maintained_tree_has_no_new_missing_internal_imports() -> None:
             for relative_root in INTERNAL_ROOTS
             for path in (REPO_ROOT / relative_root).rglob("*.py")
         }
+    published_files = {path for path in published_files if (REPO_ROOT / path).exists()}
     for relative_path in published_files:
         if not relative_path.startswith(INTERNAL_ROOTS):
             continue
