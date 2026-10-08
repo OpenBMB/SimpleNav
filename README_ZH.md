@@ -103,12 +103,12 @@ SimpleNav 通过明确的接口贯通异构导航数据、长时程 VLA 模型�
 
 ### 轨迹增强对比
 
-每个示例对齐一条原始轨迹与增强轨迹；点击动图可打开 MP4。
+每个预览对比一条原始轨迹与增强轨迹；点击缩略图可播放项目主页托管的完整 MP4。
 
 <table>
   <tr>
-    <td align="center"><a href="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif"><img src="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif" alt="AerialVLN 增强前后视频对比" width="420"></a><br><strong>AerialVLN · 示例 1</strong><br><img src="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN 增强前后轨迹图" width="420"></td>
-    <td align="center"><a href="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.gif"><img src="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.gif" alt="OpenFly 增强前后视频对比" width="420"></a><br><strong>OpenFly · Episode 000008</strong><br><img src="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly 增强前后轨迹图" width="420"></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.mp4"><img src="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.jpg" alt="AerialVLN 增强前后视频对比" width="420"></a><br><strong>AerialVLN · 示例 1</strong><br><img src="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN 增强前后轨迹图" width="420"></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.mp4"><img src="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.jpg" alt="OpenFly 增强前后视频对比" width="420"></a><br><strong>OpenFly · Episode 000008</strong><br><img src="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly 增强前后轨迹图" width="420"></td>
   </tr>
 </table>
 
@@ -139,20 +139,20 @@ SimpleNav 将视觉语言骨干、筛选后的长历史、时空视角上下文�
 
 ### 演示
  
-部分 Rollout 轨迹预览展示，完整视频见[项目主页视频库](https://simplenav.github.io/#demos)。
+点击下面的缩略图可播放项目主页托管的完整 Rollout 视频；更多视频见[项目主页视频库](https://simplenav.github.io/#demos)。
 
 <table>
   <tr>
-    <td align="center"><a href="https://simplenav.github.io/#demos"><img src="docs/assets/demos/previews/openfly.gif" alt="OpenFly Rollout 轨迹" width="420"></a><br><strong>OpenFly · Env 16</strong></td>
-    <td align="center"><a href="https://simplenav.github.io/#demos"><img src="docs/assets/demos/previews/traveluav.gif" alt="TravelUAV Rollout 轨迹" width="420"></a><br><strong>TravelUAV · Modern City</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/demos/openfly/env16_ep000420.mp4"><img src="docs/assets/demos/previews/openfly.jpg" alt="OpenFly Rollout 轨迹" width="420"></a><br><strong>OpenFly · Env 16</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/demos/traveluav/moderncity_ep000405.mp4"><img src="docs/assets/demos/previews/traveluav.jpg" alt="TravelUAV Rollout 轨迹" width="420"></a><br><strong>TravelUAV · Modern City</strong></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/assets/demos/previews/aerialvln.gif" alt="AerialVLN Rollout 轨迹" width="420"><br><strong>AerialVLN · Env 8</strong></td>
-    <td align="center"><img src="docs/assets/demos/previews/rxr.gif" alt="RxR-CE Rollout 轨迹" width="420"><br><strong>RxR-CE · Episode 10129</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/demos/aerialvln/env8.mp4"><img src="docs/assets/demos/previews/aerialvln.jpg" alt="AerialVLN Rollout 轨迹" width="420"></a><br><strong>AerialVLN · Env 8</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/demos/rxr/ep10129.mp4"><img src="docs/assets/demos/previews/rxr.jpg" alt="RxR-CE Rollout 轨迹" width="420"></a><br><strong>RxR-CE · Episode 10129</strong></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://simplenav.github.io/#demos"><img src="docs/assets/demos/previews/evt_bench.gif" alt="EVT-Bench Scene 2 Rollout 轨迹" width="420"></a><br><strong>EVT-Bench · Scene 2</strong></td>
-    <td align="center"><a href="https://simplenav.github.io/#demos"><img src="docs/assets/demos/evt_bench/scene30.jpg" alt="EVT-Bench Scene 30 Rollout 轨迹" width="420"></a><br><strong>EVT-Bench · Scene 30</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/demos/evt_bench/scene2.mp4"><img src="docs/assets/demos/previews/evt_bench.jpg" alt="EVT-Bench Scene 2 Rollout 轨迹" width="420"></a><br><strong>EVT-Bench · Scene 2</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/demos/evt_bench/scene30.mp4"><img src="docs/assets/demos/evt_bench/scene30.jpg" alt="EVT-Bench Scene 30 Rollout 轨迹" width="420"></a><br><strong>EVT-Bench · Scene 30</strong></td>
   </tr>
 </table>
 

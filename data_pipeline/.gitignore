@@ -29,7 +29,6 @@ ENVs/
 vln_train/
 vln_train_enhanced*/
 *.mp4
-!docs/assets/trajectory_comparisons/*.mp4
 *.zip
 *.parquet
 *.npy

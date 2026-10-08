@@ -1,0 +1,107 @@
+# Python bytecode and native extension builds
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.dylib
+*.dll
+
+# Python packaging and distributions
+.Python
+.eggs/
+*.egg-info/
+*.egg
+build/
+dist/
+wheels/
+pip-wheel-metadata/
+MANIFEST
+
+# Virtual environments and local environment settings
+.venv/
+/venv/
+/env/
+/ENV/
+.conda/
+.direnv/
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+
+# Test, coverage, type-checking and lint caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.pytype/
+.tox/
+.nox/
+.hypothesis/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+nosetests.xml
+.ipynb_checkpoints/
+
+# Editor and operating-system files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# SimpleNav downloaded data, models, simulators and runtime bundles
+/local/
+/datasets/
+/ENVs/
+/airsim_runtime/
+/eval_runtime/
+/python/
+
+# Training, evaluation and data-pipeline outputs
+/results/
+/eval_results/
+/checkpoints/
+/cache/
+/runs/
+/outputs/
+/reports/
+/videos/
+/data_pipeline/outputs/
+wandb/
+lightning_logs/
+events.out.tfevents.*
+.render_staging/
+*.log
+*.tmp
+*.partial
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+
+# Large generated/downloaded artifacts belong outside the source repository.
+# Keep configs, uv.lock, manifests and small static documentation images tracked.
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.whl
+*.parquet
+*.npy
+*.npz
+*.lmdb
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.gif
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z

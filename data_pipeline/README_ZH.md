@@ -24,7 +24,7 @@
 
 下面展示 AerialVLN 和 OpenFly 数据增强前后的轨迹与图像对比。视频按照归一化三维累计路径进度对齐两条序列：左侧为 **RAW**，右侧为 **ENHANCED**。轨迹图中，蓝色表示源轨迹采样点，橙色表示增强后的采样点，绿色圆点表示起点，红色叉号表示终点。
 
-点击视频预览可打开对应的 H.264 MP4；点击轨迹图可查看原始分辨率图片。
+点击缩略图可播放项目主页托管的 H.264 MP4；点击轨迹图可查看原始分辨率图片。
 
 ### AerialVLN
 
@@ -32,7 +32,7 @@
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.mp4">
-    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif" alt="AerialVLN 增强前后视频对比" width="448">
+    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.jpg" alt="AerialVLN 增强前后视频对比" width="448">
   </a>
 </p>
 
@@ -44,7 +44,7 @@
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.mp4">
-    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.gif" alt="第二组 AerialVLN 增强前后视频对比" width="448">
+    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.jpg" alt="第二组 AerialVLN 增强前后视频对比" width="448">
   </a>
 </p>
 
@@ -58,7 +58,7 @@
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.mp4">
-    <img src="docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.gif" alt="OpenFly 增强前后视频对比" width="448">
+    <img src="docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.jpg" alt="OpenFly 增强前后视频对比" width="448">
   </a>
 </p>
 
@@ -70,7 +70,7 @@
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/openfly_002240_aligned_raw_vs_enhanced.mp4">
-    <img src="docs/assets/trajectory_comparisons/openfly_002240_aligned_raw_vs_enhanced.gif" alt="第二组 OpenFly 增强前后视频对比" width="448">
+    <img src="docs/assets/trajectory_comparisons/openfly_002240_aligned_raw_vs_enhanced.jpg" alt="第二组 OpenFly 增强前后视频对比" width="448">
   </a>
 </p>
 

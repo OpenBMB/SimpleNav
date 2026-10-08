@@ -24,7 +24,7 @@ Raw inputs and the source `vln_train` remain read-only. Trajectory augmentation 
 
 The following examples compare source and enhanced trajectories from AerialVLN and OpenFly. The videos align the two sequences by normalized cumulative 3-D path progress: **RAW** is shown on the left and **ENHANCED** on the right. In the trajectory plots, blue denotes the source samples, orange denotes the enhanced samples, the green marker is the start, and the red marker is the terminal point.
 
-Click a video preview to open the corresponding H.264 MP4, or click a trajectory plot to view it at full resolution.
+Click a thumbnail to play the corresponding H.264 MP4 hosted on the project website, or click a trajectory plot to view it at full resolution.
 
 ### AerialVLN
 
@@ -32,7 +32,7 @@ Click a video preview to open the corresponding H.264 MP4, or click a trajectory
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.mp4">
-    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.gif" alt="AerialVLN raw and enhanced video comparison" width="448">
+    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.jpg" alt="AerialVLN raw and enhanced video comparison" width="448">
   </a>
 </p>
 
@@ -44,7 +44,7 @@ Click a video preview to open the corresponding H.264 MP4, or click a trajectory
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.mp4">
-    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.gif" alt="Second AerialVLN raw and enhanced video comparison" width="448">
+    <img src="docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M3ODARH_aligned_raw_vs_enhanced.jpg" alt="Second AerialVLN raw and enhanced video comparison" width="448">
   </a>
 </p>
 
@@ -58,7 +58,7 @@ Click a video preview to open the corresponding H.264 MP4, or click a trajectory
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.mp4">
-    <img src="docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.gif" alt="OpenFly raw and enhanced video comparison" width="448">
+    <img src="docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.jpg" alt="OpenFly raw and enhanced video comparison" width="448">
   </a>
 </p>
 
@@ -70,7 +70,7 @@ Click a video preview to open the corresponding H.264 MP4, or click a trajectory
 
 <p align="center">
   <a href="https://simplenav.github.io/assets/augmentation/openfly_002240_aligned_raw_vs_enhanced.mp4">
-    <img src="docs/assets/trajectory_comparisons/openfly_002240_aligned_raw_vs_enhanced.gif" alt="Second OpenFly raw and enhanced video comparison" width="448">
+    <img src="docs/assets/trajectory_comparisons/openfly_002240_aligned_raw_vs_enhanced.jpg" alt="Second OpenFly raw and enhanced video comparison" width="448">
   </a>
 </p>
 
