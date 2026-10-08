@@ -24,20 +24,10 @@ vulkaninfo --summary
 
 AirSim RGB rendering cannot run with CUDA or `nvidia-smi` alone when no hardware Vulkan graphics device is available.
 
-The collector uses Python 3.10 with AirSim 1.8.1, msgpack-rpc-python 0.4.1, NumPy 1.24.4, PyArrow 12.0.1, and Pillow 10.0.0. From the repository root:
+The collector shares the root uv environment: AirSim 1.8.1, msgpack-rpc-python 0.4.1, NumPy 1.26.4, PyArrow 14.0.1, and Pillow 12.2.0. Install it through [the shared environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment).
 
 ```bash
-cd image_collection
-conda env create -f environment.yml
-conda activate vln-image-collection
-vln-collect --help
-```
-
-To install in an existing Python 3.10 environment:
-
-```bash
-python -m pip install .
-python -m waypoint_collector --help
+uv run --no-sync vln-collect --help
 ```
 
 If the host requires a separate graphics-library activation script, specify it when using the generic launcher:
@@ -117,7 +107,7 @@ Use the same `--run-id` and common arguments for every stage.
 Start with one GPU:
 
 ```bash
-vln-collect preflight \
+uv run --no-sync vln-collect preflight \
   --package-dir /path/to/Dataset_lerobot/vln_train_enhanced \
   --env-archive-root /path/to/AirSim_scenes \
   --env-cache-root /path/to/scene-cache \
@@ -132,7 +122,7 @@ vln-collect preflight \
 ### Step 2: Prepare scenes
 
 ```bash
-vln-collect prepare-envs \
+uv run --no-sync vln-collect prepare-envs \
   --package-dir /path/to/Dataset_lerobot/vln_train_enhanced \
   --env-archive-root /path/to/AirSim_scenes \
   --env-cache-root /path/to/scene-cache \
@@ -144,7 +134,7 @@ vln-collect prepare-envs \
 ### Step 3: Run and inspect the pilot
 
 ```bash
-vln-collect pilot \
+uv run --no-sync vln-collect pilot \
   --package-dir /path/to/Dataset_lerobot/vln_train_enhanced \
   --env-archive-root /path/to/AirSim_scenes \
   --env-cache-root /path/to/scene-cache \
@@ -167,7 +157,7 @@ Confirm that the drone is in the correct scene, above the ground, and facing a p
 After approving the pilot, keep the same `run-id` and collection configuration. `--resume` reuses the completed stages:
 
 ```bash
-vln-collect run \
+uv run --no-sync vln-collect run \
   --package-dir /path/to/Dataset_lerobot/vln_train_enhanced \
   --env-archive-root /path/to/AirSim_scenes \
   --env-cache-root /path/to/scene-cache \

@@ -93,7 +93,7 @@ data_pipeline/
 - [Trajectory augmentation guide](trajectory_augmentation/README.md)
 - [Image collection guide](image_collection/README.md)
 
-Each component uses a separate Python 3.10 Conda environment.
+All components use the root Python 3.10.12 uv workspace and its `.venv`.
 
 ## 0. Convert raw data to the common format
 
@@ -101,10 +101,8 @@ If the input is not already NavVLA LeRobot v3, install the converter and run the
 
 ```bash
 cd dataset_conversion
-conda env create -f environment.yml
-conda activate vln-dataset-conversion
 
-vln-convert \
+uv run --no-sync vln-convert \
   --adapter aerialvln \
   --source-root /path/to/raw/AerialVLN \
   --output-root /path/to/AerialVLN_lerobot \
@@ -219,12 +217,10 @@ Temporary render files are stored under `<package-dir>/.render_staging/<run-id>/
 
 Use `dataset_conversion` to create, or otherwise prepare, the required LeRobot dataset while retaining a verifiable canonical-world-pose source. If images will be collected, also prepare the AirSim scene root and a writable scene-cache directory.
 
-### Step 2: Install the trajectory environment
+### Step 2: Use the shared trajectory tools
 
 ```bash
 cd trajectory_augmentation
-conda env create -f environment.yml
-conda activate vln-trajectory-augmentation
 ```
 
 ### Step 3: Select or create a profile
@@ -234,11 +230,11 @@ Use `profiles/aerialvln.json`, `profiles/openfly.json`, or copy `profiles/new-da
 ### Step 4: Run profile checks and a dry run
 
 ```bash
-vln-augment validate-profile \
+uv run --no-sync vln-augment validate-profile \
   --profile profiles/aerialvln.json \
   --dataset-root /path/to/AerialVLN_lerobot
 
-vln-augment export-profile \
+uv run --no-sync vln-augment export-profile \
   --profile profiles/aerialvln.json \
   --dataset-root /path/to/AerialVLN_lerobot \
   --dry-run
@@ -249,20 +245,18 @@ For a new dataset, first restrict `selection.include_episode_indices` to a small
 ### Step 5: Export and check the trajectory package
 
 ```bash
-vln-augment export-profile \
+uv run --no-sync vln-augment export-profile \
   --profile profiles/aerialvln.json \
   --dataset-root /path/to/AerialVLN_lerobot
 
-vln-augment validate-trajectory-package \
+uv run --no-sync vln-augment validate-trajectory-package \
   --package-dir /path/to/AerialVLN_lerobot/vln_train_enhanced
 ```
 
-### Step 6: Install the image-collection environment
+### Step 6: Use the shared image-collection tools
 
 ```bash
 cd ../image_collection
-conda env create -f environment.yml
-conda activate vln-image-collection
 ```
 
 ### Step 7: Run preflight, prepare scenes, and collect a pilot
@@ -270,21 +264,21 @@ conda activate vln-image-collection
 Use the same `--run-id` and arguments for all commands:
 
 ```bash
-vln-collect preflight \
+uv run --no-sync vln-collect preflight \
   --package-dir /path/to/AerialVLN_lerobot/vln_train_enhanced \
   --env-archive-root /path/to/AirSim_scenes \
   --env-cache-root /path/to/scene-cache \
   --gpus 0 --workers 1 \
   --run-id waypoint-v1
 
-vln-collect prepare-envs \
+uv run --no-sync vln-collect prepare-envs \
   --package-dir /path/to/AerialVLN_lerobot/vln_train_enhanced \
   --env-archive-root /path/to/AirSim_scenes \
   --env-cache-root /path/to/scene-cache \
   --gpus 0 --workers 1 \
   --run-id waypoint-v1 --resume
 
-vln-collect pilot \
+uv run --no-sync vln-collect pilot \
   --package-dir /path/to/AerialVLN_lerobot/vln_train_enhanced \
   --env-archive-root /path/to/AirSim_scenes \
   --env-cache-root /path/to/scene-cache \
@@ -299,7 +293,7 @@ Inspect `<package-dir>/.render_staging/<run-id>/pilot/contact_sheet.png`. Confir
 After approving the pilot, keep the same `run-id` and collection configuration. Completed stages are reused because the command uses `--resume`:
 
 ```bash
-vln-collect run \
+uv run --no-sync vln-collect run \
   --package-dir /path/to/AerialVLN_lerobot/vln_train_enhanced \
   --env-archive-root /path/to/AirSim_scenes \
   --env-cache-root /path/to/scene-cache \
@@ -318,12 +312,11 @@ For multi-GPU collection, choose the final `--gpus` and `--workers` values befor
 
 ### Step 9: Build the complete enhanced LeRobot split
 
-After four-view collection and package validation, return to the conversion environment and write the enhanced split to a new independent destination:
+After four-view collection and package validation, use the converter in the same environment and write the enhanced split to a new independent destination:
 
 ```bash
-conda activate vln-dataset-conversion
 
-vln-convert \
+uv run --no-sync vln-convert \
   --adapter enhanced_vln \
   --source-root /path/to/AerialVLN_lerobot/vln_train_enhanced \
   --output-root /path/to/enhanced_vln_lerobot/AerialVLN \

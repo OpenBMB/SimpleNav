@@ -70,7 +70,7 @@ Evaluation is a standalone Habitat / OpenTrackVLA closed-loop evaluator. It does
 | `dt` | `track_infer_dt.yaml` | `evt-bench-dt-teach-avoid` |
 | `stt` | `track_infer_stt.yaml` | `evt-bench-stt` |
 
-Before running, you need an OpenTrackVLA checkout from [zlrisone/track-lerobot](https://github.com/zlrisone/track-lerobot) (the revision with the human-switch fix and the Track configs under `habitat-lab/habitat/config/benchmark/nav/track/`), a Conda env named `track`, and a checkpoint from this recipe:
+Before running, install the [shared uv environment](../../README.md#1-clone-and-install-the-shared-uv-environment), prepare Track scene/humanoid/data assets under `local/simulators/track/`, and provide a checkpoint from this recipe. Track tasks and configs are part of this repository:
 
 ```text
 <run_dir>/dataset_statistics.json
@@ -83,7 +83,7 @@ Smoke a few episodes on one split first:
 
 ```bash
 export CKPT=local/results/navvla_qwen35_cpm_track_at_dt_stt/Checkpoints/<run_id>/final_model/pytorch_model.pt
-export CONDA_BIN=/path/to/miniconda/bin/conda
+export DATA_ROOT=$PWD/local/simulators/track
 
 bash NavVLAeval/track/run_qwen35_track_eval.sh stt \
   --split-id 0 --split-num 281 --max-episodes 2 \

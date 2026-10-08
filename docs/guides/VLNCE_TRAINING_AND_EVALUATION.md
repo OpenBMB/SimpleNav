@@ -8,12 +8,12 @@ Download the released datasets, Habitat environment packages, and SimpleNAV chec
 
 ## 1. Environment
 
-Install the main project environment as described in [Installation](INSTALLATION.md). The commands below expect:
+Install the main project environment as described in [Environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment). The commands below expect:
 
-- the project Python environment at `.venv/` or an available `uv` executable;
+- the fixed root uv environment at `.venv/`;
 - eight NVIDIA GPUs for the released training and evaluation settings;
 - Qwen3.5-4B under `local/models/Qwen3.5-4B/`;
-- Habitat-Lab 0.3.1 and its matching Habitat-Sim build under `local/simulators/VLN-CE/`.
+- Habitat-Lab 0.3.1 and the matching Habitat-Sim wheel installed in that same `.venv`.
 
 The public launchers use repository-relative paths and do not require server-specific path edits.
 
@@ -51,11 +51,6 @@ local/
 │                   ├── val_unseen_guide.json.gz
 │                   └── val_unseen_guide_gt.json.gz
 ├── simulators/
-│   ├── VLN-CE/
-│   │   ├── Evt-bench/
-│   │   │   └── habitat-lab/
-│   │   └── build_py310_habitat_sim_031/
-│   │       └── lib/python3.10/site-packages/
 │   └── nvidia-egl/
 ├── checkpoints/
 │   └── vlnce/

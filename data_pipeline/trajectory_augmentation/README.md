@@ -6,20 +6,10 @@ It does not launch AirSim or re-encode collected images into a complete LeRobot 
 
 ## 1. Installation
 
-Python 3.10 is required. From the repository root, create the dedicated Conda environment:
+Use the root `.venv` installed by [the shared environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment).
 
 ```bash
-cd trajectory_augmentation
-conda env create -f environment.yml
-conda activate vln-trajectory-augmentation
-vln-augment --help
-```
-
-To install in an existing Python 3.10 environment:
-
-```bash
-python -m pip install .
-python -m vln_aug.cli --help
+uv run --no-sync vln-augment --help
 ```
 
 ## 2. Input Data Location and Format
@@ -82,7 +72,7 @@ Fill in the annotation path, pose adapter, coordinate transforms, scene selectio
 ### Validate the profile
 
 ```bash
-vln-augment validate-profile \
+uv run --no-sync vln-augment validate-profile \
   --profile profiles/aerialvln.json \
   --dataset-root /path/to/AerialVLN_lerobot
 ```
@@ -90,7 +80,7 @@ vln-augment validate-profile \
 ### Run a dry export
 
 ```bash
-vln-augment export-profile \
+uv run --no-sync vln-augment export-profile \
   --profile profiles/aerialvln.json \
   --dataset-root /path/to/AerialVLN_lerobot \
   --dry-run
@@ -101,7 +91,7 @@ vln-augment export-profile \
 After checking representative episodes and rendered samples, run:
 
 ```bash
-vln-augment export-profile \
+uv run --no-sync vln-augment export-profile \
   --profile profiles/aerialvln.json \
   --dataset-root /path/to/AerialVLN_lerobot
 ```
@@ -109,7 +99,7 @@ vln-augment export-profile \
 ### Check the generated package
 
 ```bash
-vln-augment validate-trajectory-package \
+uv run --no-sync vln-augment validate-trajectory-package \
   --package-dir /path/to/AerialVLN_lerobot/vln_train_enhanced
 ```
 

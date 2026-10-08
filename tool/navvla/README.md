@@ -8,9 +8,7 @@ Raw-data conversion, trajectory augmentation, AirSim four-view image collection,
 
 ```bash
 cd data_pipeline/dataset_conversion
-conda env create -f environment.yml
-conda activate vln-dataset-conversion
-vln-convert --help
+uv run --no-sync vln-convert --help
 ```
 
 Choose the component for your task:

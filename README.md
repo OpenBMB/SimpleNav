@@ -35,7 +35,7 @@ SimpleNav is a simple, unified, reproducible, and extensible framework for navig
 - [Results](#results)
   - [Demos](#demos)
 - [Quick Start](#quick-start)
-  - [1. Clone and install the model environment](#1-clone-and-install-the-model-environment)
+  - [1. Clone and install the shared uv environment](#1-clone-and-install-the-shared-uv-environment)
   - [2. Prepare data](#2-prepare-data)
   - [3. Train](#3-train)
   - [4. Evaluate](#4-evaluate)
@@ -136,36 +136,82 @@ Public resources:
 
 Place downloaded packages in the repository-relative `local/` layout below.
 
-### 1. Clone and install the model environment
+### 1. Clone and install the shared uv environment
 
-Requirements: Linux, Python 3.10, and a model-compatible NVIDIA driver. Dataset conversion also requires `ffmpeg`; closed-loop evaluation requires the corresponding simulator and scene assets.
+Training, evaluation, dataset conversion, trajectory augmentation, image collection, and visual-cache generation share the root `.venv`. Python is fixed to 3.10.12; `pyproject.toml` and `uv.lock` define all dependencies, and ordinary packages use the Tsinghua index. The three data components are installed as workspace packages.
+
+Requirements: Linux x86_64, a CUDA 12.4 toolkit and compatible NVIDIA driver, GCC/G++, CMake, Ninja, EGL/OpenGL development libraries, and FFmpeg/FFprobe with H.264 support. AirSim rendering also needs Vulkan and scene executables. Set `CUDA_HOME` to your installed toolkit; DeepSpeed requires an executable `bin/nvcc`.
+
+On Ubuntu, install the system build and video tools:
+
+```bash
+sudo apt-get install build-essential cmake ninja-build python3.10-dev \
+  libjpeg-dev libglm-dev libegl1-mesa-dev libgl1-mesa-dev ffmpeg
+```
+
+Clone the repository and install the locked Python dependencies into the single environment. The initial sync skips the native wheels that are built or supplied next:
 
 ```bash
 git clone -b SimpleNav https://github.com/OpenBMB/SimpleNav.git SimpleNav
 cd SimpleNav
 curl -LsSf https://astral.sh/uv/install.sh | sh
-uv python install 3.10
-uv sync --frozen --no-dev
-uv run --no-sync python -c "import torch, transformers; print(torch.__version__, transformers.__version__)"
+export CUDA_HOME=/usr/local/cuda-12.4
+export UV_PROJECT_ENVIRONMENT="$PWD/.venv"
+uv sync --frozen --no-install-package habitat-sim --no-install-package magnum \
+  --no-install-package flash-attn --no-install-package causal-conv1d
+mkdir -p third_party/wheels
 ```
 
-For the Qwen3.5 reference recipe, install the optional CUDA extension after the base environment succeeds:
+Build Habitat-Sim 0.3.1 at the revision recorded in `third_party/sources.json`. Apply the NumPy dependency patch, then create the Habitat-Sim and companion Magnum/Corrade wheels with that same root interpreter:
 
 ```bash
-uv sync --frozen --no-dev --extra flash-attention
+git clone --branch v0.3.1 https://github.com/facebookresearch/habitat-sim.git third_party/habitat-sim
+git -C third_party/habitat-sim checkout 3d6d67d6deae4ab2472cc84df7a3cef1503f606d
+git -C third_party/habitat-sim submodule update --init --recursive --jobs 4
+git -C third_party/habitat-sim apply ../patches/habitat-sim-numpy126.patch
+
+cd third_party/habitat-sim
+../../.venv/bin/python setup.py build_ext --parallel 8 bdist_wheel \
+  --headless --bullet --skip-install-magnum --no-update-submodules --no-lto
+cp dist/habitat_sim-0.3.1-cp310-cp310-linux_x86_64.whl ../wheels/
+cd ../..
+
+repo_root=$PWD
+(
+  cd third_party/habitat-sim/build/temp.linux-x86_64-cpython-310/deps/magnum-bindings/src/python
+  "$repo_root/.venv/bin/python" setup.py bdist_wheel -d "$repo_root/third_party/wheels"
+)
 ```
 
-See [Installation](docs/guides/INSTALLATION.md) for the Conda data-tool environments and system packages.
+The Habitat build enables headless EGL and Bullet. RGB rendering does not require `--with-cuda`. Habitat-Lab 0.3.1 is installed from a fixed upstream Git revision; Track tasks use the same installed Habitat-Lab.
+
+Place the official FlashAttention and causal-conv1d wheels in `third_party/wheels/`, or download them. These files match Python cp310, Torch 2.6, CUDA 12, and C++ ABI FALSE:
+
+```bash
+curl -fL 'https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.4.post1/flash_attn-2.7.4.post1%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl' \
+  -o third_party/wheels/flash_attn-2.7.4.post1+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+curl -fL 'https://github.com/Dao-AILab/causal-conv1d/releases/download/v1.5.0.post8/causal_conv1d-1.5.0.post8%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl' \
+  -o third_party/wheels/causal_conv1d-1.5.0.post8+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+```
+
+After a local Habitat-Sim or Magnum rebuild, refresh the two local wheel hashes while preserving the locked dependency versions, then synchronize the complete environment:
+
+```bash
+uv lock --refresh-package habitat-sim --refresh-package magnum
+uv sync --frozen
+uv lock --check
+uv pip check --python .venv/bin/python
+uv run --no-sync python -c "import torch, transformers, deepspeed, habitat_sim, flash_attn, causal_conv1d; print(torch.__version__, transformers.__version__, habitat_sim.__version__)"
+```
+
+If all four wheels already match the lock, run `uv sync --frozen` directly. Core versions remain Torch 2.6.0/cu124, torchvision 0.21.0, Transformers 5.12.1, DeepSpeed 0.16.9, NumPy 1.26.4, PyArrow 14.0.1, Pillow 12.2.0, and Gym 0.23.0. Export `CUDA_HOME` in the shell used for training; launchers and evaluation workers select the root `.venv` directly.
 
 ### 2. Prepare data
 
-Install only the data component you need. For raw-dataset conversion:
+The converter is already installed in the shared environment:
 
 ```bash
-cd data_pipeline/dataset_conversion
-conda env create -f environment.yml
-conda activate vln-dataset-conversion
-vln-convert --help
+uv run --no-sync vln-convert --help
 ```
 
 The other component entry points are:
@@ -242,7 +288,7 @@ For the released R2R-CE and RxR-CE Qwen3.5 workflow, use [VLN-CE Training and Ev
 
 | Task | Document |
 | --- | --- |
-| Install environments | [Installation](docs/guides/INSTALLATION.md) |
+| Install the shared environment | [README environment setup](#1-clone-and-install-the-shared-uv-environment) |
 | Convert, augment, and render data | [Data Preparation](docs/guides/DATA_PIPELINE.md) |
 | Understand state/action semantics | [Data Structure and State/Action Protocol](docs/guides/DATA_STRUCTURE.md) |
 | Understand or extend the model | [Model Architecture](docs/guides/MODEL_ARCHITECTURE.md) |

@@ -4,7 +4,7 @@
 
 | Task | Document |
 | --- | --- |
-| Install the model and data-tool environments | [Installation](INSTALLATION.md) |
+| Install the shared uv environment | [Environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment) |
 | Convert, augment, render, and validate data | [Data Preparation](DATA_PIPELINE.md) |
 | Implement a dataset or dataloader correctly | [Data Structure and State/Action Protocol](DATA_STRUCTURE.md) |
 | Understand or extend the model | [Model Architecture](MODEL_ARCHITECTURE.md) |

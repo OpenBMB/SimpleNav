@@ -21,23 +21,15 @@ overwrites a target.
 
 ## Installation
 
-Python 3.10, FFmpeg, and FFprobe are required:
+Use the root `.venv` installed by [the shared environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment). FFmpeg and FFprobe are required.
 
 ```bash
-cd dataset_conversion
-conda env create -f environment.yml
-conda activate vln-dataset-conversion
+# From the repository root, after setup
+uv run --no-sync vln-convert --help
+uv run --no-sync vln-render-vlnce --help
 ```
 
-Or install into an existing Python 3.10 environment:
-
-```bash
-python -m pip install -e .
-```
-
-VLN-CE RGB rendering requires a separately prepared compatible Habitat/VLN-CE
-environment. AerialVLN LMDB image decoding uses `lmdb`, `msgpack`, and
-`msgpack-numpy`, which are declared dependencies.
+VLN-CE rendering uses the same installed Habitat-Lab 0.3.1 and Habitat-Sim wheel as evaluation. Prepare the VLN-CE annotations and scene assets under `--vlnce-root`; a separate Python environment is unnecessary.
 
 ## Common output contract
 
@@ -56,7 +48,7 @@ poses, axes, z convention, and yaw units.
 ## Unified conversion
 
 ```bash
-vln-convert \
+uv run --no-sync vln-convert \
   --adapter aerialvln \
   --source-root /path/to/raw/AerialVLN \
   --output-root /path/to/AerialVLN_lerobot \
@@ -69,7 +61,7 @@ vln-convert \
 The equivalent module entry point is:
 
 ```bash
-python -m navvla_conversion.cli.convert_dataset --help
+uv run --no-sync python -m navvla_conversion.cli.convert_dataset --help
 ```
 
 `--cache-workers` remains an alias for `--write-workers`. `--repair-existing`
@@ -99,7 +91,7 @@ Run `vln-convert --help` for dataset-specific options such as `--variant`,
 ### Convert a completed enhanced package
 
 ```bash
-vln-convert \
+uv run --no-sync vln-convert \
   --adapter enhanced_vln \
   --source-root /path/to/Dataset_lerobot/vln_train_enhanced \
   --output-root /path/to/enhanced_lerobot/Dataset \
@@ -118,12 +110,12 @@ NED and must not receive another z reflection.
 CosFly preserves paired ori/aug samples through a deterministic two-step flow:
 
 ```bash
-vln-cosfly prepare-manifest \
+uv run --no-sync vln-cosfly prepare-manifest \
   --source-root /path/to/CosFly \
   --output /path/to/cosfly_splits.json \
   --seed 42
 
-vln-cosfly convert \
+uv run --no-sync vln-cosfly convert \
   --source-root /path/to/CosFly \
   --output-root /path/to/CosFly_lerobot \
   --split-manifest /path/to/cosfly_splits.json \
@@ -137,7 +129,7 @@ Metadata finalization is part of conversion; no separate repair command is expos
 ## VLN-CE RGB rendering
 
 ```bash
-vln-render-vlnce \
+uv run --no-sync vln-render-vlnce \
   --vlnce-root /path/to/VLN-CE \
   --output-root /path/to/vlnce_rendered_rgb \
   --family r2r \
@@ -150,7 +142,7 @@ Both paths are required. Feed the result to `vln-convert --adapter vlnce_rendere
 ## Validation
 
 ```bash
-vln-validate /path/to/Dataset_lerobot/vln_train \
+uv run --no-sync vln-validate /path/to/Dataset_lerobot/vln_train \
   --all-token-budgets \
   --check-media-decode sampled
 ```

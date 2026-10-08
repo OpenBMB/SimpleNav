@@ -1,26 +1,17 @@
 # Aerial Dataset Training and Evaluation
 
-[Main README](../../README.md) · [Installation](INSTALLATION.md) · [Data Preparation](DATA_PIPELINE.md)
+[Main README](../../README.md) · [Environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment) · [Data Preparation](DATA_PIPELINE.md)
 
 This guide covers the complete OpenFly, AerialVLN, and TravelUAV workflow: resource download, model-ready data preparation, Qwen3.5-VL training, checkpoint packaging, and AirSim closed-loop evaluation. Run all commands from the repository root. Public configs use repository-relative paths.
 
-## 1. Install environments
+## 1. Install the shared environment
+
+Follow the [README environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment) to build the native wheels and synchronize the complete root lock.
+
+Dataset conversion, augmentation, and image collection are included in that environment:
 
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-uv python install 3.10
-uv sync --frozen --no-dev
-uv sync --frozen --no-dev --extra flash-attention
-```
-
-Install the dataset conversion environment:
-
-```bash
-cd data_pipeline/dataset_conversion
-conda env create -f environment.yml
-conda activate vln-dataset-conversion
-vln-convert --help
-cd ../..
+uv run --no-sync vln-convert --help
 ```
 
 ## 2. Download resources
@@ -69,7 +60,7 @@ uv run --no-sync hf download Qwen/Qwen3.5-4B \
 The released OpenFly and AerialVLN training configs use enhanced trajectories with collected images. If the downloaded package already contains the model-ready splits shown above, place them directly under `local/data/`. To build them from raw data, use:
 
 ```text
-vln-convert
+uv run --no-sync vln-convert
   -> vln-augment
   -> vln-collect
   -> vln-convert --adapter enhanced_vln
@@ -78,8 +69,7 @@ vln-convert
 See [Data Preparation](DATA_PIPELINE.md) for the component commands. TravelUAV can be converted directly:
 
 ```bash
-conda activate vln-dataset-conversion
-vln-convert \
+uv run --no-sync vln-convert \
   --adapter traveluav \
   --source-root /path/to/raw/TravelUAV \
   --output-root local/data/TravelUAV \

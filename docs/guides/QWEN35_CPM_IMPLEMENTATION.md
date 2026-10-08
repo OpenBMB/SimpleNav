@@ -43,7 +43,7 @@ OpenFly, and TravelUAV camera references, the raw tensor estimate is about
 Generate a cache with the same resize and checkpoint used by training:
 
 ```bash
-python -m tool.navvla.cli.generate_visual_cache DATASET_ROOT \
+uv run --no-sync python -m tool.navvla.cli.generate_visual_cache DATASET_ROOT \
   --profile qwen3_5_4b_postmerge_pool4_256_mmap \
   --visual-head qwen3_5_postmerge_pool4 \
   --encoder-name Qwen3.5-4B \

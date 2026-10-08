@@ -23,19 +23,17 @@ Download the released datasets and simulator environments from the [SimpleNAV Mo
 
 | Component | Install | Entry point | Output |
 | --- | --- | --- | --- |
-| [`dataset_conversion`](../../data_pipeline/dataset_conversion/README.md) | `conda env create -f environment.yml` | `vln-convert`, `vln-validate`, `vln-cosfly`, `vln-render-vlnce` | NavVLA LeRobot v3 split |
-| [`trajectory_augmentation`](../../data_pipeline/trajectory_augmentation/README.md) | `conda env create -f environment.yml` | `vln-augment` | Smoothed/resampled trajectory package and render requests |
-| [`image_collection`](../../data_pipeline/image_collection/README.md) | `conda env create -f environment.yml` | `vln-collect` | Four-view AirSim videos and camera metadata |
+| [`dataset_conversion`](../../data_pipeline/dataset_conversion/README.md) | Shared root uv workspace | `vln-convert`, `vln-validate`, `vln-cosfly`, `vln-render-vlnce` | NavVLA LeRobot v3 split |
+| [`trajectory_augmentation`](../../data_pipeline/trajectory_augmentation/README.md) | Shared root uv workspace | `vln-augment` | Smoothed/resampled trajectory package and render requests |
+| [`image_collection`](../../data_pipeline/image_collection/README.md) | Shared root uv workspace | `vln-collect` | Four-view AirSim videos and camera metadata |
 | [`tool/navvla`](../../tool/navvla/README.md) | Main project environment | `python -m tool.navvla.cli...` | Validation, repair, statistics, context, cache, and open-loop artifacts |
 
 ## Convert a raw dataset
 
 ```bash
 cd data_pipeline/dataset_conversion
-conda env create -f environment.yml
-conda activate vln-dataset-conversion
 
-vln-convert \
+uv run --no-sync vln-convert \
   --adapter aerialvln \
   --source-root /path/to/raw/AerialVLN \
   --output-root /path/to/AerialVLN_lerobot \
@@ -51,14 +49,12 @@ Available adapters include TravelUAV, AerialVLN, rendered VLN-CE, FLIGHT, Indoor
 
 ```bash
 cd data_pipeline/trajectory_augmentation
-conda env create -f environment.yml
-conda activate vln-trajectory-augmentation
 
-vln-augment validate-profile \
+uv run --no-sync vln-augment validate-profile \
   --profile profiles/aerialvln.json \
   --dataset-root /path/to/AerialVLN_lerobot
 
-vln-augment export-profile \
+uv run --no-sync vln-augment export-profile \
   --profile profiles/aerialvln.json \
   --dataset-root /path/to/AerialVLN_lerobot \
   --dry-run
@@ -67,8 +63,7 @@ vln-augment export-profile \
 After inspecting the dry run, export the package, validate it, then collect images:
 
 ```bash
-conda activate vln-image-collection
-vln-collect preflight \
+uv run --no-sync vln-collect preflight \
   --package-dir /path/to/AerialVLN_lerobot/vln_train_enhanced \
   --env-archive-root /path/to/AirSim_scenes \
   --env-cache-root /path/to/scene-cache \
@@ -80,8 +75,7 @@ Continue with `prepare-envs`, `pilot`, and `run` as listed in the [image collect
 Convert the completed package into an independent trainable split:
 
 ```bash
-conda activate vln-dataset-conversion
-vln-convert \
+uv run --no-sync vln-convert \
   --adapter enhanced_vln \
   --source-root /path/to/AerialVLN_lerobot/vln_train_enhanced \
   --output-root /path/to/enhanced_vln_lerobot/AerialVLN \
