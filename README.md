@@ -36,7 +36,6 @@ SimpleNav is a simple, unified, reproducible, and extensible framework for navig
   - [Why SimpleNav](#why-simplenav)
   - [Framework](#framework)
   - [Data Protocol](#data-protocol)
-    - [Trajectory augmentation](#trajectory-augmentation)
   - [Model](#model)
   - [Results](#results)
     - [Demos](#demos)
@@ -98,17 +97,6 @@ The primary LeRobot dataloader keeps storage, model input, and prediction target
 | Normalization | `dataset_statistics.json` is authoritative. Actions use per-dimension `q01`/`q99`; padded action rows are zero after normalization. |
 
 Benchmark adapters may declare a different action Protocol when required by the benchmark. The config and adapter Protocol are authoritative. See [Data Structure and State/Action Protocol](docs/guides/DATA_STRUCTURE.md).
-
-### Trajectory augmentation
-
-Each preview compares one raw trajectory with its enhanced version. Click a thumbnail to play the full MP4 hosted on the project website.
-
-<table>
-  <tr>
-    <td align="center"><a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.mp4"><img src="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.jpg" alt="AerialVLN raw and enhanced rollout comparison" width="420"></a><br><strong>AerialVLN · Example 1</strong><br><img src="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN raw and enhanced trajectory plot" width="420"></td>
-    <td align="center"><a href="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.mp4"><img src="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.jpg" alt="OpenFly raw and enhanced rollout comparison" width="420"></a><br><strong>OpenFly · Episode 000008</strong><br><img src="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly raw and enhanced trajectory plot" width="420"></td>
-  </tr>
-</table>
 
 ## Model
 

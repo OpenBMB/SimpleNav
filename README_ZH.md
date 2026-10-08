@@ -38,7 +38,6 @@ SimpleNav 通过明确的接口贯通异构导航数据、长时程 VLA 模型�
   - [优势](#优势)
   - [整体架构](#整体架构)
   - [数据协议](#数据协议)
-    - [轨迹增强对比](#轨迹增强对比)
   - [模型](#模型)
   - [结果](#结果)
     - [演示](#演示)
@@ -100,17 +99,6 @@ SimpleNav 通过明确的接口贯通异构导航数据、长时程 VLA 模型�
 | 归一化 | `dataset_statistics.json` 是唯一依据；action 四个维度使用 `q01`/`q99`，padding 行在归一化后为零。 |
 
 若 benchmark 需要其他动作协议，由对应配置与 adapter 明确声明。完整定义见[数据结构与 State/Action 协议](docs/guides/DATA_STRUCTURE_ZH.md)。
-
-### 轨迹增强对比
-
-每个预览对比一条原始轨迹与增强轨迹；点击缩略图可播放项目主页托管的完整 MP4。
-
-<table>
-  <tr>
-    <td align="center"><a href="https://simplenav.github.io/assets/augmentation/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.mp4"><img src="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_aligned_raw_vs_enhanced.jpg" alt="AerialVLN 增强前后视频对比" width="420"></a><br><strong>AerialVLN · 示例 1</strong><br><img src="data_pipeline/docs/assets/trajectory_comparisons/aerialvln_3018Q3ZVORO4Z811ZR054U1M4N6AR9_trajectory_raw_vs_enhanced.png" alt="AerialVLN 增强前后轨迹图" width="420"></td>
-    <td align="center"><a href="https://simplenav.github.io/assets/augmentation/openfly_000008_aligned_raw_vs_enhanced.mp4"><img src="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_aligned_raw_vs_enhanced.jpg" alt="OpenFly 增强前后视频对比" width="420"></a><br><strong>OpenFly · Episode 000008</strong><br><img src="data_pipeline/docs/assets/trajectory_comparisons/openfly_000008_trajectory_raw_vs_enhanced.png" alt="OpenFly 增强前后轨迹图" width="420"></td>
-  </tr>
-</table>
 
 ## 模型
 
