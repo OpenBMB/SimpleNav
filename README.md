@@ -110,20 +110,20 @@ Full comparison tables and protocol notes are in [Release 01 Benchmarks](docs/gu
 
 ### Demos
 
-Click a thumbnail below to play the full rollout video hosted on the project website. More videos are available in the [project-page video gallery](https://simplenav.github.io/#demos).
+Animated rollout previews are shown below. Click an animation to play the full rollout video hosted on the project website. More videos are available in the [project-page video gallery](https://simplenav.github.io/#demos).
 
 <table>
   <tr>
-    <td align="center"><a href="https://simplenav.github.io/assets/demos/openfly/env16_ep000420.mp4"><img src="docs/assets/demos/previews/openfly.jpg" alt="OpenFly rollout trajectory" width="420"></a><br><strong>OpenFly · Env 16</strong></td>
-    <td align="center"><a href="https://simplenav.github.io/assets/demos/traveluav/moderncity_ep000405.mp4"><img src="docs/assets/demos/previews/traveluav.jpg" alt="TravelUAV rollout trajectory" width="420"></a><br><strong>TravelUAV · Modern City</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/demos/openfly/env16_ep000420.mp4"><img src="docs/assets/demos/previews/openfly.gif" alt="OpenFly rollout trajectory" width="420"></a><br><strong>OpenFly · Env 16</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/demos/traveluav/moderncity_ep000405.mp4"><img src="docs/assets/demos/previews/traveluav.gif" alt="TravelUAV rollout trajectory" width="420"></a><br><strong>TravelUAV · Modern City</strong></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://simplenav.github.io/assets/demos/aerialvln/env8.mp4"><img src="docs/assets/demos/previews/aerialvln.jpg" alt="AerialVLN rollout trajectory" width="420"></a><br><strong>AerialVLN · Env 8</strong></td>
-    <td align="center"><a href="https://simplenav.github.io/assets/demos/rxr/ep10129.mp4"><img src="docs/assets/demos/previews/rxr.jpg" alt="RxR-CE rollout trajectory" width="420"></a><br><strong>RxR-CE · Episode 10129</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/demos/aerialvln/env8.mp4"><img src="docs/assets/demos/previews/aerialvln.gif" alt="AerialVLN rollout trajectory" width="420"></a><br><strong>AerialVLN · Env 8</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/demos/rxr/ep10129.mp4"><img src="docs/assets/demos/previews/rxr.gif" alt="RxR-CE rollout trajectory" width="420"></a><br><strong>RxR-CE · Episode 10129</strong></td>
   </tr>
   <tr>
-    <td align="center"><a href="https://simplenav.github.io/assets/demos/evt_bench/scene2.mp4"><img src="docs/assets/demos/previews/evt_bench.jpg" alt="EVT-Bench Scene 2 rollout trajectory" width="420"></a><br><strong>EVT-Bench · Scene 2</strong></td>
-    <td align="center"><a href="https://simplenav.github.io/assets/demos/evt_bench/scene30.mp4"><img src="docs/assets/demos/evt_bench/scene30.jpg" alt="EVT-Bench Scene 30 rollout trajectory" width="420"></a><br><strong>EVT-Bench · Scene 30</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/demos/evt_bench/scene2.mp4"><img src="docs/assets/demos/previews/evt_bench.gif" alt="EVT-Bench Scene 2 rollout trajectory" width="420"></a><br><strong>EVT-Bench · Scene 2</strong></td>
+    <td align="center"><a href="https://simplenav.github.io/assets/demos/evt_bench/scene30.mp4"><img src="docs/assets/demos/previews/evt_bench_scene30.gif" alt="EVT-Bench Scene 30 rollout trajectory" width="420"></a><br><strong>EVT-Bench · Scene 30</strong></td>
   </tr>
 </table>
 

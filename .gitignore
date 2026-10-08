@@ -85,7 +85,7 @@ events.out.tfevents.*
 *.sqlite3-wal
 
 # Large generated/downloaded artifacts belong outside the source repository.
-# Keep configs, uv.lock, manifests and small static documentation images tracked.
+# Keep configs, uv.lock, manifests and documentation preview images tracked.
 *.pt
 *.pth
 *.ckpt
@@ -100,6 +100,7 @@ events.out.tfevents.*
 *.mov
 *.mkv
 *.gif
+!/docs/assets/demos/previews/*.gif
 *.zip
 *.tar
 *.tar.gz
