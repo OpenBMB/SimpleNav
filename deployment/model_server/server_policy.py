@@ -1,74 +1,40 @@
-# Copyright 2025 starVLA community. All rights reserved.
-# Licensed under the MIT License, Version 1.0 (the "License");
-# Implemented by [Jinhui YE / HKUST University] in [2025].
+"""Load a saved model once and serve reset/predict/close sessions."""
 
 import argparse
 import logging
-import os
-import socket
-
-import torch
 
 from deployment.model_server.tools.websocket_policy_server import WebsocketPolicyServer
-from starVLA.model.framework.base_framework import baseframework
 
 
-def main(args) -> None:
-    # Example usage:
-    # policy = YourPolicyClass()  # Replace with your actual policy class
-    # server = WebsocketPolicyServer(policy, host="localhost", port=10091)
-    # server.serve_forever()
-
-    vla = baseframework.from_pretrained(  # TODO should auto detect framework from model path
-        args.ckpt_path,
-    )
-
-    if args.use_bf16:  # False
-        vla = vla.to(torch.bfloat16)
-    vla = vla.to("cuda").eval()
-
-    hostname = socket.gethostname()
-    local_ip = socket.gethostbyname(hostname)
-    logging.info("Creating server (host: %s, ip: %s)", hostname, local_ip)
-
-    # start websocket server
-    server = WebsocketPolicyServer(
-        policy=vla,
-        host="0.0.0.0",
-        port=args.port,
-        idle_timeout=args.idle_timeout,
-        metadata={"env": "simpler_env"},
-    )
-    logging.info("server running ...")
-    server.serve_forever()
-
-
-def build_argparser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--ckpt_path", type=str, default="Qwen/Qwen2.5-VL-3B-Instruct")
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--checkpoint", required=True)
+    parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=10093)
-    parser.add_argument("--use_bf16", action="store_true")
-    parser.add_argument("--idle_timeout", type=int, default=1800, help="Idle timeout in seconds, -1 means never close")
-    return parser
+    parser.add_argument("--device", default="cuda")
+    parser.add_argument("--backbone-path")
+    parser.add_argument("--attn-implementation")
+    parser.add_argument("--idle-timeout", type=int, default=-1)
+    args = parser.parse_args()
+    from starVLA.model.framework.base_framework import baseframework
 
-
-def start_debugpy_once():
-    """start debugpy once"""
-    import debugpy
-
-    if getattr(start_debugpy_once, "_started", False):
-        return
-    debugpy.listen(("0.0.0.0", 10095))
-    print("🔍 Waiting for VSCode attach on 0.0.0.0:10095 ...")
-    debugpy.wait_for_client()
-    start_debugpy_once._started = True
+    relocation = {}
+    if args.backbone_path:
+        relocation["base_vlm"] = args.backbone_path
+    if args.attn_implementation:
+        relocation["attn_implementation"] = args.attn_implementation
+    model = baseframework.from_pretrained(
+        args.checkpoint, config_overrides={"framework": {"qwenvl": relocation}} if relocation else None
+    )
+    model.to(args.device).eval()
+    for parameter in model.parameters():
+        parameter.requires_grad_(False)
+    model.eval()
+    WebsocketPolicyServer(
+        model, host=args.host, port=args.port, idle_timeout=args.idle_timeout, metadata={"checkpoint": args.checkpoint}
+    ).serve_forever()
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, force=True)
-    parser = build_argparser()
-    args = parser.parse_args()
-    if os.getenv("DEBUG", False):
-        print("🔍 DEBUGPY is enabled")
-        start_debugpy_once()
-    main(args)
+    logging.basicConfig(level=logging.INFO)
+    main()

@@ -1,75 +1,55 @@
-# Copyright 2025 starVLA community. All rights reserved.
-# Licensed under the MIT License, Version 1.0 (the "License");
-# Implemented by [Jinhui YE / HKUST University] in [2025].
+"""Lightweight policy RPC client; no model or Torch dependency."""
 
-import logging
-import os
+from __future__ import annotations
+
 import time
-from typing import Dict, Optional, Tuple
 
 import websockets.sync.client
-from typing_extensions import override
 
 from . import msgpack_numpy
 
 
 class WebsocketClientPolicy:
-    """Implements the Policy interface by communicating with a server over websocket.
-
-    See WebsocketPolicyServer for a corresponding server implementation.
-    """
-
-    def __init__(self, host: str = "127.0.0.1", port: Optional[int] = 10093, api_key: Optional[str] = None) -> None:
-        # 0.0.0.0 cannot be used as a connection target, here default 127.0.0.1
-        self._uri = f"ws://{host}"
-        if port is not None:
-            self._uri += f":{port}"
-        self._packer = msgpack_numpy.Packer()
-        self._api_key = api_key
-        self._ws, self._server_metadata = self._wait_for_server()
-
-    def get_server_metadata(self) -> Dict:
-        return self._server_metadata
-
-    def _wait_for_server(self, timeout: float = 300) -> Tuple[websockets.sync.client.ClientConnection, Dict]:
-        logging.info(f"Waiting for server at {self._uri}...")
-        start_time = time.time()
-
-        for k in ("HTTP_PROXY", "http_proxy", "HTTPS_PROXY", "https_proxy", "ALL_PROXY", "all_proxy"):
-            os.environ.pop(k, None)
-
+    def __init__(self, *, uri="ws://127.0.0.1:10093", timeout=120.0):
+        self.timeout = float(timeout)
+        deadline = time.monotonic() + self.timeout
         while True:
-            if time.time() - start_time > timeout:
-                raise TimeoutError(f"Failed to connect to server within {timeout} seconds")
-
             try:
-                headers = {"Authorization": f"Api-Key {self._api_key}"} if self._api_key else None
-                conn = websockets.sync.client.connect(
-                    self._uri,
-                    compression=None,
-                    max_size=None,
-                    additional_headers=headers,
-                    open_timeout=150,
-                    ping_interval=20,
-                    ping_timeout=20,
+                self._ws = websockets.sync.client.connect(
+                    uri, compression=None, max_size=None, open_timeout=max(0.1, deadline - time.monotonic()), proxy=None
                 )
-                metadata = msgpack_numpy.unpackb(conn.recv())
-                return conn, metadata
+                self.metadata = msgpack_numpy.unpackb(self._ws.recv(timeout=self.timeout))
+                break
             except ConnectionRefusedError:
-                logging.info(f"Still waiting for server {self._uri} ...")
-                time.sleep(2)
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError(f"Policy connection deadline exceeded: {uri}")
+                time.sleep(min(0.5, remaining))
+        self.session_id = None
 
-    def close(self) -> None:
+    def _request(self, method, payload):
+        self._ws.send(msgpack_numpy.packb({"method": method, "session_id": self.session_id, "payload": payload}))
         try:
+            response = msgpack_numpy.unpackb(self._ws.recv(timeout=self.timeout))
+        except TimeoutError:
+            # A stateful prediction may have committed. Close instead of replaying it.
             self._ws.close()
-        except Exception:
-            pass
+            raise
+        if not response["ok"]:
+            raise RuntimeError(f"Policy {method} failed: {response['error']}")
+        return response["data"]
 
-    @override
-    def predict_action(self, query_info: Dict) -> Dict:
-        data = self._packer.pack(query_info)
-        self._ws.send(data)
-        response = self._ws.recv()
-        if isinstance(response, str):
-            raise RuntimeError(f"Error in inference server:\n{response}")
-        return msgpack_numpy.unpackb(response)
+    def reset(self, *, session_id, episode_id, statistics_key=None, seed=42):
+        self.session_id = str(session_id)
+        return self._request("reset", dict(episode_id=str(episode_id), statistics_key=statistics_key, seed=int(seed)))
+
+    def predict(self, *, frames, instruction):
+        return self._request("predict", dict(frames=frames, instruction=instruction))
+
+    def close_session(self, session_id):
+        if self.session_id == session_id:
+            self._request("close", {})
+            self.session_id = None
+
+    def close(self):
+        self._ws.close()

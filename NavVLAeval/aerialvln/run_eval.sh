@@ -17,6 +17,9 @@ if [[ "${1:-}" == "--config" ]]; then
   fi
 fi
 
+export UV_PROJECT_ENVIRONMENT="$repo_root/.venv"
+export PYTHONNOUSERSITE=1
+
 uv run --project "$repo_root" --no-sync \
   python -m NavVLAeval.aerialvln.eval \
   --config "$config_path" "$@"

@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Protocol, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Protocol
 
 if TYPE_CHECKING:
-    from NavVLAeval.common.log.artifacts import ArtifactStore
     from NavVLAeval.common.config import EnvConfig
+    from NavVLAeval.common.log.artifacts import ArtifactStore
 
 
 @dataclass(frozen=True)
@@ -40,11 +40,13 @@ class EnvironmentBackendPlanner(Protocol):
         store: ArtifactStore,
         worker_index: int,
         physical_gpu_id: int,
-    ) -> WorkerBackendPlan:
-        ...
+    ) -> WorkerBackendPlan: ...
 
 
-class OfflineBackendPlanner:
+class SimpleBackendPlanner:
+    def __init__(self, env_type):
+        self.env_type = env_type
+
     def plan_worker_backend(
         self,
         *,
@@ -54,12 +56,12 @@ class OfflineBackendPlanner:
         physical_gpu_id: int,
     ) -> WorkerBackendPlan:
         del cfg, store, worker_index, physical_gpu_id
-        return WorkerBackendPlan(type="offline", kwargs={})
+        return WorkerBackendPlan(type=self.env_type, kwargs={})
 
 
 def default_backend_planner(env_type: str) -> EnvironmentBackendPlanner:
-    if env_type == "offline":
-        return OfflineBackendPlanner()
+    if env_type in {"offline", "habitat"}:
+        return SimpleBackendPlanner(env_type)
     raise ValueError(f"env.planner_class_path is required for environment backend type: {env_type!r}")
 
 
@@ -70,12 +72,6 @@ def planner_from_config(cfg) -> EnvironmentBackendPlanner:
         planner_cls = load_class(cfg.env.planner_class_path)
         return planner_cls(**cfg.env.kwargs)
     return default_backend_planner(cfg.env.type)
-
-
-def OfflineWorkerBackendPlan(*, type: str = "offline") -> WorkerBackendPlan:
-    if type != "offline":
-        raise ValueError(f"OfflineWorkerBackendPlan type must be 'offline', got {type!r}")
-    return WorkerBackendPlan(type="offline", kwargs={})
 
 
 def _to_jsonable(value: Any) -> Any:

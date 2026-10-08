@@ -1,25 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 import importlib
 import os
+from dataclasses import dataclass
 from pathlib import Path
-import sys
 from typing import Any
 
 import numpy as np
 
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
-DEFAULT_VLNCE_RUNTIME_ROOT = REPO_ROOT / "local" / "simulators" / "VLN-CE"
-DEFAULT_EVT_BENCH_ROOT = DEFAULT_VLNCE_RUNTIME_ROOT / "Evt-bench"
-DEFAULT_HABITAT_SIM_SITE_PACKAGES = (
-    DEFAULT_VLNCE_RUNTIME_ROOT
-    / "build_py310_habitat_sim_031"
-    / "lib"
-    / "python3.10"
-    / "site-packages"
-)
 class VLNCE031HabitatRuntime:
     def __init__(
         self,
@@ -29,9 +18,6 @@ class VLNCE031HabitatRuntime:
         gpu_id: int,
         task_name: str = "r2r",
         seed: int = 0,
-        evt_bench_root: str | Path | None = None,
-        habitat_lab_root: str | Path | None = None,
-        habitat_sim_site_packages: str | Path | None = None,
         benchmark_config_path: str | Path | None = None,
         success_distance: float = 3.0,
         image_size: int = 224,
@@ -48,17 +34,7 @@ class VLNCE031HabitatRuntime:
         self.gpu_id = int(gpu_id)
         self.task_name = str(task_name or "r2r").lower()
         self.seed = int(seed)
-        self.evt_bench_root = Path(evt_bench_root or DEFAULT_EVT_BENCH_ROOT).expanduser().resolve()
-        self.habitat_lab_root = Path(habitat_lab_root or self.evt_bench_root / "habitat-lab").expanduser().resolve()
-        self.habitat_sim_site_packages = (
-            Path(habitat_sim_site_packages).expanduser().resolve()
-            if habitat_sim_site_packages
-            else DEFAULT_HABITAT_SIM_SITE_PACKAGES
-        )
-        self.benchmark_config_path = Path(
-            benchmark_config_path
-            or self.habitat_lab_root / "habitat" / "config" / "benchmark" / "nav" / "vln_r2r.yaml"
-        ).expanduser().resolve()
+        self.benchmark_config_path = benchmark_config_path
         self.success_distance = float(success_distance)
         self.image_size = int(image_size)
         self.camera_height = float(camera_height)
@@ -109,15 +85,6 @@ class VLNCE031HabitatRuntime:
         self._last_observation = {}
 
     def _load(self) -> None:
-        apply_runtime_python_paths(
-            {
-                "data_root": str(self.data_root),
-                "evt_bench_root": str(self.evt_bench_root),
-                "habitat_lab_root": str(self.habitat_lab_root),
-                "habitat_sim_site_packages": str(self.habitat_sim_site_packages),
-            }
-        )
-        apply_gym_spaces_compat()
         importlib.import_module("habitat.datasets.vln.r2r_vln_dataset")
         importlib.import_module("habitat.tasks.vln.vln")
         actions_module = importlib.import_module("NavVLAeval.common.simulators.habitat.vlnce031_actions")
@@ -129,7 +96,8 @@ class VLNCE031HabitatRuntime:
         make_dataset = importlib.import_module("habitat.datasets").make_dataset
         habitat = importlib.import_module("habitat")
 
-        cfg = get_config(str(self.benchmark_config_path))
+        config_path = self.benchmark_config_path or Path(habitat.__file__).parent / "config/benchmark/nav/vln_r2r.yaml"
+        cfg = get_config(str(config_path))
         with read_write(cfg):
             cfg.habitat.seed = self.seed
             cfg.habitat.environment.max_episode_steps = self.max_episode_steps
@@ -150,7 +118,9 @@ class VLNCE031HabitatRuntime:
                 height=self.camera_height,
             )
             cfg.habitat.task.lab_sensors = {}
-            cfg.habitat.task.actions = actions_module.structured_action_configs(control_mode=self.continuous_control_mode)
+            cfg.habitat.task.actions = actions_module.structured_action_configs(
+                control_mode=self.continuous_control_mode
+            )
             cfg.habitat.task.measurements = measures_module.structured_measurement_configs(
                 split=self.split,
                 gt_path=datasets_module.vlnce_split_gt_path(
@@ -191,11 +161,11 @@ class VLNCE031HabitatRuntime:
         if euclidean_distance is not None:
             if "distance_to_goal" in metrics:
                 metrics["geodesic_distance_to_goal"] = metrics["distance_to_goal"]
-            metrics["distance_to_goal"] = euclidean_distance
             metrics["euclidean_distance_to_goal"] = euclidean_distance
         return {
             "observation": dict(observation),
             "pose": _agent_pose(self.env),
+            **camera_observation_metadata(self.env.sim),
             "instruction": str(getattr(getattr(episode, "instruction", None), "instruction_text", "") or ""),
             "episode_id": str(getattr(episode, "episode_id", "")),
             "scene_id": str(getattr(episode, "scene_id", "")),
@@ -211,10 +181,9 @@ def runtime_kwargs_from_cfg(kwargs: dict[str, Any], *, physical_gpu_id: int) -> 
         "gpu_id": int(physical_gpu_id),
         "task_name": str(kwargs.get("task_name") or kwargs.get("benchmark_name") or "r2r").lower(),
         "seed": int(kwargs.get("seed", 0)),
-        "evt_bench_root": _optional_path(kwargs.get("evt_bench_root")),
-        "habitat_lab_root": _optional_path(kwargs.get("habitat_lab_root")),
-        "habitat_sim_site_packages": _optional_path(kwargs.get("habitat_sim_site_packages")),
-        "benchmark_config_path": _optional_path(kwargs.get("benchmark_config_path") or kwargs.get("habitat_config_path")),
+        "benchmark_config_path": _optional_path(
+            kwargs.get("benchmark_config_path") or kwargs.get("habitat_config_path")
+        ),
         "success_distance": float(kwargs.get("success_distance", 3.0)),
         "image_size": int(kwargs.get("image_size", 224)),
         "camera_height": float(kwargs.get("camera_height", 1.25)),
@@ -224,49 +193,6 @@ def runtime_kwargs_from_cfg(kwargs: dict[str, Any], *, physical_gpu_id: int) -> 
         "languages": tuple(str(language) for language in (kwargs.get("languages") or ())),
         "content_scenes": kwargs.get("content_scenes") or kwargs.get("scene_ids"),
     }
-
-
-def runtime_python_paths(kwargs: dict[str, Any]) -> list[Path]:
-    data_root = Path(str(kwargs.get("data_root") or kwargs.get("vlnce_data_root") or ".")).expanduser().resolve()
-    evt_bench_root = Path(str(kwargs.get("evt_bench_root") or DEFAULT_EVT_BENCH_ROOT)).expanduser().resolve()
-    habitat_lab_root = Path(str(kwargs.get("habitat_lab_root") or evt_bench_root / "habitat-lab")).expanduser().resolve()
-    paths = [habitat_lab_root, evt_bench_root]
-    habitat_sim_site_packages = _habitat_sim_site_packages_path(kwargs, data_root=data_root, evt_bench_root=evt_bench_root)
-    if habitat_sim_site_packages is not None:
-        paths.append(habitat_sim_site_packages)
-    if data_root != evt_bench_root:
-        paths.append(data_root)
-    return paths
-
-
-def apply_runtime_python_paths(kwargs: dict[str, Any]) -> None:
-    for path in reversed(runtime_python_paths(kwargs)):
-        text = str(path)
-        if text in sys.path:
-            sys.path.remove(text)
-        sys.path.insert(0, text)
-
-
-def apply_gym_spaces_compat() -> None:
-    try:
-        import gym
-        from gym import spaces
-        from typing import Any as TypingAny
-    except Exception:
-        return
-    if not hasattr(spaces, "Space") and hasattr(gym, "Space"):
-        spaces.Space = gym.Space
-    if not hasattr(spaces, "space") and hasattr(spaces, "Space"):
-        spaces.space = spaces.Space
-    if not hasattr(gym, "spaces"):
-        gym.spaces = spaces
-    try:
-        gym_core = importlib.import_module("gym.core")
-    except Exception:
-        return
-    for alias in ("ActType", "ObsType", "RenderFrame"):
-        if not hasattr(gym_core, alias):
-            setattr(gym_core, alias, TypingAny)
 
 
 def structured_camera_sensor_configs(*, image_size: int = 224, height: float = 1.25, hfov: int = 90) -> dict[str, Any]:
@@ -299,21 +225,6 @@ def habitat_gpu_device_id(requested_gpu_id: int) -> int:
     if visible_devices and "," not in visible_devices:
         return 0
     return int(requested_gpu_id)
-
-
-def _habitat_sim_site_packages_path(kwargs: dict[str, Any], *, data_root: Path, evt_bench_root: Path) -> Path | None:
-    raw = kwargs.get("habitat_sim_site_packages")
-    if raw:
-        return Path(str(raw)).expanduser().resolve()
-    candidates = [
-        data_root / "build_py310_habitat_sim_031" / "lib" / f"python{sys.version_info.major}.{sys.version_info.minor}" / "site-packages",
-        evt_bench_root.parent / "build_py310_habitat_sim_031" / "lib" / f"python{sys.version_info.major}.{sys.version_info.minor}" / "site-packages",
-        DEFAULT_HABITAT_SIM_SITE_PACKAGES,
-    ]
-    for candidate in candidates:
-        if candidate.is_dir():
-            return candidate.resolve()
-    return None
 
 
 def _agent_pose(env: Any) -> list[float]:
@@ -406,3 +317,31 @@ def _episode_id_candidates(episode_id: str) -> list[Any]:
     if text.isdigit():
         candidates.append(int(text))
     return candidates
+
+
+def camera_pose_from_transform(transform):
+    """Habitat camera/body transform to world FRD [x,y,z,yaw,roll,pitch]."""
+    from scipy.spatial.transform import Rotation
+
+    matrix = np.asarray(transform, dtype=float)
+    basis = np.asarray([[0, 0, -1], [1, 0, 0], [0, -1, 0]], dtype=float)
+    yaw, pitch, roll = Rotation.from_matrix(basis @ matrix[:3, :3] @ basis.T).as_euler("ZYX")
+    return [*(basis @ matrix[:3, 3]).tolist(), float(yaw), float(roll), float(pitch)]
+
+
+def camera_observation_metadata(sim):
+    import quaternion
+
+    state = sim.get_agent_state()
+
+    def pose(value):
+        matrix = np.eye(4)
+        matrix[:3, :3] = quaternion.as_rotation_matrix(value.rotation)
+        matrix[:3, 3] = value.position
+        return camera_pose_from_transform(matrix)
+
+    sensors = {"rgb": "front", "rgb_left": "left", "rgb_right": "right", "rgb_rear": "rear"}
+    poses = {
+        camera: pose(state.sensor_states[sensor]) for sensor, camera in sensors.items() if sensor in state.sensor_states
+    }
+    return {"camera_poses": poses, "body_rotation": pose(state)[3:]}

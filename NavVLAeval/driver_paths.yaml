@@ -1,0 +1,4 @@
+# Empty entries inherit the host environment. Paths are relative to this file.
+LD_LIBRARY_PATH: []
+__EGL_VENDOR_LIBRARY_FILENAMES: []
+VK_DRIVER_FILES: []

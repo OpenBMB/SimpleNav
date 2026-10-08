@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import math
 from typing import Any
@@ -24,20 +23,6 @@ class AerialVLNJsonInputAdapter:
             if max_samples is not None and len(episodes) >= int(max_samples):
                 return episodes[: int(max_samples)]
         return episodes
-
-    def fingerprint(self, cfg: InputConfig) -> str:
-        digest = hashlib.sha256()
-        for namespace, path in _json_roots(cfg):
-            digest.update(namespace.encode("utf-8"))
-            digest.update(str(path).encode("utf-8"))
-            digest.update(path.read_bytes())
-        scene_ids = cfg.raw.get("scene_ids")
-        if scene_ids is not None:
-            digest.update(json.dumps(scene_ids, sort_keys=True).encode("utf-8"))
-        episode_ids = sorted(_allowed_episode_ids(cfg.raw))
-        if episode_ids:
-            digest.update(json.dumps(episode_ids).encode("utf-8"))
-        return digest.hexdigest()
 
     def _load_root(
         self,
@@ -78,6 +63,7 @@ class AerialVLNJsonInputAdapter:
                     "start_pose": start_pose,
                     "goal_position": goal_position,
                     "reference_path_m": reference_path,
+                    "reference_points": [point[:3] for point in reference_path],
                     "trajectory": [point[:3] for point in reference_path],
                 }
             )

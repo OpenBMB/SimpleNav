@@ -2,22 +2,21 @@ from __future__ import annotations
 
 import importlib
 import os
-from pathlib import Path
 import sys
 import time
+from pathlib import Path
 from types import MethodType
 from typing import Any
 
 import numpy as np
 
-from NavVLAeval.common.runner.backend_plan import WorkerBackendPlan
 from NavVLAeval.common.config import EnvConfig
+from NavVLAeval.common.runner.backend_plan import WorkerBackendPlan
 from NavVLAeval.common.simulators.base import select_waypoints_for_step
 from NavVLAeval.common.simulators.unrealzoo.coordinates import (
-    nav_waypoints_to_unreal_cm,
     nav_pose_from_unreal_cm,
+    nav_waypoints_to_unreal_cm,
     starvla_waypoints_to_nav,
-    starvla_waypoints_to_unreal_cm,
     unreal_pose_from_nav,
 )
 from NavVLAeval.common.types import EnvironmentStepResult, EvalEpisode, Pose4D
@@ -43,7 +42,7 @@ class UnrealZooBackendPlanner:
         env_id = _required_str(merged, "env_id")
         unreal_env_root = _required_str(merged, "unreal_env_root")
         return WorkerBackendPlan(
-            type="unrealzoo",
+            type="unrealcv",
             kwargs={
                 "env_id": env_id,
                 "unreal_env_root": unreal_env_root,
@@ -54,7 +53,7 @@ class UnrealZooBackendPlanner:
 
 
 class UnrealZooEnvironmentBackend:
-    type = "unrealzoo"
+    type = "unrealcv"
 
     def __init__(
         self,
@@ -74,7 +73,6 @@ class UnrealZooEnvironmentBackend:
         unrealzoo_gym_root = self.kwargs.get("unrealzoo_gym_root")
         self.unreal_env_root = Path(str(unreal_env_root)) if unreal_env_root else None
         self.unrealzoo_gym_root = Path(str(unrealzoo_gym_root)) if unrealzoo_gym_root else None
-        self.render_lib_root = Path(str(self.kwargs["render_lib_root"])) if self.kwargs.get("render_lib_root") is not None else None
         self.resolution = tuple(int(v) for v in self.kwargs.get("resolution", (256, 256)))
         self.display = self.kwargs.get("display")
         self.offscreen = bool(self.kwargs.get("offscreen", True))
@@ -113,10 +111,31 @@ class UnrealZooEnvironmentBackend:
     def get_observation(self) -> dict[str, Any]:
         env = self._require_env()
         image = env.unwrapped.unrealcv.get_image(self.camera_id, self.viewmode)
+        # This wrapper rotates the player by camera_yaw - 180 degrees.
+        xyz = env.unwrapped.unrealcv.get_obj_location(self._player())
+        roll, player_yaw, pitch = env.unwrapped.unrealcv.get_obj_rotation(self._player())
+        self._pose = nav_pose_from_unreal_cm([*xyz, roll, (player_yaw + 360.0) % 360.0 - 180.0, pitch])
+        camera = env.unwrapped.unrealcv.get_cam_pose(self.camera_id)
         state = self._pose.as_array()
+        body_pose = state.copy()
+        body_pose[3] = np.deg2rad(body_pose[3])
         return {
             "image": np.asarray(image),
+            "images": {"front": np.asarray(image)},
+            "pose": self._pose,
             "state": state,
+            "body_pose": body_pose,
+            "body_rotation": [float(body_pose[3]), -np.deg2rad(roll), -np.deg2rad(pitch)],
+            "camera_poses": {
+                "front": [
+                    camera[0] / 100,
+                    camera[1] / 100,
+                    -camera[2] / 100,
+                    np.deg2rad(camera[4]),
+                    -np.deg2rad(camera[3]),
+                    -np.deg2rad(camera[5]),
+                ]
+            },
             "sim_pose_cm": unreal_pose_from_nav(self._pose),
         }
 
@@ -133,7 +152,9 @@ class UnrealZooEnvironmentBackend:
             x_cm, y_cm, z_cm, yaw_deg = [float(v) for v in waypoint]
             env.unwrapped.unrealcv.set_obj_location(self._player(), [x_cm, y_cm, z_cm])
             env.unwrapped.unrealcv.set_rotation(self._player(), yaw_deg - 180.0)
-            self._pose = Pose4D(float(nav_waypoint[0]), float(nav_waypoint[1]), float(nav_waypoint[2]), float(nav_waypoint[3]))
+            self._pose = Pose4D(
+                float(nav_waypoint[0]), float(nav_waypoint[1]), float(nav_waypoint[2]), float(nav_waypoint[3])
+            )
             self._set_camera()
             action_observations.append(self.get_observation())
             self._trajectory.append(
@@ -142,14 +163,13 @@ class UnrealZooEnvironmentBackend:
                     "state_cm": [[x_cm, y_cm, z_cm], [0.0, yaw_deg, 0.0]],
                 }
             )
-        last = nav_waypoints[-1]
-        self._pose = Pose4D(float(last[0]), float(last[1]), float(last[2]), float(last[3]))
         diagnostics = {
             "original_waypoint_count": int(original_nav_waypoints.shape[0]),
             "executed_waypoint_count": int(nav_waypoints.shape[0]),
             "selected_waypoint_indices": selected_indices,
             "world_waypoints": original_nav_waypoints.tolist(),
             "executed_world_waypoints": nav_waypoints.tolist(),
+            "actual_waypoint_poses": [obs["pose"].as_array().tolist() for obs in action_observations],
             "unreal_waypoints_cm": unreal_waypoints.tolist(),
         }
         return EnvironmentStepResult(
@@ -201,7 +221,6 @@ class UnrealZooEnvironmentBackend:
         if not self.start_process:
             return
         self._prepare_imports()
-        self._prepare_render_environment()
         gym = importlib.import_module("gym")
         importlib.import_module("gym_unrealcv")
         config_ue = importlib.import_module("gym_unrealcv.envs.wrappers.configUE")
@@ -229,30 +248,6 @@ class UnrealZooEnvironmentBackend:
         self.env = env
         env.unwrapped.unrealcv.set_viewport(self._player())
         env.unwrapped.unrealcv.set_phy(self._player(), 0)
-
-    def _prepare_render_environment(self) -> None:
-        if self.render_lib_root is None:
-            os.environ["CUDA_VISIBLE_DEVICES"] = str(self.physical_gpu_id)
-            return
-        required = [
-            self.render_lib_root / "lib",
-            self.render_lib_root / "etc" / "nvidia_icd.json",
-            self.render_lib_root / "etc" / "10_nvidia.json",
-        ]
-        for path in required:
-            if not path.exists():
-                raise FileNotFoundError(f"missing UnrealZoo render dependency: {path}")
-        current_ld_library_path = os.environ.get("LD_LIBRARY_PATH", "")
-        lib_path = str(self.render_lib_root / "lib")
-        if current_ld_library_path:
-            entries = current_ld_library_path.split(":")
-            if lib_path not in entries:
-                os.environ["LD_LIBRARY_PATH"] = f"{lib_path}:{current_ld_library_path}"
-        else:
-            os.environ["LD_LIBRARY_PATH"] = lib_path
-        os.environ["VK_DRIVER_FILES"] = str(self.render_lib_root / "etc" / "nvidia_icd.json")
-        os.environ["__EGL_VENDOR_LIBRARY_FILENAMES"] = str(self.render_lib_root / "etc" / "10_nvidia.json")
-        os.environ["CUDA_VISIBLE_DEVICES"] = str(self.physical_gpu_id)
 
     def _patch_unrealzoo_launch(self, unwrapped_env) -> None:
         def launch_ue_env(env_self):
@@ -312,6 +307,7 @@ class UnrealZooEnvironmentBackend:
         env = self._require_env()
         if hasattr(env.unwrapped.unrealcv, "set_cam"):
             env.unwrapped.unrealcv.set_cam(self._player())
+
 
 def nav_pose_from_sim_pose_cm(pose_cm) -> Pose4D:
     return nav_pose_from_unreal_cm(pose_cm)

@@ -5,7 +5,6 @@ import gzip
 import json
 import math
 import shutil
-import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -52,10 +51,10 @@ def normalize_family(family: str) -> str:
 
 
 def default_task_config(vlnce_root: Union[str, Path], *, family: str) -> Path:
-    root = Path(vlnce_root)
-    if normalize_family(family) == R2R_FAMILY:
-        return root / "habitat_extensions" / "config" / "vlnce_task.yaml"
-    return root / "habitat_extensions" / "config" / "rxr_vlnce_english_task.yaml"
+    import habitat
+
+    normalize_family(family)
+    return Path(habitat.__file__).parent / "config/benchmark/nav/vln_r2r.yaml"
 
 
 def main() -> None:
@@ -85,8 +84,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--start-episode-index", type=int, default=0)
     parser.add_argument("--end-episode-index", type=int, default=None)
     parser.add_argument("--gpu-id", type=int, default=0)
-    parser.add_argument("--width", type=int, default=None, help="Optional RGB width override. Defaults to official config.")
-    parser.add_argument("--height", type=int, default=None, help="Optional RGB height override. Defaults to official config.")
+    parser.add_argument("--width", type=int, default=None, help="Optional RGB width override. Defaults to 256.")
+    parser.add_argument("--height", type=int, default=None, help="Optional RGB height override. Defaults to 256.")
     parser.add_argument("--resume", action="store_true", help="Reuse existing PNGs while rebuilding the manifest.")
     parser.add_argument("--overwrite", action="store_true", help="Delete the staged split root before rendering.")
     return parser
@@ -188,11 +187,11 @@ def render_vlnce_rgb(args: argparse.Namespace) -> Dict[str, Any]:
         "reused_frames": reused_frames,
         "skipped_no_gt": skipped_no_gt,
         "rgb_sensor": {
-            "width": int(task_config.SIMULATOR.RGB_SENSOR.WIDTH),
-            "height": int(task_config.SIMULATOR.RGB_SENSOR.HEIGHT),
-            "hfov": float(task_config.SIMULATOR.RGB_SENSOR.HFOV),
+            "width": int(task_config.habitat.simulator.agents.main_agent.sim_sensors.rgb.width),
+            "height": int(task_config.habitat.simulator.agents.main_agent.sim_sensors.rgb.height),
+            "hfov": float(task_config.habitat.simulator.agents.main_agent.sim_sensors.rgb.hfov),
         },
-        "depth_enabled": "DEPTH_SENSOR" in list(task_config.SIMULATOR.AGENT_0.SENSORS),
+        "depth_enabled": False,
     }
     (stage_root / "render_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     return summary
@@ -210,28 +209,29 @@ def build_task_config(
     width: Optional[int],
     height: Optional[int],
 ):
-    sys.path.insert(0, str(vlnce_root))
-    from habitat_extensions.config.default import get_extended_config
+    from habitat.config import get_config, read_write
+    from NavVLAeval.common.simulators.habitat.vlnce031_datasets import configure_dataset_config
+    from NavVLAeval.common.simulators.habitat.vlnce031_runtime import structured_camera_sensor_configs
 
-    config = get_extended_config(str(default_task_config(vlnce_root, family=family)))
-    config.defrost()
-    config.DATASET.SPLIT = split
-    config.DATASET.DATA_PATH = str(dataset_path)
-    config.DATASET.SCENES_DIR = str(vlnce_root / "data" / "scene_datasets")
-    if family == RXR_FAMILY:
-        config.DATASET.ROLES = [role]
-        config.DATASET.LANGUAGES = languages or ["*"]
-    config.SIMULATOR.AGENT_0.SENSORS = ["RGB_SENSOR"]
-    config.SIMULATOR.HABITAT_SIM_V0.GPU_DEVICE_ID = int(gpu_id)
-    if width is not None:
-        config.SIMULATOR.RGB_SENSOR.WIDTH = int(width)
-    if height is not None:
-        config.SIMULATOR.RGB_SENSOR.HEIGHT = int(height)
-    config.TASK.SENSORS = []
-    config.TASK.MEASUREMENTS = []
-    config.ENVIRONMENT.ITERATOR_OPTIONS.SHUFFLE = False
-    config.ENVIRONMENT.ITERATOR_OPTIONS.MAX_SCENE_REPEAT_STEPS = -1
-    config.freeze()
+    config = get_config(str(default_task_config(vlnce_root, family=family)))
+    with read_write(config):
+        configure_dataset_config(
+            config,
+            data_root=vlnce_root / "data",
+            task_name=family,
+            split=split,
+            roles=[role] if family == RXR_FAMILY else ["guide"],
+            languages=languages,
+        )
+        config.habitat.dataset.data_path = str(dataset_path)
+        config.habitat.simulator.habitat_sim_v0.gpu_device_id = gpu_id
+        sensors = structured_camera_sensor_configs(image_size=256 if height is None else height)
+        sensors["rgb"].width = 256 if width is None else width
+        config.habitat.simulator.agents.main_agent.sim_sensors = {"rgb": sensors["rgb"]}
+        config.habitat.task.lab_sensors = {}
+        config.habitat.task.measurements = {}
+        config.habitat.environment.iterator_options.shuffle = False
+        config.habitat.environment.iterator_options.max_scene_repeat_steps = -1
     return config
 
 

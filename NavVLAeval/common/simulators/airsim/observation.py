@@ -7,7 +7,6 @@ import numpy as np
 
 from NavVLAeval.common.simulators.airsim.images import decode_depth_response, decode_scene_response
 
-
 TRAVELUAV_CAMERA_NAMES = ["FrontCamera", "LeftCamera", "RightCamera", "RearCamera", "DownCamera"]
 TRAVELUAV_RECORD_CAMERA_INDICES = (0, 4)
 
@@ -17,7 +16,6 @@ class AirSimObservationBuilder:
         self.profile = str(profile or "openfly")
         self.camera_name = str(camera_name or "front")
         self.last_movement_result: dict[str, Any] = {"collision": False, "collision_reason": None}
-        self.target_position: np.ndarray | None = None
 
     def build(self, *, client: Any, airsim: Any) -> dict[str, Any]:
         if self.profile == "traveluav":
@@ -34,7 +32,8 @@ class AirSimObservationBuilder:
             scene_response_indices=[0],
             label="openfly",
         )
-        return {"image": decode_scene_response(responses[0])}
+        image = decode_scene_response(responses[0])
+        return {"image": image, "images": {"front": image}, **_camera_metadata(airsim, {"front": responses[0]})}
 
     def _build_aerialvln_observation(self, *, client: Any, airsim: Any) -> dict[str, Any]:
         camera_name = self.camera_name or "front_0"
@@ -46,7 +45,8 @@ class AirSimObservationBuilder:
             label="aerialvln",
             vehicle_name="Drone_1",
         )
-        return {"image": decode_scene_response(responses[0]), "navvla_eval": {}}
+        image = decode_scene_response(responses[0])
+        return {"image": image, "images": {"front": image}, **_camera_metadata(airsim, {"front": responses[0]})}
 
     def _build_traveluav_observation(self, *, client: Any, airsim: Any) -> dict[str, Any]:
         requests = []
@@ -60,13 +60,14 @@ class AirSimObservationBuilder:
             label="traveluav",
         )
         rgbs = [decode_scene_response(responses[2 * index]) for index in range(len(TRAVELUAV_CAMERA_NAMES))]
-        depths = [decode_depth_response(airsim, responses[2 * index + 1]) for index in range(len(TRAVELUAV_CAMERA_NAMES))]
+        depths = [
+            decode_depth_response(airsim, responses[2 * index + 1]) for index in range(len(TRAVELUAV_CAMERA_NAMES))
+        ]
         rgb_record = [rgbs[index] for index in TRAVELUAV_RECORD_CAMERA_INDICES]
         depth_record = [depths[index] for index in TRAVELUAV_RECORD_CAMERA_INDICES]
         state_info = state_info_from_multirotor(client)
         imu_info = imu_info_from_client(client)
         traveluav_episode = {
-            "instruction": "",
             "rgb": rgbs,
             "depth": depths,
             "rgb_record": rgb_record,
@@ -76,10 +77,11 @@ class AirSimObservationBuilder:
         traveluav_episode["sensors"]["state"]["movement"] = dict(self.last_movement_result)
         return {
             "image": rgbs[0],
-            "state": np.asarray([0.0] * 16, dtype=np.float32),
+            "images": dict(zip(("front", "left", "right", "rear", "down"), rgbs)),
+            **_camera_metadata(airsim, dict(zip(("front", "left", "right", "rear", "down"), responses[::2]))),
             "traveluav_episode": traveluav_episode,
-            "target_position": self.target_position if self.target_position is not None else np.zeros(3, dtype=np.float32),
         }
+
 
 def _sim_get_images_with_valid_scenes(
     client: Any,
@@ -160,3 +162,12 @@ def imu_info_from_client(client: Any) -> dict[str, Any]:
         "linear_acceleration": list(data.linear_acceleration),
         "angular_velocity": list(data.angular_velocity),
     }
+
+
+def _camera_metadata(airsim, responses):
+    poses = {}
+    for camera, response in responses.items():
+        p = response.camera_position
+        pitch, roll, yaw = airsim.to_eularian_angles(response.camera_orientation)
+        poses[camera] = [p.x_val, p.y_val, p.z_val, yaw, roll, pitch]
+    return {"camera_poses": poses, "timestamp_s": next(iter(responses.values())).time_stamp / 1e9}

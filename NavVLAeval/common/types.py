@@ -6,16 +6,7 @@ from typing import Any
 
 import numpy as np
 
-from NavVLAeval.common.runner.backend_plan import (
-    OfflineWorkerBackendPlan,
-    WorkerBackendPlan,
-)
-
-
-def AirSimWorkerBackendPlan(*, type: str = "airsim", airsim_port: int, settings_root: str | Path) -> WorkerBackendPlan:
-    if type != "airsim":
-        raise ValueError(f"AirSimWorkerBackendPlan type must be 'airsim', got {type!r}")
-    return WorkerBackendPlan(type="airsim", kwargs={"airsim_port": int(airsim_port), "settings_root": settings_root})
+from NavVLAeval.common.runner.backend_plan import WorkerBackendPlan
 
 
 @dataclass(frozen=True)
@@ -43,22 +34,14 @@ class EvalEpisode:
 
 @dataclass
 class EpisodeHistory:
-    images: list[Any] = field(default_factory=list)
-    observations: list[dict[str, Any]] = field(default_factory=list)
     poses: list[Pose4D] = field(default_factory=list)
-    raw_actions: list[np.ndarray] = field(default_factory=list)
-    instructions: list[str] = field(default_factory=list)
-    long_memory_tokens: np.ndarray | None = None
-    long_memory_tvi: np.ndarray | None = None
-    long_memory_blocks: list[dict[str, Any]] = field(default_factory=list)
-    long_memory_frame_indices: set[int] = field(default_factory=set)
 
 
 @dataclass(frozen=True)
 class ActionPrediction:
-    normalized_actions: np.ndarray
     raw_actions: np.ndarray
     metadata: dict[str, Any] = field(default_factory=dict)
+    stop: bool = False
 
 
 @dataclass(frozen=True)
@@ -79,6 +62,7 @@ class WorkerPlan:
     worker_log_path: Path
     backend: WorkerBackendPlan
     episode_attempts: dict[str, str]
+    episode_ordinals: dict[str, int] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -86,8 +70,6 @@ class RunPlan:
     schema_version: int
     benchmark: str
     run_name: str
-    config_sha256: str
-    input_fingerprint: str
     total_episode_uids: list[str]
     skipped_episode_uids: list[str]
     pending_episode_uids: list[str]
@@ -102,9 +84,9 @@ class EpisodeResult:
     instruction: str
     success: int
     oracle_success: int
-    final_distance: float
+    final_distance: float | None
     path_length: float
-    gt_path_length: float
+    gt_path_length: float | None
     steps: int
     failure: str | None
     failure_type: str | None

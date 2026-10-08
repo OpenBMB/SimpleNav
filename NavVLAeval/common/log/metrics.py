@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from collections import Counter, defaultdict
-from dataclasses import asdict, is_dataclass
 import json
 import math
+from collections import Counter, defaultdict
+from dataclasses import asdict, is_dataclass
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -12,8 +12,7 @@ import numpy as np
 from NavVLAeval.common.log.artifacts import scan_eval_infos
 from NavVLAeval.common.types import EpisodeResult
 
-
-DEFAULT_METRIC_KEYS = ("SR", "OSR", "NE", "SPL", "standard_SPL")
+DEFAULT_METRIC_KEYS = ("SR", "OSR", "NE", "SPL")
 ALL_METRIC_KEYS = DEFAULT_METRIC_KEYS + ("nDTW", "path_length", "gt_path_length", "steps_taken")
 
 
@@ -27,8 +26,12 @@ def normalize_metric_keys(metric_keys: Sequence[str] | None) -> tuple[str, ...]:
     return keys
 
 
-def episode_metric_payload(result: EpisodeResult | Mapping[str, Any], *, metric_keys: Sequence[str] | None = None) -> dict[str, Any]:
+def episode_metric_payload(
+    result: EpisodeResult | Mapping[str, Any], *, metric_keys: Sequence[str] | None = None
+) -> dict[str, Any]:
     result_dict = _result_dict(result)
+    if result_dict.get("failure") is not None:
+        return {key: None for key in normalize_metric_keys(metric_keys)}
     all_metrics = _all_episode_metrics(result_dict)
     return {key: all_metrics[key] for key in normalize_metric_keys(metric_keys) if key in all_metrics}
 
@@ -44,11 +47,15 @@ def summarize_result_metrics(
     failed = sum(1 for result in result_dicts if result.get("failure") is not None)
     metric_results = [result for result in result_dicts if result.get("failure") is None]
     metric_total = len(metric_results)
-    metrics = {key: 0.0 for key in selected_keys}
+    metrics = {key: None for key in selected_keys}
     if metric_total:
         per_episode = [_all_episode_metrics(result) for result in metric_results]
         metrics = {
-            key: float(sum(float(metric.get(key, 0.0)) for metric in per_episode) / metric_total)
+            key: (
+                sum(float(metric[key]) for metric in per_episode) / metric_total
+                if all(metric.get(key) is not None for metric in per_episode)
+                else None
+            )
             for key in selected_keys
         }
     return {
@@ -75,7 +82,9 @@ def summarize_results_by_scene(
     }
 
 
-def summary_from_run_artifacts(run_plan_path: str | Path, run_root: str | Path, *, metric_keys: Sequence[str] | None = None) -> dict[str, Any]:
+def summary_from_run_artifacts(
+    run_plan_path: str | Path, run_root: str | Path, *, metric_keys: Sequence[str] | None = None
+) -> dict[str, Any]:
     run_plan_path = Path(run_plan_path)
     run_root = Path(run_root)
     run_plan = json.loads(run_plan_path.read_text(encoding="utf-8"))
@@ -91,8 +100,6 @@ def summary_from_run_artifacts(run_plan_path: str | Path, run_root: str | Path, 
         episode_uid = str(payload.get("episode_uid"))
         if episode_uid not in set(total_uids):
             continue
-        if not _matches_run_identity(payload, run_plan):
-            raise ValueError(f"eval_info run identity mismatch for {episode_uid}: {record.path}")
         status = str(payload.get("status") or "")
         if status not in {"completed", "failed"}:
             continue
@@ -109,8 +116,6 @@ def summary_from_run_artifacts(run_plan_path: str | Path, run_root: str | Path, 
         "benchmark": run_plan["benchmark"],
         "run_name": run_plan["run_name"],
         "config_path": "config.yaml",
-        "config_sha256": run_plan["config_sha256"],
-        "input_fingerprint": run_plan["input_fingerprint"],
         "total_episodes": len(total_uids),
         "completed_episodes": base_summary["completed_episodes"],
         "failed_episodes": base_summary["failed_episodes"],
@@ -124,7 +129,9 @@ def summary_from_run_artifacts(run_plan_path: str | Path, run_root: str | Path, 
     }
 
 
-def ndtw_score(predicted_points: Sequence[Any], reference_points: Sequence[Any], *, success_distance: float = 1.0) -> float | None:
+def ndtw_score(
+    predicted_points: Sequence[Any], reference_points: Sequence[Any], *, success_distance: float = 1.0
+) -> float | None:
     if not predicted_points or not reference_points:
         return None
     predicted = np.asarray(predicted_points, dtype=np.float32).reshape(len(predicted_points), -1)[:, :3]
@@ -153,64 +160,29 @@ def _result_dict(result: EpisodeResult | Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _all_episode_metrics(result: Mapping[str, Any]) -> dict[str, float]:
-    success = float(int(result.get("success", 0)))
-    oracle_success = float(int(result.get("oracle_success", 0)))
-    final_distance = float(result.get("final_distance", 0.0))
-    path_length = float(result.get("path_length", 0.0))
-    gt_path_length = float(result.get("gt_path_length", 0.0))
+    success = float(int(result["success"]))
+    oracle_success = float(int(result["oracle_success"]))
+    final_distance = float(result["final_distance"])
+    path_length = float(result["path_length"])
+    gt_path_length = float(result["gt_path_length"])
     metrics = {
         "SR": success,
         "OSR": oracle_success,
         "NE": final_distance,
         "SPL": _spl(result),
-        "standard_SPL": _standard_spl(result),
-        "nDTW": _ndtw(result),
+        "nDTW": result.get("nDTW"),
         "path_length": path_length,
         "gt_path_length": gt_path_length,
-        "steps_taken": float(result.get("steps", 0)),
+        "steps_taken": float(result["steps"]),
     }
-    payload_metrics = result.get("metrics")
-    if isinstance(payload_metrics, Mapping):
-        for key, value in payload_metrics.items():
-            if key in ALL_METRIC_KEYS and value is not None:
-                metrics[str(key)] = float(value)
     return metrics
 
 
 def _spl(result: Mapping[str, Any]) -> float:
-    if not int(result.get("success", 0)):
+    if not int(result["success"]):
         return 0.0
-    gt_path_length = float(result.get("gt_path_length", 0.0))
-    return gt_path_length / max(float(result.get("path_length", 0.0)), gt_path_length, 1e-6)
-
-
-def _standard_spl(result: Mapping[str, Any]) -> float:
-    if not int(result.get("success", 0)):
-        return 0.0
-    return float(result.get("gt_path_length", 0.0)) / max(
-        float(result.get("path_length", 0.0)),
-        float(result.get("gt_path_length", 0.0)),
-        1e-6,
-    )
-
-
-def _ndtw(result: Mapping[str, Any]) -> float:
-    if result.get("nDTW") is not None:
-        return float(result["nDTW"])
-    if result.get("ndtw") is not None:
-        return float(result["ndtw"])
-    gt_path_length = float(result.get("gt_path_length", 0.0))
-    final_distance = max(float(result.get("final_distance", 0.0)), 0.0)
-    if gt_path_length <= 1e-6:
-        return 1.0 if final_distance <= 1e-6 else 0.0
-    return float(math.exp(-final_distance / max(gt_path_length, 1e-6)))
-
-
-def _matches_run_identity(payload: Mapping[str, Any], run_plan: Mapping[str, Any]) -> bool:
-    for key in ("benchmark", "run_name", "config_sha256", "input_fingerprint"):
-        if payload.get(key) != run_plan.get(key):
-            return False
-    return True
+    gt_path_length = float(result["gt_path_length"])
+    return gt_path_length / max(float(result["path_length"]), gt_path_length, 1e-6)
 
 
 def _summary_metric_keys_from_eval_infos(payloads: Sequence[Mapping[str, Any]]) -> tuple[str, ...]:

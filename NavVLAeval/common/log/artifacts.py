@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 import json
 import os
-from pathlib import Path
 import re
 import shutil
+import uuid
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Mapping
 
 import numpy as np
@@ -13,13 +14,10 @@ from PIL import Image
 
 from NavVLAeval.common.types import EvalEpisode, StepState
 
-
 _SAFE_COMPONENT_RE = re.compile(r"[^A-Za-z0-9_.-]+")
 _REQUIRED_EVAL_INFO_FIELDS = {
     "benchmark",
     "run_name",
-    "config_sha256",
-    "input_fingerprint",
     "episode_uid",
     "source_episode_id",
     "input_namespace",
@@ -35,14 +33,6 @@ class ImageCoercionResult:
     image: np.ndarray | None
     reason: str | None
     shape: tuple[int, ...] | None
-
-
-@dataclass(frozen=True)
-class RunIdentity:
-    benchmark: str
-    run_name: str
-    config_sha256: str
-    input_fingerprint: str
 
 
 @dataclass(frozen=True)
@@ -114,9 +104,11 @@ def sanitize_path_component(value: str) -> str:
 
 
 def validate_sanitized_episode_paths(episodes: list[EvalEpisode]) -> None:
-    seen: dict[tuple[str, str], tuple[str, str]] = {}
+    seen: dict[tuple[str, ...], tuple[str, str]] = {}
     for episode in episodes:
-        sanitized = (sanitize_path_component(episode.scene_id), sanitize_path_component(episode.episode_uid))
+        sanitized = tuple(
+            sanitize_path_component(v) for v in (episode.scene_id, episode.input_namespace, episode.source_episode_id)
+        )
         raw = (episode.scene_id, episode.episode_uid)
         previous = seen.get(sanitized)
         if previous is not None and previous != raw:
@@ -127,11 +119,13 @@ def validate_sanitized_episode_paths(episodes: list[EvalEpisode]) -> None:
 def write_json_atomic(path: Path, payload: Mapping[str, Any], *, sort_keys: bool = True) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(payload, indent=2, sort_keys=sort_keys), encoding="utf-8")
+    tmp.write_text(json.dumps(json_safe_value(payload), indent=2, sort_keys=sort_keys), encoding="utf-8")
     tmp.replace(path)
 
 
 def json_safe_value(value: Any) -> Any:
+    if isinstance(value, Path):
+        return str(value)
     if isinstance(value, np.ndarray):
         return value.tolist()
     if isinstance(value, np.generic):
@@ -313,7 +307,9 @@ class EpisodeArtifactWriter:
             return
         policy = str(action_observation_image_policy)
         if policy in {"step", "both"}:
-            for camera_name, image in extract_observation_images(state.post_observation, image_cameras=image_cameras).items():
+            for camera_name, image in extract_observation_images(
+                state.post_observation, image_cameras=image_cameras
+            ).items():
                 self.write_image(Path(camera_name) / f"{step_name}.png", image)
         if policy in {"action", "both"}:
             for action_offset, observation in enumerate(state.action_observations):
@@ -357,30 +353,11 @@ class EpisodeArtifactWriter:
         eval_info_path = self.store.episode_eval_info_path(self.episode)
         if not eval_info_path.exists():
             return
-        payload = json.loads(eval_info_path.read_text(encoding="utf-8"))
-        if not isinstance(payload, dict):
-            raise ValueError(f"existing eval_info must be an object before retry: {eval_info_path}")
-        attempt_id = str(payload.get("attempt_id") or "").strip()
-        if not attempt_id:
-            raise ValueError(f"existing eval_info is missing attempt_id before retry: {eval_info_path}")
-        attempt_dir = self.episode_dir / "attempts" / _safe_attempt_id(attempt_id)
-        if attempt_dir.exists():
-            raise FileExistsError(f"attempt archive already exists: {attempt_dir}")
+        attempt_dir = self.episode_dir / "attempts" / uuid.uuid4().hex
         attempt_dir.mkdir(parents=True)
-        for name in ("eval_info.json",):
-            source = self.episode_dir / name
-            if source.exists():
-                shutil.move(str(source), str(attempt_dir / name))
-        for source_dir in sorted(path for path in self.episode_dir.iterdir() if path.is_dir() and path.name != "attempts"):
-            if source_dir.exists():
-                shutil.move(str(source_dir), str(attempt_dir / source_dir.name))
-
-
-def _safe_attempt_id(value: str) -> str:
-    safe = "".join(char if char.isalnum() or char in "._-" else "_" for char in value.strip())
-    if not safe:
-        raise ValueError(f"attempt_id sanitizes to empty: {value!r}")
-    return safe
+        for source in list(self.episode_dir.iterdir()):
+            if source.name != "attempts":
+                shutil.move(str(source), str(attempt_dir / source.name))
 
 
 def scan_eval_infos(run_root: Path) -> list[EvalInfoRecord]:
@@ -407,25 +384,18 @@ def scan_eval_infos(run_root: Path) -> list[EvalInfoRecord]:
                 )
             )
             continue
+        if payload["status"] == "completed":
+            numeric = ("success", "oracle_success", "final_distance", "path_length", "gt_path_length", "steps")
+            valid = payload["failure"] is None and all(
+                isinstance(payload.get(key), (int, float)) and np.isfinite(payload[key]) for key in numeric
+            )
+            ndtw = payload.get("nDTW")
+            valid = valid and (ndtw is None or (isinstance(ndtw, (int, float)) and np.isfinite(ndtw)))
+            if not valid:
+                records.append(EvalInfoRecord(path, payload, False, "completed result lacks finite outcome fields"))
+                continue
         records.append(EvalInfoRecord(path=path, payload=payload, valid=True))
     return records
-
-
-def is_completed_skip_candidate(eval_info: Mapping[str, Any], episode: EvalEpisode, identity: RunIdentity) -> bool:
-    expected = {
-        "benchmark": identity.benchmark,
-        "run_name": identity.run_name,
-        "config_sha256": identity.config_sha256,
-        "input_fingerprint": identity.input_fingerprint,
-        "episode_uid": episode.episode_uid,
-        "source_episode_id": episode.source_episode_id,
-        "input_namespace": episode.input_namespace,
-        "input_root": episode.input_root,
-        "scene_id": episode.scene_id,
-        "status": "completed",
-        "failure": None,
-    }
-    return all(eval_info.get(key) == value for key, value in expected.items())
 
 
 def acquire_run_lock(run_root: Path) -> RunLock:

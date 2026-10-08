@@ -14,7 +14,7 @@ from NavVLAeval.common.types import (
 )
 
 
-class AerialVLNBenchmarkSpec:
+class AerialVLNBenchmark(BaseBenchmarkRuntime):
     def __init__(
         self,
         *,
@@ -33,48 +33,18 @@ class AerialVLNBenchmarkSpec:
         self.ndtw_success_distance = float(ndtw_success_distance)
         if self.ndtw_success_distance <= 0:
             raise ValueError(f"ndtw_success_distance must be positive, got {ndtw_success_distance!r}")
+        self._low_action_streak = 0
+        self.success_on_timeout = True
 
-    def validate_episode(self, episode: EvalEpisode, *, env: Any, dataset: Any) -> None:
-        del env, dataset
+    def validate_episode(self, episode: EvalEpisode) -> None:
         payload = episode.payload
         for key in ("env_name", "start_pose", "goal_position", "reference_path_m"):
             if key not in payload or payload[key] in (None, ""):
                 raise ValueError(f"AerialVLN episode {episode.episode_uid} is missing payload[{key!r}]")
-        runtime = self.create_runtime(None)
+        runtime = self
         runtime.initial_pose(episode)
         runtime.goal_position(episode)
         runtime.gt_path_length(episode)
-
-    def create_runtime(self, cfg: Any) -> "AerialVLNBenchmarkRuntime":
-        del cfg
-        return AerialVLNBenchmarkRuntime(
-            success_radius=self.success_radius,
-            termination_mode=self.termination_mode,
-            stop_action_threshold=self.stop_action_threshold,
-            stop_action_measure=self.stop_action_measure,
-            stop_action_confirmations=self.stop_action_confirmations,
-        )
-
-
-class AerialVLNBenchmarkRuntime(BaseBenchmarkRuntime):
-    def __init__(
-        self,
-        *,
-        success_radius: float,
-        termination_mode: str,
-        stop_action_threshold: float,
-        stop_action_measure: str,
-        stop_action_confirmations: int,
-    ):
-        self.success_radius = float(success_radius)
-        self.termination_mode = _validate_termination_mode(termination_mode)
-        self.stop_action_threshold = float(stop_action_threshold)
-        self.stop_action_measure = _validate_stop_action_measure(stop_action_measure)
-        self.stop_action_confirmations = _validate_stop_action_confirmations(stop_action_confirmations)
-        self._low_action_streak = 0
-
-    def stop_at_first_success_waypoint(self) -> bool:
-        return self.termination_mode == "success_or_max_steps"
 
     def initial_pose(self, episode: EvalEpisode) -> Pose4D:
         pose = _pose_values(episode.payload.get("start_pose"), episode=episode, label="start_pose")
@@ -96,36 +66,6 @@ class AerialVLNBenchmarkRuntime(BaseBenchmarkRuntime):
     def instruction_for_step(self, episode: EvalEpisode, history: EpisodeHistory | None, step: int) -> str:
         del history, step
         return episode.instruction
-
-    def prepare_observation_for_model(
-        self,
-        *,
-        episode: EvalEpisode,
-        history: EpisodeHistory,
-        step: int,
-        observation: dict[str, Any],
-        instruction: str,
-    ) -> dict[str, Any]:
-        del history
-        prepared = dict(observation)
-        metadata = dict(prepared.get("navvla_eval") or {})
-        # The runtime dataset assigns frame_index in control-tick units.  Keep
-        # that dense index so the online history can include every waypoint
-        # observation; ``step`` is only the coarser model-inference index.
-        frame_index = metadata.get("frame_index", step)
-        metadata.update(
-            {
-                "episode_id": episode.source_episode_id,
-                "episode_uid": episode.episode_uid,
-                "scene_id": episode.scene_id,
-                "frame_index": int(frame_index),
-                "model_step": int(step),
-            }
-        )
-        prepared["navvla_eval"] = metadata
-        prepared["instruction"] = instruction
-        prepared["goal_position"] = self.goal_position(episode)
-        return prepared
 
     def goal_position(self, episode: EvalEpisode) -> np.ndarray:
         goal = episode.payload.get("goal_position")
@@ -209,8 +149,7 @@ def _stop_action_value(raw_action_chunk: np.ndarray, measure: str) -> float:
     action = np.asarray(raw_action_chunk, dtype=np.float32)
     if action.ndim != 2 or action.shape[0] < 2 or action.shape[1] < 3:
         raise ValueError(
-            "final_segment_xyz_norm requires raw_action_chunk shape [horizon>=2, dim>=3], "
-            f"got {action.shape}"
+            f"final_segment_xyz_norm requires raw_action_chunk shape [horizon>=2, dim>=3], got {action.shape}"
         )
     if not np.isfinite(action).all():
         raise ValueError("raw_action_chunk contains non-finite values")

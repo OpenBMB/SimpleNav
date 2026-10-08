@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import math
 from pathlib import Path
@@ -64,19 +63,6 @@ class OpenFlyStarVLAInputAdapter:
                 break
         return episodes
 
-    def fingerprint(self, cfg: InputConfig) -> str:
-        if cfg.data_root is None or not cfg.split:
-            raise ValueError("input.data_root and input.split are required for OpenFly fingerprint")
-        split_path = cfg.data_root / "splits" / f"{cfg.split}.txt"
-        annotation_path = cfg.data_root / "Annotation" / f"{cfg.split}.json"
-        digest = hashlib.sha256()
-        digest.update(str(cfg.data_root).encode("utf-8"))
-        digest.update(str(cfg.namespace).encode("utf-8"))
-        digest.update((split_path if split_path.exists() else annotation_path).read_bytes())
-        _update_scene_filter_fingerprint(digest, cfg.raw)
-        _update_source_z_sign_fingerprint(digest, cfg.raw)
-        return digest.hexdigest()
-
     def _load_payload(self, episode_path: Path, *, source_z_sign: float = 1.0) -> dict[str, Any]:
         if not episode_path.exists():
             raise FileNotFoundError(f"Missing OpenFly episode file: {episode_path}")
@@ -99,6 +85,7 @@ class OpenFlyStarVLAInputAdapter:
             yaw.append(heading)
         converted = dict(payload)
         converted["pos"] = positions
+        converted["reference_points"] = positions
         converted["yaw"] = yaw
         return converted
 
@@ -142,6 +129,7 @@ class OpenFlyStarVLAInputAdapter:
                 for position, heading in zip(positions, yaw)
             ]
             payload["pos"] = [position for position, _heading in converted_poses]
+            payload["reference_points"] = payload["pos"]
             payload["yaw"] = [heading for _position, heading in converted_poses]
             episodes.append(
                 EvalEpisode(
@@ -202,14 +190,3 @@ def _allowed_scene_ids(raw: dict[str, Any]) -> set[str]:
         return set()
     values = raw_value if isinstance(raw_value, (list, tuple, set)) else [raw_value]
     return {str(value).strip() for value in values if str(value).strip()}
-
-
-def _update_scene_filter_fingerprint(digest: Any, raw: dict[str, Any]) -> None:
-    scene_ids = sorted(_allowed_scene_ids(raw))
-    if scene_ids:
-        digest.update(json.dumps(scene_ids, sort_keys=True).encode("utf-8"))
-
-
-def _update_source_z_sign_fingerprint(digest: Any, raw: dict[str, Any]) -> None:
-    if "source_z_sign" in raw:
-        digest.update(json.dumps({"source_z_sign": _source_z_sign(raw)}, sort_keys=True).encode("utf-8"))

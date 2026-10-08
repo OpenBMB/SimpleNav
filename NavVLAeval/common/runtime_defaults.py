@@ -1,46 +1,23 @@
-from __future__ import annotations
-
-from typing import Any
-
-from NavVLAeval.common.types import EnvironmentStepResult, EpisodeHistory, EvalEpisode, StepState
+from NavVLAeval.common.types import TerminationStatus
 
 
 class BaseBenchmarkRuntime:
-    def stop_at_first_success_waypoint(self) -> bool:
-        return True
+    """Small task hooks; simulator execution and model state have separate owners."""
 
-    def prepare_observation_for_model(
-        self,
-        *,
-        episode: EvalEpisode,
-        history: EpisodeHistory,
-        step: int,
-        observation: dict[str, Any],
-        instruction: str,
-    ) -> dict[str, Any]:
-        del episode, history, step, instruction
+    success_on_timeout = False
+
+    def observe(self, episode, observation):
+        pass
+
+    def prepare_observation_for_model(self, *, episode, history, step, observation, instruction):
         return observation
 
-    def needs_post_action_observation(self) -> bool:
-        return False
+    def log_step_artifacts(self, state, artifacts):
+        return {}
 
-    def log_step_artifacts(self, state: StepState, artifacts: Any) -> None:
-        del state, artifacts
-        return None
-
-    def offline_transition(self, state: StepState) -> EnvironmentStepResult:
-        del state
-        raise RuntimeError("offline_transition is unsupported for this runtime")
-
-
-class BaseRuntimeDatasetAdapter:
-    def history_observations_for_update(
-        self,
-        *,
-        pre_observation: dict[str, Any],
-        post_observation: dict[str, Any],
-        step_result: EnvironmentStepResult,
-        action_observations: list[dict[str, Any]] | None = None,
-    ) -> list[dict[str, Any]]:
-        del pre_observation, step_result, action_observations
-        return [post_observation]
+    def finalize(self, episode, pose, *, reason, previous, oracle_success):
+        if previous.done:
+            return previous
+        stopped = reason in {"model_stop", "waypoint_motion_stop"}
+        success = int(self.is_success(pose, episode) and (stopped or self.success_on_timeout))
+        return TerminationStatus(True, success, int(oracle_success), reason, None, None)

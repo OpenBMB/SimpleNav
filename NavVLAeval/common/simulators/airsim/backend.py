@@ -2,15 +2,15 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import subprocess
 import time
+from pathlib import Path
 from typing import Any
 
 import numpy as np
 
-from NavVLAeval.common.runner.backend_plan import WorkerBackendPlan
 from NavVLAeval.common.config import EnvConfig
+from NavVLAeval.common.runner.backend_plan import WorkerBackendPlan
 from NavVLAeval.common.simulators.airsim.actions import airsim_actions_to_world_waypoints
 from NavVLAeval.common.simulators.airsim.observation import AirSimObservationBuilder
 from NavVLAeval.common.simulators.airsim.process import (
@@ -18,9 +18,7 @@ from NavVLAeval.common.simulators.airsim.process import (
     build_airsim_launch_command,
     build_airsim_launch_env,
     copytree_with_hardlinks,
-    kill_pid,
     kill_process_group,
-    pid_for_listening_port,
     resolve_airsim_start_script,
     resolve_binary_settings_path,
 )
@@ -35,7 +33,6 @@ from NavVLAeval.common.simulators.base import (
     pose_from_waypoint,
 )
 from NavVLAeval.common.types import EnvironmentStepResult, EvalEpisode, Pose4D
-
 
 AIRSIM_RPC_TIMEOUT_SEC = 40
 TELEPORT_POSE_TOLERANCE_M = 0.05
@@ -92,7 +89,6 @@ class AirSimEnvironmentBackend:
         self._reject_legacy_kwargs()
         self.worker_backend = worker_backend
         self.env_root = Path(self._required_kwarg("env_root"))
-        self.render_lib_root = Path(self._required_kwarg("render_lib_root"))
         self.settings_root = Path(self._required_worker_kwarg("settings_root"))
         self.airsim_port = int(self._required_worker_kwarg("airsim_port"))
         self.camera_name = str(self.kwargs.get("camera_name") or "front")
@@ -115,7 +111,9 @@ class AirSimEnvironmentBackend:
         self.start_process = bool(start_process)
         self.settings_profile = str(self.kwargs.get("settings_profile") or "openfly")
         self.env_layout = str(self.kwargs.get("layout") or self.settings_profile or "openfly")
-        self.recording_folder = Path(self.kwargs["recording_folder"]) if self.kwargs.get("recording_folder") is not None else None
+        self.recording_folder = (
+            Path(self.kwargs["recording_folder"]) if self.kwargs.get("recording_folder") is not None else None
+        )
         self.recording_camera_name = self.kwargs.get("recording_camera_name")
         self.recording_interval = self.kwargs.get("recording_interval")
         self.camera_resolution_overrides = dict(self.kwargs.get("camera_resolution_overrides") or {})
@@ -123,8 +121,7 @@ class AirSimEnvironmentBackend:
         self.clock_speed = self.kwargs.get("clock_speed")
         self.view_mode = self.kwargs.get("view_mode")
         self.action_waypoint_semantics = str(
-            self.kwargs.get("action_waypoint_semantics")
-            or "anchor_relative_frd_xyz_yaw"
+            self.kwargs.get("action_waypoint_semantics") or "anchor_relative_frd_xyz_yaw"
         )
         self.airsim_z_sign = float(self.kwargs.get("airsim_z_sign", 1.0))
         if self.airsim_z_sign not in {-1.0, 1.0}:
@@ -181,7 +178,7 @@ class AirSimEnvironmentBackend:
         if self.start_process:
             self.process = subprocess.Popen(
                 command,
-                env=build_airsim_launch_env(self.render_lib_root, physical_gpu_id=self.physical_gpu_id),
+                env=build_airsim_launch_env(physical_gpu_id=self.physical_gpu_id),
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.STDOUT,
                 text=True,
@@ -250,7 +247,17 @@ class AirSimEnvironmentBackend:
 
     def get_observation(self) -> dict[str, Any]:
         client, airsim = self._require_client()
-        return self.observation_builder.build(client=client, airsim=airsim)
+        observation = self.observation_builder.build(client=client, airsim=airsim)
+        vehicle = client.simGetVehiclePose(
+            vehicle_name="Drone_1" if self.observation_builder.profile == "aerialvln" else ""
+        )
+        observation["pose"] = self._pose_from_airsim_coordinates(_pose4d_from_airsim_pose(vehicle))
+        pitch, roll, yaw = airsim.to_eularian_angles(vehicle.orientation)
+        observation["body_rotation"] = [yaw, roll * self.airsim_z_sign, pitch * self.airsim_z_sign]
+        for pose in observation["camera_poses"].values():
+            for axis in (2, 4, 5):
+                pose[axis] *= self.airsim_z_sign
+        return observation
 
     def _wait_for_valid_render(self) -> None:
         deadline = time.monotonic() + self.render_warmup_sec
@@ -260,9 +267,7 @@ class AirSimEnvironmentBackend:
                 return
             remaining = deadline - time.monotonic()
             if remaining <= 0:
-                raise RuntimeError(
-                    f"AirSim renderer remained blank for {self.render_warmup_sec:.1f}s"
-                )
+                raise RuntimeError(f"AirSim renderer remained blank for {self.render_warmup_sec:.1f}s")
             time.sleep(min(1.0, remaining))
 
     def apply_action(self, current_pose: Pose4D, raw_actions: np.ndarray) -> EnvironmentStepResult:
@@ -364,7 +369,6 @@ class AirSimEnvironmentBackend:
             is_blueprint=False,
         )
         self.object_count += 1
-        self.observation_builder.target_position = np.asarray(pose_values[:3], dtype=np.float32)
         client.simContinueForFrames(1)
         client.simPause(True)
         return bool(success)
@@ -375,8 +379,6 @@ class AirSimEnvironmentBackend:
     def close(self) -> None:
         if self.process:
             kill_process_group(self.process.pid)
-        if self.start_process:
-            kill_pid(pid_for_listening_port(self.airsim_port))
         self.process = None
         self.client = None
         self.airsim = None
@@ -495,6 +497,7 @@ class AirSimEnvironmentBackend:
         collision_reason = None
         completed = 0
         action_observations = []
+        actual_waypoint_poses = []
         client.enableApiControl(True)
         client.armDisarm(True)
         client.simPause(False)
@@ -520,6 +523,7 @@ class AirSimEnvironmentBackend:
                 break
             completed = waypoint_index + 1
             action_observations.append(self.get_observation())
+            actual_waypoint_poses.append(action_observations[-1]["pose"])
         client.simPause(True)
         next_pose = self._pose_from_airsim_coordinates(_actual_pose_from_multirotor_state(client))
         return WaypointExecutionResult(
@@ -530,6 +534,7 @@ class AirSimEnvironmentBackend:
             completed_waypoint_count=completed,
             collision=collision,
             collision_reason=collision_reason,
+            actual_waypoint_poses=actual_waypoint_poses,
             action_observations=action_observations,
             diagnostics={"execution_mode": plan.mode.value},
         )
@@ -542,9 +547,7 @@ class AirSimEnvironmentBackend:
     def _reject_legacy_kwargs(self) -> None:
         for legacy_key, canonical_key in LEGACY_AIRSIM_ENV_KWARGS.items():
             if legacy_key in self.kwargs:
-                raise ValueError(
-                    f"env.kwargs.{legacy_key} is not supported; use env.kwargs.{canonical_key}"
-                )
+                raise ValueError(f"env.kwargs.{legacy_key} is not supported; use env.kwargs.{canonical_key}")
 
     def _required_kwarg(self, key: str) -> Any:
         value = self.kwargs.get(key)
@@ -623,10 +626,7 @@ def _pose4d_from_airsim_pose(airsim_pose: Any) -> Pose4D:
 
 
 def _positions_match(actual_pose: Pose4D, target_pose: Pose4D) -> bool:
-    return bool(
-        np.linalg.norm(actual_pose.as_array()[:3] - target_pose.as_array()[:3])
-        <= TELEPORT_POSE_TOLERANCE_M
-    )
+    return bool(np.linalg.norm(actual_pose.as_array()[:3] - target_pose.as_array()[:3]) <= TELEPORT_POSE_TOLERANCE_M)
 
 
 def _yaw_from_airsim_quaternion(orientation: Any) -> float:

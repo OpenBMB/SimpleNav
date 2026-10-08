@@ -12,22 +12,6 @@ from NavVLAeval.common.simulators.habitat.vlnce031_runtime import VLNCE031Habita
 from NavVLAeval.common.types import EnvironmentStepResult, EvalEpisode, Pose4D
 
 
-class VLNCE031HabitatBackendPlanner:
-    def __init__(self, **kwargs: Any) -> None:
-        self.kwargs = dict(kwargs)
-
-    def plan_worker_backend(
-        self,
-        *,
-        cfg: EnvConfig,
-        store,
-        worker_index: int,
-        physical_gpu_id: int,
-    ) -> WorkerBackendPlan:
-        del cfg, store, worker_index, physical_gpu_id
-        return WorkerBackendPlan(type="habitat", kwargs={})
-
-
 class VLNCE031HabitatBackend:
     type = "habitat"
 
@@ -55,9 +39,7 @@ class VLNCE031HabitatBackend:
     def start_episode(self, episode: EvalEpisode, initial_pose: Pose4D) -> dict[str, Any]:
         del initial_pose
         self._episode = episode
-        self._latest_payload = self.runtime.reset(
-            {"episode_id": episode.source_episode_id, "item": episode.payload}
-        )
+        self._latest_payload = self.runtime.reset({"episode_id": episode.source_episode_id, "item": episode.payload})
         return {
             "simulator": "habitat",
             "episode_id": episode.source_episode_id,
@@ -184,6 +166,12 @@ def _observation_from_payload(payload: dict[str, Any]) -> dict[str, Any]:
     if pose is not None:
         converted["pose"] = _pose_from_payload(pose)
         converted["state"] = converted["pose"].as_array()
+    body_pose = converted["pose"].as_array()
+    body_pose[3] = _wrap_to_pi(body_pose[3] + pi / 2)
+    converted["body_pose"] = body_pose
+    for key in ("camera_poses", "body_rotation"):
+        if key in payload:
+            converted[key] = payload[key]
     converted["instruction"] = str(payload.get("instruction") or "")
     converted["metrics"] = dict(payload.get("metrics") or {})
     converted["done"] = bool(payload.get("done", False))

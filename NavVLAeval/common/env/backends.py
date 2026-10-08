@@ -4,8 +4,8 @@ from typing import Any
 
 import numpy as np
 
-from NavVLAeval.common.runner.backend_plan import WorkerBackendPlan
 from NavVLAeval.common.config import EnvConfig, load_class
+from NavVLAeval.common.runner.backend_plan import WorkerBackendPlan
 from NavVLAeval.common.types import EnvironmentStepResult, EvalEpisode, Pose4D
 
 
@@ -44,6 +44,13 @@ class OfflineReplayBackend:
             diagnostics={"offline_frame_index": self._cursor},
         )
 
+    def project_action_to_world(self, current_pose, raw_actions):
+        from NavVLAeval.common.simulators.airsim.actions import airsim_actions_to_world_waypoints
+
+        return airsim_actions_to_world_waypoints(
+            current_pose=current_pose, raw_actions=raw_actions, action_semantics="anchor_relative_body_frame_xyz_yaw"
+        )
+
     def close_episode(self) -> None:
         self._episode = None
         self._frames = []
@@ -69,11 +76,9 @@ def create_environment_backend(
 ):
     if cfg.type != worker_backend.type:
         raise ValueError(f"worker backend type {worker_backend.type!r} does not match env.type {cfg.type!r}")
-    if worker_backend.type == "offline" and not getattr(cfg, "backend_class_path", None):
+    if worker_backend.type == "offline" and not cfg.backend_class_path:
         return OfflineReplayBackend()
-    if not getattr(cfg, "backend_class_path", None):
-        if worker_backend.type in {"airsim", "unrealzoo"}:
-            raise ValueError(f"env.backend_class_path is required for {worker_backend.type} env")
+    if not cfg.backend_class_path:
         raise ValueError(f"env.backend_class_path is required for worker backend type: {worker_backend.type!r}")
     backend_cls = load_class(cfg.backend_class_path)
     return backend_cls(
@@ -82,6 +87,8 @@ def create_environment_backend(
         physical_gpu_id=physical_gpu_id,
         start_process=start_process,
     )
+
+
 def _pose_from_frame(frame: dict[str, Any], *, fallback: Pose4D, episode_uid: str) -> Pose4D:
     pose = frame.get("pose")
     if pose is None:
@@ -107,6 +114,9 @@ def _observation_from_frame(frame: dict[str, Any], pose: Pose4D) -> dict[str, An
         payload = dict(observation)
     else:
         payload = {}
+    payload["pose"] = pose
+    if "images" not in payload and "image" in payload:
+        payload["images"] = {"front": payload["image"]}
     if "state" not in payload:
         payload["state"] = pose.as_array()
     elif not isinstance(payload["state"], np.ndarray):

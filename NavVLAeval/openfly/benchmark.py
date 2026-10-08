@@ -14,7 +14,7 @@ from NavVLAeval.common.types import (
 )
 
 
-class OpenFlyBenchmarkSpec:
+class OpenFlyBenchmark(BaseBenchmarkRuntime):
     def __init__(
         self,
         *,
@@ -29,52 +29,21 @@ class OpenFlyBenchmarkSpec:
         self.termination_mode = _validate_termination_mode(termination_mode)
         self.stop_action_measure = _validate_stop_action_measure(stop_action_measure)
         self.stop_action_confirmations = _validate_stop_action_confirmations(stop_action_confirmations)
+        self._low_action_streak = 0
+        self.success_on_timeout = True
 
-    def validate_episode(self, episode: EvalEpisode, *, env: Any, dataset: Any) -> None:
-        del env, dataset
+    def validate_episode(self, episode: EvalEpisode) -> None:
         payload = episode.payload
         if not str(payload.get("env_name") or "").strip():
             raise ValueError(f"OpenFly episode {episode.episode_uid} is missing payload['env_name']")
         _positions(payload, episode)
         _yaw(payload, episode)
 
-    def create_runtime(self, cfg: Any) -> "OpenFlyBenchmarkRuntime":
-        del cfg
-        return OpenFlyBenchmarkRuntime(
-            success_radius=self.success_radius,
-            stop_action_threshold=self.stop_action_threshold,
-            termination_mode=self.termination_mode,
-            stop_action_measure=self.stop_action_measure,
-            stop_action_confirmations=self.stop_action_confirmations,
-        )
-
-
-class OpenFlyBenchmarkRuntime(BaseBenchmarkRuntime):
-    def __init__(
-        self,
-        *,
-        success_radius: float,
-        stop_action_threshold: float,
-        termination_mode: str,
-        stop_action_measure: str,
-        stop_action_confirmations: int,
-    ):
-        self.success_radius = float(success_radius)
-        self.stop_action_threshold = float(stop_action_threshold)
-        self.termination_mode = _validate_termination_mode(termination_mode)
-        self.stop_action_measure = _validate_stop_action_measure(stop_action_measure)
-        self.stop_action_confirmations = _validate_stop_action_confirmations(stop_action_confirmations)
-        self._low_action_streak = 0
-
-    def stop_at_first_success_waypoint(self) -> bool:
-        return self.termination_mode == "success_or_action"
-
     def log_step_artifacts(self, state: StepState, artifacts: Any) -> dict[str, Any]:
         del artifacts
         return {
             "stop_action_values": {
-                measure: _stop_action_value(state.raw_action_chunk, measure)
-                for measure in sorted(_STOP_ACTION_MEASURES)
+                measure: _stop_action_value(state.raw_action_chunk, measure) for measure in sorted(_STOP_ACTION_MEASURES)
             }
         }
 
@@ -180,8 +149,7 @@ def _stop_action_value(raw_action_chunk: np.ndarray, measure: str) -> float:
     if measure == "tail4_max_segment_xyz_norm":
         if action.shape[0] < 5:
             raise ValueError(
-                "tail4_max_segment_xyz_norm requires at least 5 action waypoints, "
-                f"got horizon {action.shape[0]}"
+                f"tail4_max_segment_xyz_norm requires at least 5 action waypoints, got horizon {action.shape[0]}"
             )
         tail_segment_norm = np.linalg.norm(np.diff(action[-5:, :3], axis=0), axis=1)
         return float(np.max(tail_segment_norm))

@@ -2,30 +2,22 @@ from __future__ import annotations
 
 from typing import Any
 
+import numpy as np
+
 from NavVLAeval.common.config import InputConfig, load_class
-from NavVLAeval.common.protocols import EvalInputAdapter
 from NavVLAeval.common.types import EvalEpisode
 
 
-def load_input_adapter(cfg: InputConfig) -> EvalInputAdapter:
-    adapter_cls = load_class(cfg.adapter_class_path)
-    adapter = adapter_cls()
-    return adapter
-
-
-def compute_input_fingerprint(adapter: EvalInputAdapter, cfg: InputConfig) -> str:
-    fingerprint = adapter.fingerprint(cfg)
-    text = str(fingerprint).strip()
-    if not text:
-        raise ValueError("input adapter fingerprint must be non-empty")
-    return text
-
-
 def load_eval_episodes(cfg: InputConfig, *, max_samples: int | None = None) -> list[EvalEpisode]:
-    adapter = load_input_adapter(cfg)
+    adapter = load_class(cfg.adapter_class_path)()
     episodes = adapter.load_episodes(cfg, max_samples=max_samples)
     if not isinstance(episodes, list):
         raise TypeError("input adapter load_episodes() must return list[EvalEpisode]")
+    for episode in episodes:
+        payload = episode.payload
+        points = np.asarray(payload["reference_points"], dtype=float)
+        if points.size and (points.ndim != 2 or points.shape[1] != 3 or not np.isfinite(points).all()):
+            raise ValueError(f"Invalid reference_points for {episode.episode_uid}")
     _validate_episodes(episodes)
     return episodes
 

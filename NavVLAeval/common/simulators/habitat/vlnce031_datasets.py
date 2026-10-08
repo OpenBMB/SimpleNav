@@ -1,21 +1,19 @@
 from __future__ import annotations
 
 import gzip
-import hashlib
 import json
 import os
-from pathlib import Path
 import shutil
 import tempfile
+from pathlib import Path
 from typing import Any
 
 import attr
-from habitat.core.dataset import ALL_SCENES_MASK, Dataset
+from habitat.core.dataset import Dataset
 from habitat.core.registry import registry
 from habitat.core.utils import not_none_validator
 from habitat.tasks.nav.nav import NavigationGoal
 from habitat.tasks.vln.vln import VLNEpisode
-
 
 DEFAULT_SCENE_PATH_PREFIX = "data/scene_datasets/"
 ALL_LANGUAGES_MASK = "*"
@@ -146,9 +144,9 @@ class RxRVLNCEDatasetV1(Dataset):
 
     @classmethod
     def check_config_paths_exist(cls, config: Any) -> bool:
-        return all(os.path.exists(_format_data_path(config, role=role)) for role in cls.extract_roles_from_config(config)) and os.path.exists(
-            str(_cfg(config, "scenes_dir", ""))
-        )
+        return all(
+            os.path.exists(_format_data_path(config, role=role)) for role in cls.extract_roles_from_config(config)
+        ) and os.path.exists(str(_cfg(config, "scenes_dir", "")))
 
 
 def _format_data_path(config: Any, *, role: str) -> str:
@@ -160,16 +158,7 @@ def _format_data_path(config: Any, *, role: str) -> str:
 def _cfg(config: Any, key: str, default: Any = None) -> Any:
     if config is None:
         return default
-    lowered = key.lower()
-    uppered = key.upper()
-    try:
-        return getattr(config, lowered)
-    except Exception:
-        pass
-    try:
-        return getattr(config, uppered)
-    except Exception:
-        return default
+    return getattr(config, key, default)
 
 
 def _cfg_list(config: Any, key: str, *, default: tuple[str, ...]) -> list[str]:
@@ -221,8 +210,7 @@ def _split_file_path(
 
 def _gzip_shadow_for_json(path: Path) -> Path:
     source = path.expanduser().resolve()
-    digest = hashlib.sha1(str(source).encode("utf-8")).hexdigest()
-    shadow_dir = Path(tempfile.gettempdir()) / "navvlaeval_habitat031_json_gz" / digest
+    shadow_dir = Path(tempfile.gettempdir()) / "navvlaeval_habitat031_json_gz" / source.parent.relative_to(source.anchor)
     shadow_dir.mkdir(parents=True, exist_ok=True)
     target = shadow_dir / f"{source.name}.gz"
     if not target.exists() or target.stat().st_mtime < source.stat().st_mtime:

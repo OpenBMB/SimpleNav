@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Protocol, runtime_checkable
+from typing import Any
 
 import numpy as np
 
@@ -79,24 +79,6 @@ class WaypointExecutionResult:
             }
         )
         return diagnostics
-
-
-@runtime_checkable
-class PoseControlBackend(Protocol):
-    def reset_pose(self, pose: Pose4D) -> None:
-        ...
-
-
-@runtime_checkable
-class ObjectPlacementBackend(Protocol):
-    def set_object(self, object_info: dict[str, Any]) -> bool:
-        ...
-
-
-@runtime_checkable
-class WaypointProjectorBackend(Protocol):
-    def project_action_to_world(self, current_pose: Pose4D, raw_actions: np.ndarray) -> np.ndarray:
-        ...
 
 
 def parse_action_execution_mode(value: str | WaypointExecutionMode | None) -> WaypointExecutionMode:

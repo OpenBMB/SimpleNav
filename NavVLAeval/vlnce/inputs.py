@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import gzip
-import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -20,7 +19,9 @@ class VLNCEInputAdapter:
             raise ValueError("input.path is required for VLN-CE input")
         if not cfg.namespace:
             raise ValueError("input.namespace is required for VLN-CE input")
-        task_name = str(cfg.raw.get("task_name") or cfg.raw.get("benchmark_name") or _task_from_input_type(cfg.type)).lower()
+        task_name = str(
+            cfg.raw.get("task_name") or cfg.raw.get("benchmark_name") or _task_from_input_type(cfg.type)
+        ).lower()
         split = str(cfg.raw.get("split") or "val_unseen")
         roles = tuple(str(role) for role in (cfg.raw.get("roles") or ("guide",)))
         languages = tuple(str(language) for language in (cfg.raw.get("languages") or ()))
@@ -44,6 +45,9 @@ class VLNCEInputAdapter:
                     "split": split,
                     "instruction": instruction,
                     "gt_path_length": _reference_path_length(payload.get("reference_path") or []),
+                    "reference_points": [
+                        [-point[2], point[0], -point[1]] for point in payload.get("reference_path", [])
+                    ],
                 }
             )
             episodes.append(
@@ -60,26 +64,6 @@ class VLNCEInputAdapter:
             )
         return episodes
 
-    def fingerprint(self, cfg: InputConfig) -> str:
-        if cfg.path is None:
-            raise ValueError("input.path is required for VLN-CE fingerprint")
-        task_name = str(cfg.raw.get("task_name") or cfg.raw.get("benchmark_name") or _task_from_input_type(cfg.type)).lower()
-        split = str(cfg.raw.get("split") or "val_unseen")
-        roles = tuple(str(role) for role in (cfg.raw.get("roles") or ("guide",)))
-        digest = hashlib.sha256()
-        digest.update(str(cfg.namespace).encode("utf-8"))
-        digest.update(task_name.encode("utf-8"))
-        digest.update(split.encode("utf-8"))
-        for path in _split_paths(cfg.path, task_name=task_name, split=split, roles=roles):
-            resolved_path = _existing_json_or_json_gz(path)
-            digest.update(str(resolved_path.relative_to(cfg.path)).encode("utf-8"))
-            digest.update(resolved_path.read_bytes())
-        return digest.hexdigest()
-
-
-VLNCER2RInputAdapter = VLNCEInputAdapter
-VLNCERxRInputAdapter = VLNCEInputAdapter
-
 
 class NavVLALeRobotVLNCEInputAdapter:
     """Load NavVLA-LeRobot v3 roots as VLN-CE EvalEpisode records."""
@@ -93,7 +77,9 @@ class NavVLALeRobotVLNCEInputAdapter:
             raise FileNotFoundError(f"NavVLA-LeRobot episodes parquet does not exist: {fallback_path}")
         import pandas as pd
 
-        table = pd.concat((pd.read_parquet(path) for path in episode_paths), ignore_index=True).sort_values("episode_index")
+        table = pd.concat((pd.read_parquet(path) for path in episode_paths), ignore_index=True).sort_values(
+            "episode_index"
+        )
         if max_samples is not None:
             table = table.head(int(max_samples))
         task_text_by_index = _lerobot_task_text_by_index(cfg.path)
@@ -113,6 +99,7 @@ class NavVLALeRobotVLNCEInputAdapter:
                 "trajectory_id": str(row.get("trajectory_id") or source_id),
                 "task_index": task_index,
                 "lerobot_root": str(cfg.path),
+                "reference_points": [],
                 "gt_path_length": float(row.get("gt_path_length", 0.0) or 0.0),
             }
             result.append(
@@ -128,22 +115,6 @@ class NavVLALeRobotVLNCEInputAdapter:
                 )
             )
         return result
-
-    def fingerprint(self, cfg: InputConfig) -> str:
-        if cfg.path is None:
-            raise ValueError("input.path is required for NavVLA-LeRobot VLN-CE fingerprint")
-        digest = hashlib.sha256()
-        episode_paths = sorted((cfg.path / "meta" / "episodes").glob("chunk-*/part-*.parquet"))
-        for rel in ("meta/info.json", "meta/tasks.parquet"):
-            path = cfg.path / rel
-            if path.exists():
-                digest.update(rel.encode("utf-8"))
-                digest.update(path.read_bytes())
-        for path in episode_paths:
-            rel = path.relative_to(cfg.path).as_posix()
-            digest.update(rel.encode("utf-8"))
-            digest.update(path.read_bytes())
-        return digest.hexdigest()
 
 
 VLNCELerobotInputAdapter = NavVLALeRobotVLNCEInputAdapter
@@ -166,7 +137,6 @@ def _first_task_text(value: Any) -> str:
     if isinstance(value, (list, tuple)) and value:
         return str(value[0])
     return str(value or "")
-
 
 
 def _load_records(

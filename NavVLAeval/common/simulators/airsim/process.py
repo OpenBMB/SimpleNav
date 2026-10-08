@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import re
-import signal
 import shutil
-import subprocess
+import signal
 import tempfile
 import time
 from dataclasses import dataclass
+from pathlib import Path
 
 XVFB_RUN_PREFIX = ["xvfb-run", "-a", "-s", "-screen 0 1280x720x24"]
 
@@ -64,23 +63,10 @@ def build_airsim_launch_command(config: AirSimLaunchConfig) -> list[str]:
     return command
 
 
-def build_airsim_launch_env(render_lib_root: str | Path, *, physical_gpu_id: int | None = None) -> dict[str, str]:
-    render_lib_root = Path(render_lib_root)
-    required_files = [
-        render_lib_root / "etc" / "nvidia_icd.json",
-        render_lib_root / "etc" / "10_nvidia.json",
-        render_lib_root / "lib",
-    ]
-    for path in required_files:
-        if not path.exists():
-            raise FileNotFoundError(f"missing AirSim Vulkan render dependency: {path}")
+def build_airsim_launch_env(*, physical_gpu_id=None):
     env = os.environ.copy()
-    current_ld_library_path = env.get("LD_LIBRARY_PATH", "")
-    env["LD_LIBRARY_PATH"] = f"{render_lib_root / 'lib'}:{current_ld_library_path}"
-    env["VK_DRIVER_FILES"] = str(render_lib_root / "etc" / "nvidia_icd.json")
-    env["__EGL_VENDOR_LIBRARY_FILENAMES"] = str(render_lib_root / "etc" / "10_nvidia.json")
     if physical_gpu_id is not None:
-        env["CUDA_VISIBLE_DEVICES"] = str(int(physical_gpu_id))
+        env["CUDA_VISIBLE_DEVICES"] = str(physical_gpu_id)
     return env
 
 
@@ -159,46 +145,6 @@ def resolve_airsim_start_script(env_root: str | Path, env_name: str, *, layout: 
                 return direct
         return env_root / candidates[-1] / "LinuxNoEditor" / "AirVLN.sh"
     raise ValueError(f"unsupported AirSim env layout: {layout}")
-
-
-def pid_for_listening_port(port: int) -> int | None:
-    for command in (["ss", "-ltnp"], ["netstat", "-nlp"]):
-        try:
-            output = subprocess.check_output(command, text=True, stderr=subprocess.DEVNULL)
-        except Exception:
-            continue
-        for line in output.splitlines():
-            if f":{int(port)}" not in line:
-                continue
-            match = re.search(r"pid=(\d+)", line)
-            if match:
-                return int(match.group(1))
-            tail = line.strip().split()[-1].split("/")[0]
-            try:
-                return int(tail)
-            except Exception:
-                continue
-    return None
-
-
-def kill_pid(pid: int | None) -> None:
-    if pid is None:
-        return
-    try:
-        os.kill(pid, signal.SIGTERM)
-    except OSError:
-        return
-    deadline = time.monotonic() + 5.0
-    while time.monotonic() < deadline:
-        try:
-            os.kill(pid, 0)
-        except OSError:
-            return
-        time.sleep(0.2)
-    try:
-        os.kill(pid, signal.SIGKILL)
-    except OSError:
-        pass
 
 
 def kill_process_group(pid: int | None) -> None:

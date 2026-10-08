@@ -16,7 +16,13 @@ def groundingdino_python_paths(config_path: str | Path) -> list[str]:
 
 
 class TravelUAVDinoMonitor:
-    def __init__(self, *, groundingdino_config: str | Path, groundingdino_model_path: str | Path | None, device: str | int = "cuda"):
+    def __init__(
+        self,
+        *,
+        groundingdino_config: str | Path,
+        groundingdino_model_path: str | Path | None,
+        device: str | int = "cuda",
+    ):
         self.groundingdino_config = Path(groundingdino_config)
         self.groundingdino_model_path = Path(groundingdino_model_path) if groundingdino_model_path else None
         self.device = device
@@ -28,6 +34,7 @@ class TravelUAVDinoMonitor:
         if self.groundingdino_model_path is None:
             raise FileNotFoundError("groundingdino_model_path is required when TravelUAV DINO stop is enabled")
         import sys
+
         import torch
 
         for path in reversed(groundingdino_python_paths(self.groundingdino_config)):
@@ -39,11 +46,9 @@ class TravelUAVDinoMonitor:
         model.to(device=torch.device(self.device))
         self.dino_model = partial(predict, model=model)
 
-    def get_dino_results(self, episode: list[dict[str, Any]], obj_info: str) -> bool:
-        if not episode:
-            return False
-        images = episode[-1].get("rgb_record") or []
-        depths = episode[-1].get("depth_record") or []
+    def get_dino_results(self, observation: dict[str, Any], obj_info: str) -> bool:
+        images = observation.get("rgb_record") or []
+        depths = observation.get("depth_record") or []
         for image, depth in zip(images, depths):
             boxes, logits = self.detect(image, obj_info)
             for index, box in enumerate(boxes):
@@ -57,8 +62,8 @@ class TravelUAVDinoMonitor:
 
     def detect(self, img: Any, prompt: str):
         self._init_model()
-        import torch
         import groundingdino.datasets.transforms as T
+        import torch
         from groundingdino.util import box_ops
 
         img_src = copy.deepcopy(np.array(img))
