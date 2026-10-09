@@ -43,7 +43,7 @@ class OpenFlyBenchmark(BaseBenchmarkRuntime):
         del artifacts
         return {
             "stop_action_values": {
-                measure: _stop_action_value(state.raw_action_chunk, measure) for measure in sorted(_STOP_ACTION_MEASURES)
+                self.stop_action_measure: _stop_action_value(state.raw_action_chunk, self.stop_action_measure)
             }
         }
 

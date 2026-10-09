@@ -139,6 +139,7 @@ def build_airsim_settings(
     external_camera_resolution_overrides: dict[str, tuple[int, int]] | None = None,
     clock_speed: int | float | None = None,
     view_mode: str | None = None,
+    physics_engine_name: str | None = None,
 ) -> dict[str, Any]:
     external_cameras: dict[str, Any] = {}
     if profile == "traveluav":
@@ -149,7 +150,7 @@ def build_airsim_settings(
             _apply_camera_resolution_overrides(external_cameras, external_camera_resolution_overrides)
         resolved_clock_speed = 10 if clock_speed is None else clock_speed
         extra = {
-            "PhysiceEngineName": "ExternalPhysicsEngine",
+            "PhysicsEngineName": "ExternalPhysicsEngine",
             "Recording": _recording_settings(
                 folder=recording_folder,
                 camera_name=recording_camera_name,
@@ -224,6 +225,8 @@ def build_airsim_settings(
     if external_cameras:
         settings["ExternalCameras"] = external_cameras
     settings.update(extra)
+    if physics_engine_name is not None:
+        settings["PhysicsEngineName"] = physics_engine_name
     return settings
 
 
@@ -254,6 +257,7 @@ def write_airsim_settings(
     external_camera_resolution_overrides: dict[str, tuple[int, int]] | None = None,
     clock_speed: int | float | None = None,
     view_mode: str | None = None,
+    physics_engine_name: str | None = None,
 ) -> None:
     settings_path = Path(settings_path)
     settings_path.parent.mkdir(parents=True, exist_ok=True)
@@ -267,6 +271,7 @@ def write_airsim_settings(
         external_camera_resolution_overrides=external_camera_resolution_overrides,
         clock_speed=clock_speed,
         view_mode=view_mode,
+        physics_engine_name=physics_engine_name,
     )
     tmp_path = settings_path.with_name(f"{settings_path.name}.tmp.{os.getpid()}")
     tmp_path.write_text(json.dumps(settings, indent=2), encoding="utf-8")

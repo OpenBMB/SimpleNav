@@ -146,6 +146,7 @@ def _run_episode(*, cfg, worker, store, episode, runtime, model, env_backend):
             for pose in actual:
                 path_length += float(np.linalg.norm(pose.as_array()[:3] - history.poses[-1].as_array()[:3]))
                 history.poses.append(pose)
+                oracle = bool(oracle or runtime.is_success(pose, episode))
             post = step_result.observation
             observations = list(step_result.action_observations)
             if not observations or not np.array_equal(observations[-1]["pose"].as_array(), current_pose.as_array()):

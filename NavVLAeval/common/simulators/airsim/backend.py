@@ -209,6 +209,11 @@ class AirSimEnvironmentBackend:
             external_camera_resolution_overrides=self.external_camera_resolution_overrides,
             clock_speed=self.clock_speed,
             view_mode=self.view_mode,
+            physics_engine_name=(
+                "FastPhysicsEngine"
+                if self.action_execution_config.mode == WaypointExecutionMode.PATH
+                else "ExternalPhysicsEngine"
+            ),
         )
         self.settings_path = settings_path
         return build_airsim_launch_command(
@@ -514,16 +519,17 @@ class AirSimEnvironmentBackend:
                 lookahead=3,
                 adaptive_lookahead=1,
             )
-            if not _wait_until_waypoint_reached(
+            reached, sampled_poses = _wait_until_waypoint_reached(
                 client,
                 np.asarray([airsim_waypoint.x, airsim_waypoint.y, airsim_waypoint.z], dtype=np.float32),
-            ):
+            )
+            actual_waypoint_poses.extend(self._pose_from_airsim_coordinates(pose) for pose in sampled_poses)
+            if not reached:
                 collision = True
                 collision_reason = "stuck max len"
                 break
             completed = waypoint_index + 1
             action_observations.append(self.get_observation())
-            actual_waypoint_poses.append(action_observations[-1]["pose"])
         client.simPause(True)
         next_pose = self._pose_from_airsim_coordinates(_actual_pose_from_multirotor_state(client))
         return WaypointExecutionResult(
@@ -585,24 +591,26 @@ def _wait_until_waypoint_reached(
     distance_tolerance: float = 0.5,
     stuck_window: int = 200,
     stuck_distance: float = 0.1,
-) -> bool:
+) -> tuple[bool, list[Pose4D]]:
     target = np.asarray(target_xyz, dtype=np.float32).reshape(3)
     position_queue: list[np.ndarray] = []
+    poses: list[Pose4D] = []
     previous_distance = float("inf")
     start_time = time.perf_counter()
     while True:
         if time.perf_counter() - start_time > timeout_sec:
-            return False
+            return False, poses
         state = client.getMultirotorState(vehicle_name="")
+        poses.append(_pose4d_from_airsim_pose(state.kinematics_estimated))
         position = np.asarray(list(state.kinematics_estimated.position), dtype=np.float32).reshape(3)
         position_queue.append(position)
         if len(position_queue) > stuck_window:
             historical_position = position_queue.pop(0)
             if float(np.linalg.norm(position - historical_position)) < stuck_distance:
-                return False
+                return False, poses
         distance = float(np.linalg.norm(position - target))
         if distance <= distance_tolerance or distance > previous_distance:
-            return True
+            return True, poses
         previous_distance = distance
         time.sleep(0.005)
 
