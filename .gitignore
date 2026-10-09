@@ -109,3 +109,4 @@ events.out.tfevents.*
 
 # Local Codex notes and debugging artifacts
 /.codex/
+/AGENTS.md
