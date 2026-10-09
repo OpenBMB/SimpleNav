@@ -149,9 +149,6 @@ def evaluate(args: argparse.Namespace) -> None:
     import habitat
 
     importlib.import_module("NavVLAeval.track.habitat")
-    # Registers OpenTrackVLA's custom sensor config nodes before Hydra composes
-    # track_infer_{at,dt,stt}.yaml.
-    import evt_bench  # noqa: F401
     from habitat.datasets import make_dataset
 
     # Track dataset YAMLs intentionally use paths relative to OpenTrackVLA.
