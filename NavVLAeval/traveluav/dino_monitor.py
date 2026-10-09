@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import copy
 from functools import partial
 from pathlib import Path
 from typing import Any
@@ -42,9 +41,10 @@ class TravelUAVDinoMonitor:
                 sys.path.insert(0, path)
         from groundingdino.util.inference import load_model, predict
 
-        model = load_model(str(self.groundingdino_config), str(self.groundingdino_model_path))
-        model.to(device=torch.device(self.device))
-        self.dino_model = partial(predict, model=model)
+        device = torch.device(self.device)
+        model = load_model(str(self.groundingdino_config), str(self.groundingdino_model_path), device=device)
+        model.to(device=device)
+        self.dino_model = partial(predict, model=model, device=device)
 
     def get_dino_results(self, observation: dict[str, Any], obj_info: str) -> bool:
         images = observation.get("rgb_record") or []
@@ -66,7 +66,7 @@ class TravelUAVDinoMonitor:
         import torch
         from groundingdino.util import box_ops
 
-        img_src = copy.deepcopy(np.array(img))
+        img_src = np.asarray(img)
         pil_img = Image.fromarray(img_src)
         transform = T.Compose(
             [
@@ -85,9 +85,7 @@ class TravelUAVDinoMonitor:
         logits = logits.detach().cpu().numpy()
         height, width, _ = img_src.shape
         boxes_xyxy = (box_ops.box_cxcywh_to_xyxy(boxes) * torch.Tensor([width, height, width, height])).cpu().numpy()
-        filtered = []
-        for box in boxes_xyxy:
-            if (box[2] - box[0]) / width > 0.6 or (box[3] - box[1]) / height > 0.5:
-                continue
-            filtered.append(box)
-        return filtered, logits
+        keep = ((boxes_xyxy[:, 2] - boxes_xyxy[:, 0]) <= width * 0.6) & (
+            (boxes_xyxy[:, 3] - boxes_xyxy[:, 1]) <= height * 0.5
+        )
+        return boxes_xyxy[keep], logits[keep]
