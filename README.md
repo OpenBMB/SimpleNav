@@ -134,7 +134,7 @@ Public resources:
 
 - [Data, environments, and models](https://modelscope.cn/organization/SimpleNav)
 
-Place downloaded packages in the repository-relative `local/` layout below.
+Place native dependency wheels in the repository-relative `third_party/wheels/` directory. Place data, environment, and model packages in the `local/` layout below.
 
 ### 1. Clone and install the shared uv environment
 
@@ -152,7 +152,7 @@ sudo apt-get install build-essential cmake ninja-build python3.10-dev \
 Clone the repository and install the locked Python dependencies into the single environment. The initial sync skips the native wheels that are built or supplied next:
 
 ```bash
-git clone -b SimpleNav https://github.com/OpenBMB/SimpleNav.git SimpleNav
+git clone --recurse-submodules -b SimpleNav https://github.com/OpenBMB/SimpleNav.git SimpleNav
 cd SimpleNav
 curl -LsSf https://astral.sh/uv/install.sh | sh
 export CUDA_HOME=/usr/local/cuda-12.4
@@ -162,13 +162,14 @@ uv sync --frozen --no-install-package habitat-sim --no-install-package magnum \
 mkdir -p third_party/wheels
 ```
 
-Build Habitat-Sim 0.3.1 at the revision recorded in `third_party/sources.json`. Apply the NumPy dependency patch, then create the Habitat-Sim and companion Magnum/Corrade wheels with that same root interpreter:
+Habitat-Sim is a Git submodule pinned to revision `3d6d67d6deae4ab2472cc84df7a3cef1503f606d` (0.3.1), also recorded in `third_party/sources.json`. For an existing checkout, initialize it with `git submodule update --init --recursive --jobs 4`. The NumPy dependency patch remains tracked in this repository at `third_party/patches/habitat-sim-numpy126.patch`; applying it leaves an expected local modification inside the submodule.
+
+Build Habitat-Sim and the companion Magnum/Corrade wheel with the root interpreter. Run these commands from the repository root; the patch check also supports a checkout where the patch has already been applied:
 
 ```bash
-git clone --branch v0.3.1 https://github.com/facebookresearch/habitat-sim.git third_party/habitat-sim
-git -C third_party/habitat-sim checkout 3d6d67d6deae4ab2472cc84df7a3cef1503f606d
-git -C third_party/habitat-sim submodule update --init --recursive --jobs 4
-git -C third_party/habitat-sim apply ../patches/habitat-sim-numpy126.patch
+git submodule update --init --recursive --jobs 4
+git -C third_party/habitat-sim apply --reverse --check ../patches/habitat-sim-numpy126.patch 2>/dev/null || \
+  git -C third_party/habitat-sim apply ../patches/habitat-sim-numpy126.patch
 
 cd third_party/habitat-sim
 ../../.venv/bin/python setup.py build_ext --parallel 8 bdist_wheel \
@@ -185,9 +186,19 @@ repo_root=$PWD
 
 The Habitat build enables headless EGL and Bullet. RGB rendering does not require `--with-cuda`. Habitat-Lab 0.3.1 is installed from a fixed upstream Git revision; Track tasks use the same installed Habitat-Lab.
 
-Place the official FlashAttention and causal-conv1d wheels in `third_party/wheels/`, or download them. These files match Python cp310, Torch 2.6, CUDA 12, and C++ ABI FALSE:
+The complete local wheel list is below. All paths are relative to the SimpleNav repository root and must match `pyproject.toml`. Wheels are ignored by Git; the source manifest and patch are tracked.
+
+| Package | Version | Source | Required relative path |
+| --- | --- | --- | --- |
+| Habitat-Sim | 0.3.1 | Built from the pinned submodule above | `third_party/wheels/habitat_sim-0.3.1-cp310-cp310-linux_x86_64.whl` |
+| Magnum (with Corrade bindings) | 0.0.0 | Built from Habitat-Sim's dependencies above | `third_party/wheels/magnum-0.0.0-cp310-cp310-linux_x86_64.whl` |
+| FlashAttention | 2.7.4.post1+cu12torch2.6cxx11abiFALSE | [Official release download](https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.4.post1/flash_attn-2.7.4.post1%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl) | `third_party/wheels/flash_attn-2.7.4.post1+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl` |
+| causal-conv1d | 1.5.0.post8+cu12torch2.6cxx11abiFALSE | [Official release download](https://github.com/Dao-AILab/causal-conv1d/releases/download/v1.5.0.post8/causal_conv1d-1.5.0.post8%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl) | `third_party/wheels/causal_conv1d-1.5.0.post8+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl` |
+
+Manually download the FlashAttention and causal-conv1d wheels using the links above and save them at the exact relative paths listed, or run the commands below from the repository root. Both downloads require Python cp310, Linux x86_64, Torch 2.6, CUDA 12, and C++ ABI FALSE:
 
 ```bash
+mkdir -p third_party/wheels
 curl -fL 'https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.4.post1/flash_attn-2.7.4.post1%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl' \
   -o third_party/wheels/flash_attn-2.7.4.post1+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
 curl -fL 'https://github.com/Dao-AILab/causal-conv1d/releases/download/v1.5.0.post8/causal_conv1d-1.5.0.post8%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl' \

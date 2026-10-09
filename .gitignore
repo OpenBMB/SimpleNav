@@ -109,6 +109,3 @@ events.out.tfevents.*
 
 # Local Codex notes and debugging artifacts
 /.codex/
-
-# Third-party source checkouts and build products
-/third_party/habitat-sim/
