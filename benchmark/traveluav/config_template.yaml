@@ -1,0 +1,76 @@
+benchmark:
+  name: traveluav
+  class_path: benchmark.traveluav.benchmark:TravelUAVBenchmark
+  max_steps: 200
+  max_samples: null
+  kwargs:
+    depth_collision_policy: log_only
+    ignore_movement_collision: false
+    groundingdino_config: /path/to/GroundingDINO_config.py
+    groundingdino_model_path: /path/to/groundingdino.pth
+    dino_device: cuda
+    stop_policy: dino
+    success_radius: 20.0
+    use_gt: true
+input:
+  type: navvla_lerobot_v3
+  adapter_class_path: benchmark.traveluav.inputs:TravelUAVLeRobotV3InputAdapter
+  roots:
+  - namespace: vln_val_seen
+    path: /path/to/vln_val_seen
+  - namespace: vln_val_unseen
+    path: /path/to/vln_val_unseen
+model:
+  uri: ws://127.0.0.1:10093
+  statistics_key: vln_train_train
+  seed: 42
+  request_timeout_sec: 120.0
+env:
+  type: airsim
+  backend_class_path: benchmark.common.simulators.airsim.backend:AirSimEnvironmentBackend
+  planner_class_path: benchmark.common.simulators.airsim.backend:AirSimBackendPlanner
+  kwargs:
+    env_root: /path/to/TravelUAV_env
+    layout: traveluav
+    settings_profile: traveluav
+    sensor_profile: traveluav
+    camera_name: FrontCameraRecord
+    base_airsim_port: 41451
+    startup_timeout: 120
+    episode_startup_settle_sec: 0
+    render_warmup_sec: 0
+    teleport_render_sync_frames: 3
+    ignore_collision: false
+    reset_ignore_collision: false
+    capture_action_observations: true
+    action_execution_mode: teleport_final
+    execute_waypoints_per_step: 8
+    action_waypoint_semantics: anchor_relative_frd_xyz_yaw
+    airsim_z_sign: 1
+    ue_args:
+    - -RenderOffscreen
+    - -NoSound
+    - -NoVSync
+parallel:
+  gpu_ids:
+  - 0
+  worker_timeout_sec: 0
+output:
+  root: /path/to/eval_result/traveluav_parallel
+  run_name: traveluav_eval
+  save_step_artifacts: true
+  save_images: false
+  action_observation_image_policy: step
+  image_cameras:
+  - frontcamera
+  - downcamera
+  metrics:
+  - SR
+  - OSR
+  - NE
+  - SPL
+  - path_length
+  - gt_path_length
+observation:
+  fps: 0.2
+driver_paths_file: ../driver_paths.yaml

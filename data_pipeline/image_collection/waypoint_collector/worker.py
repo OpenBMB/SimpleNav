@@ -5,7 +5,6 @@ from pathlib import Path
 import signal
 import time
 
-from msgpackrpc.error import TimeoutError as RpcTimeoutError, TransportError
 from PIL import Image
 
 from waypoint_collector.airsim_session import AirSimServerRuntime
@@ -150,6 +149,8 @@ def reconcile_episode_outputs(state, root, views, image_width=224,
 
 def render_worker(config, runtime_factory=AirSimServerRuntime,
                   sink_factory=EpisodeVideoSink):
+    from msgpackrpc.error import TimeoutError as RpcTimeoutError, TransportError
+
     state = CollectorState(config.state_path)
 
     def create_runtime():

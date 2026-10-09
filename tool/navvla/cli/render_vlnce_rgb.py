@@ -93,6 +93,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def render_vlnce_rgb(args: argparse.Namespace) -> Dict[str, Any]:
+    from tool.navvla.simulator_dependencies import require_simulator
+
+    require_simulator("habitat")
     family = normalize_family(args.family)
     if family == RXR_FAMILY and args.role is None:
         raise ValueError("--role is required for RxR")

@@ -1,0 +1,73 @@
+benchmark:
+  name: vlnce_r2r
+  class_path: benchmark.vlnce.benchmark:VLNCEBenchmark
+  max_steps: 200
+  max_samples: null
+  kwargs:
+    task_name: r2r
+    split: val_seen
+    success_distance: 3.0
+    stop_on_success_radius: false
+    distance_metric: euclidean
+input:
+  type: vlnce_r2r
+  adapter_class_path: benchmark.vlnce.inputs:VLNCEInputAdapter
+  namespace: r2r_val_seen
+  path: /path/to/VLN-CE-StarVLA
+  task_name: r2r
+  split: val_seen
+model:
+  uri: ws://127.0.0.1:10093
+  statistics_key: vln_train_train
+  seed: 42
+  request_timeout_sec: 120.0
+env:
+  type: habitat
+  backend_class_path: benchmark.common.simulators.habitat.backend:VLNCE031HabitatBackend
+  kwargs:
+    data_root: /path/to/VLN-CE-StarVLA
+    split: val_seen
+    success_distance: 3.0
+    image_size: 256
+    camera_height: 1.25
+    max_episode_steps: 200
+    task_name: r2r
+    seed: 0
+    continuous_control_mode: collision_slide_pose_delta
+    capture_action_observations: true
+    action_adapter_class_path: benchmark.common.simulators.habitat.action_adapter:BodyFrameContinuousActionAdapter
+    action_adapter_kwargs:
+      step_scale: 1.0
+      stop_probability_threshold: 0.5
+      min_delta: 0.001
+      enable_lateral: true
+      lateral_sign: -1.0
+      yaw_sign: -1.0
+      action_index: 0
+    execute_waypoints_per_step: 1
+parallel:
+  gpu_ids:
+  - 0
+  worker_timeout_sec: 0
+output:
+  root: /path/to/eval_result/vlnce_r2r_parallel
+  run_name: r2r_eval
+  save_step_artifacts: false
+  save_images: false
+  action_observation_image_policy: step
+  image_cameras:
+  - front
+  - left
+  - right
+  - rear
+  metrics:
+  - SR
+  - OSR
+  - NE
+  - SPL
+  - nDTW
+  - path_length
+  - steps_taken
+observation:
+  fps: 1.0
+driver_paths_file: ../../driver_paths.yaml

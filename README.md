@@ -65,7 +65,7 @@ SimpleNav is a simple, unified, reproducible, and extensible framework for navig
 | [`data_pipeline/`](data_pipeline/README.md) | Raw-data conversion, trajectory augmentation, simulator image collection, and enhanced-data construction. |
 | [`starVLA/`](starVLA/) | Dataloaders, models, training runtime, and shared modules. |
 | [`examples/NavVLA/`](examples/NavVLA/) | Portable training entry points and configs. |
-| [`NavVLAeval/`](NavVLAeval/README.md) | Closed-loop and offline benchmark evaluation. |
+| [`benchmark/`](benchmark/README.md) | Closed-loop and offline benchmark evaluation. |
 | [`tool/navvla/`](tool/navvla/README.md) | Dataset validation, repair, statistics, context, cache, and open-loop tools. |
 | [`deployment/`](deployment/) | Deployment-side entry points. |
 | [`docs/`](docs/guides/README.md) | Documentation for installation, data, models, training, evaluation, and results. |
@@ -138,33 +138,77 @@ Place native dependency wheels in the repository-relative `third_party/wheels/` 
 
 ### 1. Clone and install the shared uv environment
 
-Training, evaluation, dataset conversion, trajectory augmentation, image collection, and visual-cache generation share the root `.venv`. Python is fixed to 3.10.12; `pyproject.toml` and `uv.lock` define all dependencies, and ordinary packages use the Tsinghua index. The three data components are installed as workspace packages.
+One root `pyproject.toml` installs the `SimpleNav` project into the root `.venv`. Base includes models, training, DINO, dataset conversion, trajectory augmentation, and common evaluation tools. The data-pipeline directories are source modules in this project, with six console commands; they are not separate distributions or uv workspace members.
 
-Requirements: Linux x86_64, a CUDA 12.4 toolkit and compatible NVIDIA driver, GCC/G++, CMake, Ninja, EGL/OpenGL development libraries, and FFmpeg/FFprobe with H.264 support. AirSim rendering also needs Vulkan and scene executables. Set `CUDA_HOME` to your installed toolkit; DeepSpeed requires an executable `bin/nvcc`.
+Simulator dependencies are optional and selected by simulator, not by benchmark:
 
-On Ubuntu, install the system build and video tools:
+| Installation | Includes | Typical use |
+| --- | --- | --- |
+| Base (no extra) | Models, training, DINO, conversion, augmentation, offline tools | Train from prepared data; convert or augment any supported dataset |
+| `--extra airsim` | Base + AirSim 1.8.1 and RPC client | OpenFly, TravelUAV, AerialVLN; pipeline image collection |
+| `--extra habitat` | Base + Habitat-Sim/Lab 0.3.1 and Magnum | R2R-CE, RxR-CE, EVT-Bench; VLN-CE image rendering |
+| `--extra unrealcv` | Base + UnrealCV SDK and Gym | UnrealZoo backend; also supply its external `gym_unrealcv` plugin and scene assets through runtime config |
+
+TravelUAV's DINO dependencies are in base. Benchmark data, scenes, and model weights are downloaded separately. VLN-CE conversion of already rendered data needs only base; online VLN-CE evaluation/rendering requires Habitat.
+
+Python is fixed to 3.10.12; `uv.lock` pins dependencies, and ordinary packages use the Tsinghua index. Base includes CUDA training libraries: use Linux x86_64, a CUDA 12.4 toolkit and compatible NVIDIA driver, GCC/G++, and FFmpeg/FFprobe with H.264 support. Set `CUDA_HOME` to your toolkit; DeepSpeed requires an executable `bin/nvcc`. AirSim rendering additionally needs Vulkan and scene executables. Habitat source builds additionally need CMake, Ninja, and EGL/OpenGL development libraries.
 
 ```bash
-sudo apt-get install build-essential cmake ninja-build python3.10-dev \
-  libjpeg-dev libglm-dev libegl1-mesa-dev libgl1-mesa-dev ffmpeg
-```
-
-Clone the repository and install the locked Python dependencies into the single environment. The initial sync skips the native wheels that are built or supplied next:
-
-```bash
-git clone --recurse-submodules -b SimpleNav https://github.com/OpenBMB/SimpleNav.git SimpleNav
+sudo apt-get install build-essential python3.10-dev libjpeg-dev ffmpeg
+git clone -b SimpleNav https://github.com/OpenBMB/SimpleNav.git SimpleNav
 cd SimpleNav
 curl -LsSf https://astral.sh/uv/install.sh | sh
 export CUDA_HOME=/usr/local/cuda-12.4
 export UV_PROJECT_ENVIRONMENT="$PWD/.venv"
-uv sync --frozen --no-install-package habitat-sim --no-install-package magnum \
-  --no-install-package flash-attn --no-install-package causal-conv1d
-mkdir -p third_party/wheels
 ```
 
-Habitat-Sim is a Git submodule pinned to revision `3d6d67d6deae4ab2472cc84df7a3cef1503f606d` (0.3.1), also recorded in `third_party/sources.json`. For an existing checkout, initialize it with `git submodule update --init --recursive --jobs 4`. The NumPy dependency patch remains tracked in this repository at `third_party/patches/habitat-sim-numpy126.patch`; applying it leaves an expected local modification inside the submodule.
+#### Base wheels and installation
 
-Build Habitat-Sim and the companion Magnum/Corrade wheel with the root interpreter. Run these commands from the repository root; the patch check also supports a checkout where the patch has already been applied:
+Download the FlashAttention and causal-conv1d wheels to the exact repository-relative paths below. Both are required by base and target Python cp310, Linux x86_64, Torch 2.6, CUDA 12, and C++ ABI FALSE. Habitat-Sim and Magnum are only needed when selecting `habitat`.
+
+| Package | Version | Source | Required relative path |
+| --- | --- | --- | --- |
+| Habitat-Sim | 0.3.1 | Built from the pinned submodule above | `third_party/wheels/habitat_sim-0.3.1-cp310-cp310-linux_x86_64.whl` |
+| Magnum (with Corrade bindings) | 0.0.0 | Built from Habitat-Sim's dependencies above | `third_party/wheels/magnum-0.0.0-cp310-cp310-linux_x86_64.whl` |
+| FlashAttention | 2.7.4.post1+cu12torch2.6cxx11abiFALSE | [Official release download](https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.4.post1/flash_attn-2.7.4.post1%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl) | `third_party/wheels/flash_attn-2.7.4.post1+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl` |
+| causal-conv1d | 1.5.0.post8+cu12torch2.6cxx11abiFALSE | [Official release download](https://github.com/Dao-AILab/causal-conv1d/releases/download/v1.5.0.post8/causal_conv1d-1.5.0.post8%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl) | `third_party/wheels/causal_conv1d-1.5.0.post8+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl` |
+
+Wheels are ignored by Git; the source manifest and patches stay tracked. Download the two base wheels from the official releases:
+
+```bash
+mkdir -p third_party/wheels
+curl -fL 'https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.4.post1/flash_attn-2.7.4.post1%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl' \
+  -o third_party/wheels/flash_attn-2.7.4.post1+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+curl -fL 'https://github.com/Dao-AILab/causal-conv1d/releases/download/v1.5.0.post8/causal_conv1d-1.5.0.post8%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl' \
+  -o third_party/wheels/causal_conv1d-1.5.0.post8+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+```
+
+Install base, then select the simulator(s) you need:
+
+```bash
+uv sync --frozen                                # base
+uv sync --frozen --extra airsim                 # base + AirSim
+# Or, after preparing the Habitat wheels below:
+uv sync --frozen --extra habitat                # base + Habitat
+# Or:
+uv sync --frozen --extra unrealcv               # base + UnrealCV
+# Multiple simulators in the same environment:
+uv sync --frozen --extra airsim --extra habitat
+```
+
+Each sync selects the complete set of extras to keep: repeat all desired extras on subsequent syncs. `uv sync --frozen` with no extras returns to base. Use `--frozen` for installations from the committed lock so unselected simulators do not require their local wheels or source checkouts. Run commands with `uv run --no-sync` after installation. `--extra dev` adds development tools.
+
+Core versions remain Torch 2.6.0/cu124, torchvision 0.21.0, Transformers 5.12.1, DeepSpeed 0.16.9, NumPy 1.26.4, PyArrow 14.0.1, and Pillow 12.2.0. Export `CUDA_HOME` in the shell used for training; launchers and evaluation workers select the root `.venv` directly.
+
+#### Habitat only: source build
+
+Skip this section for base, AirSim, or UnrealCV installations. Habitat-Sim is a Git submodule pinned to revision `3d6d67d6deae4ab2472cc84df7a3cef1503f606d` (0.3.1), also recorded in `third_party/sources.json`. Its NumPy patch remains tracked at `third_party/patches/habitat-sim-numpy126.patch`; applying it leaves an expected local modification inside the submodule.
+
+Install base first, then install the build prerequisites and build Habitat-Sim and Magnum/Corrade with the root interpreter. The patch check supports an already patched checkout:
+
+```bash
+sudo apt-get install cmake ninja-build libglm-dev libegl1-mesa-dev libgl1-mesa-dev
+```
 
 ```bash
 git submodule update --init --recursive --jobs 4
@@ -184,38 +228,19 @@ repo_root=$PWD
 )
 ```
 
-The Habitat build enables headless EGL and Bullet. RGB rendering does not require `--with-cuda`. Habitat-Lab 0.3.1 is installed from a fixed upstream Git revision; Track tasks use the same installed Habitat-Lab.
+The build enables headless EGL and Bullet; RGB rendering does not require `--with-cuda`. Habitat-Lab 0.3.1 is installed from fixed Git revision `142616776544f918c19e7f0392b65cc8cc69fa13`. Track tasks use the same installed Habitat-Lab.
 
-The complete local wheel list is below. All paths are relative to the SimpleNav repository root and must match `pyproject.toml`. Wheels are ignored by Git; the source manifest and patch are tracked.
-
-| Package | Version | Source | Required relative path |
-| --- | --- | --- | --- |
-| Habitat-Sim | 0.3.1 | Built from the pinned submodule above | `third_party/wheels/habitat_sim-0.3.1-cp310-cp310-linux_x86_64.whl` |
-| Magnum (with Corrade bindings) | 0.0.0 | Built from Habitat-Sim's dependencies above | `third_party/wheels/magnum-0.0.0-cp310-cp310-linux_x86_64.whl` |
-| FlashAttention | 2.7.4.post1+cu12torch2.6cxx11abiFALSE | [Official release download](https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.4.post1/flash_attn-2.7.4.post1%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl) | `third_party/wheels/flash_attn-2.7.4.post1+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl` |
-| causal-conv1d | 1.5.0.post8+cu12torch2.6cxx11abiFALSE | [Official release download](https://github.com/Dao-AILab/causal-conv1d/releases/download/v1.5.0.post8/causal_conv1d-1.5.0.post8%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl) | `third_party/wheels/causal_conv1d-1.5.0.post8+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl` |
-
-Manually download the FlashAttention and causal-conv1d wheels using the links above and save them at the exact relative paths listed, or run the commands below from the repository root. Both downloads require Python cp310, Linux x86_64, Torch 2.6, CUDA 12, and C++ ABI FALSE:
-
-```bash
-mkdir -p third_party/wheels
-curl -fL 'https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.4.post1/flash_attn-2.7.4.post1%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl' \
-  -o third_party/wheels/flash_attn-2.7.4.post1+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
-curl -fL 'https://github.com/Dao-AILab/causal-conv1d/releases/download/v1.5.0.post8/causal_conv1d-1.5.0.post8%2Bcu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl' \
-  -o third_party/wheels/causal_conv1d-1.5.0.post8+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
-```
-
-After a local Habitat-Sim or Magnum rebuild, refresh the two local wheel hashes while preserving the locked dependency versions, then synchronize the complete environment:
+If locally rebuilt wheels differ from the committed hashes, refresh their lock entries before installation (lock maintenance requires all four local wheels):
 
 ```bash
 uv lock --refresh-package habitat-sim --refresh-package magnum
-uv sync --frozen
 uv lock --check
+uv sync --frozen --extra habitat
 uv pip check --python .venv/bin/python
-uv run --no-sync python -c "import torch, transformers, deepspeed, habitat_sim, flash_attn, causal_conv1d; print(torch.__version__, transformers.__version__, habitat_sim.__version__)"
+uv run --no-sync python -c "import habitat_sim; print(habitat_sim.__version__)"
 ```
 
-If all four wheels already match the lock, run `uv sync --frozen` directly. Core versions remain Torch 2.6.0/cu124, torchvision 0.21.0, Transformers 5.12.1, DeepSpeed 0.16.9, NumPy 1.26.4, PyArrow 14.0.1, Pillow 12.2.0, and Gym 0.23.0. Export `CUDA_HOME` in the shell used for training; launchers and evaluation workers select the root `.venv` directly.
+If the Habitat wheels already match the lock, run `uv sync --frozen --extra habitat` directly. Include any other simulator extras you want to retain.
 
 ### 2. Prepare data
 
@@ -272,18 +297,18 @@ Each public config resolves paths relative to its own directory.
 
 | Benchmark | Config | Launcher |
 | --- | --- | --- |
-| OpenFly | `NavVLAeval/openfly/config_portable.yaml` | `bash NavVLAeval/openfly/run_eval.sh` |
-| TravelUAV | `NavVLAeval/traveluav/config_portable.yaml` | `bash NavVLAeval/traveluav/run_eval.sh` |
-| AerialVLN | `NavVLAeval/aerialvln/config_portable.yaml` | `bash NavVLAeval/aerialvln/run_eval.sh` |
-| AerialVLN-S Val Seen · action stop | `NavVLAeval/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml` | `bash NavVLAeval/aerialvln/run_eval.sh --config <config>` |
-| EVT-Bench | `NavVLAeval/track/eval_qwen35_track.py` | `bash NavVLAeval/track/run_qwen35_track_eval.sh` |
-| R2R-CE | `NavVLAeval/vlnce/r2r/config_portable.yaml` | `bash NavVLAeval/vlnce/r2r/run_eval.sh` |
-| RxR-CE | `NavVLAeval/vlnce/rxr/config_portable.yaml` | `bash NavVLAeval/vlnce/rxr/run_eval.sh` |
+| OpenFly | `benchmark/openfly/config_portable.yaml` | `bash benchmark/openfly/run_eval.sh` |
+| TravelUAV | `benchmark/traveluav/config_portable.yaml` | `bash benchmark/traveluav/run_eval.sh` |
+| AerialVLN | `benchmark/aerialvln/config_portable.yaml` | `bash benchmark/aerialvln/run_eval.sh` |
+| AerialVLN-S Val Seen · action stop | `benchmark/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml` | `bash benchmark/aerialvln/run_eval.sh --config <config>` |
+| EVT-Bench | `benchmark/track/eval_qwen35_track.py` | `bash benchmark/track/run_qwen35_track_eval.sh` |
+| R2R-CE | `benchmark/vlnce/r2r/config_portable.yaml` | `bash benchmark/vlnce/r2r/run_eval.sh` |
+| RxR-CE | `benchmark/vlnce/rxr/config_portable.yaml` | `bash benchmark/vlnce/rxr/run_eval.sh` |
 
 Inspect a two-episode plan before starting a simulator:
 
 ```bash
-bash NavVLAeval/openfly/run_eval.sh --dry-run \
+bash benchmark/openfly/run_eval.sh --dry-run \
   --override benchmark.max_samples=2 \
   --override parallel.gpu_ids='[0]' \
   --override output.run_name=openfly_dry_run

@@ -22,5 +22,5 @@ Implementation references:
 - [Data pipeline](../../data_pipeline/README.md)
 - [Model-side data tools](../../tool/navvla/README.md)
 - [Qwen3.5-VL CPM implementation](QWEN35_CPM_IMPLEMENTATION.md)
-- [Evaluation framework](../../NavVLAeval/README.md)
+- [Evaluation framework](../../benchmark/README.md)
 - [Public data, simulator environments, and checkpoints](https://modelscope.cn/organization/SimpleNav)

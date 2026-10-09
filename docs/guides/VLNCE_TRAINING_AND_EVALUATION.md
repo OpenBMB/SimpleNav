@@ -8,7 +8,7 @@ Download the released datasets, Habitat environment packages, and SimpleNAV chec
 
 ## 1. Environment
 
-Install the main project environment as described in [Environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment). The commands below expect:
+Install the main project environment as described in [Environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment). Training on prepared data uses base. For evaluation or rendering, prepare the Habitat wheels and run `uv sync --frozen --extra habitat` from the repository root; AirSim and UnrealCV are not required. The commands below expect:
 
 - the fixed root uv environment at `.venv/`;
 - eight NVIDIA GPUs for the released training and evaluation settings;
@@ -189,13 +189,13 @@ An episode stops when the mean translation between adjacent predicted waypoints 
 Configuration:
 
 ```text
-NavVLAeval/vlnce/r2r/config_portable.yaml
+benchmark/vlnce/r2r/config_portable.yaml
 ```
 
 Inspect a two-episode, single-GPU plan:
 
 ```bash
-bash NavVLAeval/vlnce/r2r/run_eval.sh --dry-run \
+bash benchmark/vlnce/r2r/run_eval.sh --dry-run \
   --override benchmark.max_samples=2 \
   --override parallel.gpu_ids='[0]' \
   --override output.run_name=r2r_qwen35_smoke
@@ -204,7 +204,7 @@ bash NavVLAeval/vlnce/r2r/run_eval.sh --dry-run \
 Run the full released protocol:
 
 ```bash
-bash NavVLAeval/vlnce/r2r/run_eval.sh
+bash benchmark/vlnce/r2r/run_eval.sh
 ```
 
 R2R uses `val_unseen`, a maximum of 200 policy steps, and a success distance of 3 meters.
@@ -214,13 +214,13 @@ R2R uses `val_unseen`, a maximum of 200 policy steps, and a success distance of 
 Configuration:
 
 ```text
-NavVLAeval/vlnce/rxr/config_portable.yaml
+benchmark/vlnce/rxr/config_portable.yaml
 ```
 
 Inspect a two-episode, single-GPU plan:
 
 ```bash
-bash NavVLAeval/vlnce/rxr/run_eval.sh --dry-run \
+bash benchmark/vlnce/rxr/run_eval.sh --dry-run \
   --override benchmark.max_samples=2 \
   --override parallel.gpu_ids='[0]' \
   --override output.run_name=rxr_qwen35_smoke
@@ -229,7 +229,7 @@ bash NavVLAeval/vlnce/rxr/run_eval.sh --dry-run \
 Run the full released protocol:
 
 ```bash
-bash NavVLAeval/vlnce/rxr/run_eval.sh
+bash benchmark/vlnce/rxr/run_eval.sh
 ```
 
 RxR uses the `guide` role, English `en-US` and `en-IN` instructions, `val_unseen`, a maximum of 500 policy steps, and a success distance of 3 meters.
@@ -257,7 +257,7 @@ Rerun the same command to resume an interrupted evaluation. Completed episodes w
 The released configuration uses eight GPUs. For a single-GPU evaluation, override the worker list:
 
 ```bash
-bash NavVLAeval/vlnce/r2r/run_eval.sh \
+bash benchmark/vlnce/r2r/run_eval.sh \
   --override parallel.gpu_ids='[0]' \
   --override output.run_name=r2r_qwen35_single_gpu
 ```

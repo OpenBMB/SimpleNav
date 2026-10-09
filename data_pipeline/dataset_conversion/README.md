@@ -21,7 +21,7 @@ overwrites a target.
 
 ## Installation
 
-Use the root `.venv` installed by [the shared environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment). FFmpeg and FFprobe are required.
+Use the root `.venv` installed by [the shared environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment). Conversion is part of base (`uv sync --frozen` from the repository root); it has no separate package installation. FFmpeg and FFprobe are required.
 
 ```bash
 # From the repository root, after setup
@@ -29,7 +29,7 @@ uv run --no-sync vln-convert --help
 uv run --no-sync vln-render-vlnce --help
 ```
 
-VLN-CE rendering uses the same installed Habitat-Lab 0.3.1 and Habitat-Sim wheel as evaluation. Prepare the VLN-CE annotations and scene assets under `--vlnce-root`; a separate Python environment is unnecessary.
+For VLN-CE rendering, prepare the Habitat wheels and run `uv sync --frozen --extra habitat` from the repository root. Rendering uses the same installed Habitat-Lab 0.3.1 and Habitat-Sim wheel as evaluation. Prepare the VLN-CE annotations and scene assets under `--vlnce-root`; a separate Python environment is unnecessary.
 
 ## Common output contract
 

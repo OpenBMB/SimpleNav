@@ -60,8 +60,12 @@ def build_parser():
 
 
 def main(argv=None):
+    args = build_parser().parse_args(argv)
+    if args.command in {"preflight", "pilot", "render", "run"}:
+        from tool.navvla.simulator_dependencies import require_simulator
+
+        require_simulator("airsim")
     from waypoint_collector.pipeline import CollectorPipeline
 
-    args = build_parser().parse_args(argv)
     pipeline = CollectorPipeline.from_args(args)
     return pipeline.execute(args.command)

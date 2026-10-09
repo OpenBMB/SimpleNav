@@ -62,7 +62,7 @@ bash examples/NavVLA/train_files/qwen35/train_qwen35_cpm_track.sh
 
 ## EVT-bench evaluation
 
-Evaluation is a standalone Habitat / OpenTrackVLA closed-loop evaluator. It does not use the training launcher or `NavVLAeval/common`. The entry point is [`eval_qwen35_track.py`](../../NavVLAeval/track/eval_qwen35_track.py); use [`run_qwen35_track_eval.sh`](../../NavVLAeval/track/run_qwen35_track_eval.sh) for one GPU and [`run_qwen35_track_eval_multigpu.sh`](../../NavVLAeval/track/run_qwen35_track_eval_multigpu.sh) for multiple GPUs (one independent process per GPU, not distributed training).
+Evaluation is a standalone Habitat / OpenTrackVLA closed-loop evaluator. It does not use the training launcher or `benchmark/common`. The entry point is [`eval_qwen35_track.py`](../../benchmark/track/eval_qwen35_track.py); use [`run_qwen35_track_eval.sh`](../../benchmark/track/run_qwen35_track_eval.sh) for one GPU and [`run_qwen35_track_eval_multigpu.sh`](../../benchmark/track/run_qwen35_track_eval_multigpu.sh) for multiple GPUs (one independent process per GPU, not distributed training).
 
 | Task | Habitat config | Action statistics key |
 | --- | --- | --- |
@@ -70,7 +70,7 @@ Evaluation is a standalone Habitat / OpenTrackVLA closed-loop evaluator. It does
 | `dt` | `track_infer_dt.yaml` | `evt-bench-dt-teach-avoid` |
 | `stt` | `track_infer_stt.yaml` | `evt-bench-stt` |
 
-Before running, install the [shared uv environment](../../README.md#1-clone-and-install-the-shared-uv-environment), prepare Track scene/humanoid/data assets under `local/simulators/track/`, and provide a checkpoint from this recipe. Track tasks and configs are part of this repository:
+Before running, select the Habitat extra (`uv sync --frozen --extra habitat` from the repository root) after preparing its wheels in the [shared uv environment](../../README.md#1-clone-and-install-the-shared-uv-environment), prepare Track scene/humanoid/data assets under `local/simulators/track/`, and provide a checkpoint from this recipe. Track tasks and configs are part of this repository:
 
 ```text
 <run_dir>/dataset_statistics.json
@@ -85,7 +85,7 @@ Smoke a few episodes on one split first:
 export CKPT=local/results/navvla_qwen35_cpm_track_at_dt_stt/Checkpoints/<run_id>/final_model/pytorch_model.pt
 export DATA_ROOT=$PWD/local/simulators/track
 
-bash NavVLAeval/track/run_qwen35_track_eval.sh stt \
+bash benchmark/track/run_qwen35_track_eval.sh stt \
   --split-id 0 --split-num 281 --max-episodes 2 \
   --save-path /tmp/track_smoke \
   --no-save-front-video
@@ -100,7 +100,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
 CKPT=/path/to/run_dir/final_model/pytorch_model.pt \
 SAVE_PATH=/path/to/track_eval/stt \
 SPLIT_NUM=281 SPLIT_ID=all \
-bash NavVLAeval/track/run_qwen35_track_eval_multigpu.sh stt
+bash benchmark/track/run_qwen35_track_eval_multigpu.sh stt
 ```
 
 Each split writes `summary_split_<id>.json`. Treat `success_rate` as SR. `mean_following_rate` is the unweighted mean of per-episode following rates, not a step-weighted TR. Compare runs only with the same task, checkpoint, split count, and completed episode count.

@@ -6,7 +6,7 @@ It does not launch AirSim or re-encode collected images into a complete LeRobot 
 
 ## 1. Installation
 
-Use the root `.venv` installed by [the shared environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment).
+Trajectory augmentation is part of root SimpleNav base (`uv sync --frozen`) and requires no simulator extra. Use the root `.venv` installed by [the shared environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment).
 
 ```bash
 uv run --no-sync vln-augment --help

@@ -1,6 +1,8 @@
 # Inference and Evaluation
 
-[Main README](../../README.md) · [Framework reference](../../NavVLAeval/README.md)
+[Main README](../../README.md) · [Framework reference](../../benchmark/README.md)
+
+Dependencies are selected by simulator: `uv sync --frozen --extra airsim` for OpenFly, TravelUAV, and AerialVLN; `uv sync --frozen --extra habitat` for VLN-CE and EVT-Bench; `uv sync --frozen --extra unrealcv` for the UnrealZoo backend. Run these from the repository root after preparing the [required wheels](../../README.md#1-clone-and-install-the-shared-uv-environment). Repeat all desired extras in each sync. Models, training, and TravelUAV DINO dependencies are in base.
 
 ## Portable configs
 
@@ -8,13 +10,13 @@ Download benchmark data, simulator environments, and checkpoints from the [Simpl
 
 | Benchmark | Config | Launcher | Backend |
 | --- | --- | --- | --- |
-| OpenFly | `NavVLAeval/openfly/config_portable.yaml` | `bash NavVLAeval/openfly/run_eval.sh` | AirSim |
-| TravelUAV | `NavVLAeval/traveluav/config_portable.yaml` | `bash NavVLAeval/traveluav/run_eval.sh` | AirSim |
-| AerialVLN | `NavVLAeval/aerialvln/config_portable.yaml` | `bash NavVLAeval/aerialvln/run_eval.sh` | AirSim |
-| AerialVLN-S Val Seen · action stop | `NavVLAeval/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml` | `bash NavVLAeval/aerialvln/run_eval.sh --config <config>` | AirSim |
-| EVT-Bench | `NavVLAeval/track/eval_qwen35_track.py` | `bash NavVLAeval/track/run_qwen35_track_eval.sh` | Habitat |
-| R2R-CE | `NavVLAeval/vlnce/r2r/config_portable.yaml` | `bash NavVLAeval/vlnce/r2r/run_eval.sh` | Habitat |
-| RxR-CE | `NavVLAeval/vlnce/rxr/config_portable.yaml` | `bash NavVLAeval/vlnce/rxr/run_eval.sh` | Habitat |
+| OpenFly | `benchmark/openfly/config_portable.yaml` | `bash benchmark/openfly/run_eval.sh` | AirSim |
+| TravelUAV | `benchmark/traveluav/config_portable.yaml` | `bash benchmark/traveluav/run_eval.sh` | AirSim |
+| AerialVLN | `benchmark/aerialvln/config_portable.yaml` | `bash benchmark/aerialvln/run_eval.sh` | AirSim |
+| AerialVLN-S Val Seen · action stop | `benchmark/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml` | `bash benchmark/aerialvln/run_eval.sh --config <config>` | AirSim |
+| EVT-Bench | `benchmark/track/eval_qwen35_track.py` | `bash benchmark/track/run_qwen35_track_eval.sh` | Habitat |
+| R2R-CE | `benchmark/vlnce/r2r/config_portable.yaml` | `bash benchmark/vlnce/r2r/run_eval.sh` | Habitat |
+| RxR-CE | `benchmark/vlnce/rxr/config_portable.yaml` | `bash benchmark/vlnce/rxr/run_eval.sh` | Habitat |
 
 Use [VLN-CE Training and Evaluation](VLNCE_TRAINING_AND_EVALUATION.md) for the released R2R-CE and RxR-CE Qwen3.5 checkpoint layout and commands.
 
@@ -57,7 +59,7 @@ Keep each aerial `pytorch_model.pt` in `final_model/`, with `config.yaml` and `d
 Use `--dry-run` with a small sample count before starting a full evaluation:
 
 ```bash
-bash NavVLAeval/openfly/run_eval.sh --dry-run \
+bash benchmark/openfly/run_eval.sh --dry-run \
   --override benchmark.max_samples=2 \
   --override parallel.gpu_ids='[0]' \
   --override output.run_name=openfly_dry_run
@@ -68,7 +70,7 @@ The same flags work with the other launchers. The dry run loads the config and b
 ## Run evaluation
 
 ```bash
-bash NavVLAeval/openfly/run_eval.sh \
+bash benchmark/openfly/run_eval.sh \
   --override parallel.gpu_ids='[0]' \
   --override output.run_name=openfly_release01
 ```
@@ -76,14 +78,14 @@ bash NavVLAeval/openfly/run_eval.sh \
 Examples for the other datasets:
 
 ```bash
-bash NavVLAeval/traveluav/run_eval.sh --override parallel.gpu_ids='[0]'
-bash NavVLAeval/aerialvln/run_eval.sh --override parallel.gpu_ids='[0]'
-bash NavVLAeval/aerialvln/run_eval.sh \
-  --config NavVLAeval/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml \
+bash benchmark/traveluav/run_eval.sh --override parallel.gpu_ids='[0]'
+bash benchmark/aerialvln/run_eval.sh --override parallel.gpu_ids='[0]'
+bash benchmark/aerialvln/run_eval.sh \
+  --config benchmark/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml \
   --override parallel.gpu_ids='[0]'
-bash NavVLAeval/vlnce/r2r/run_eval.sh --override parallel.gpu_ids='[0]'
-bash NavVLAeval/vlnce/rxr/run_eval.sh --override parallel.gpu_ids='[0]'
-bash NavVLAeval/track/run_qwen35_track_eval_multigpu.sh stt
+bash benchmark/vlnce/r2r/run_eval.sh --override parallel.gpu_ids='[0]'
+bash benchmark/vlnce/rxr/run_eval.sh --override parallel.gpu_ids='[0]'
+bash benchmark/track/run_qwen35_track_eval_multigpu.sh stt
 ```
 
 Use config overrides for run-specific GPU IDs, sample limits, scene filters, output names, and debugging flags. Copy the config for protocol changes.

@@ -24,7 +24,7 @@ vulkaninfo --summary
 
 AirSim RGB rendering cannot run with CUDA or `nvidia-smi` alone when no hardware Vulkan graphics device is available.
 
-The collector shares the root uv environment: AirSim 1.8.1, msgpack-rpc-python 0.4.1, NumPy 1.26.4, PyArrow 14.0.1, and Pillow 12.2.0. Install it through [the shared environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment).
+The collector is included in the root SimpleNav package. Rendering requires the `airsim` extra: run `uv sync --frozen --extra airsim` from the repository root for AirSim 1.8.1 and msgpack-rpc-python 0.4.1. NumPy 1.26.4, PyArrow 14.0.1, and Pillow 12.2.0 are in base. Offline preparation, assembly, validation, and publishing require no simulator SDK. Install through [the shared environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment).
 
 ```bash
 uv run --no-sync vln-collect --help

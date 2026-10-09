@@ -32,7 +32,7 @@ DEFAULT_EVAL_ROOT = Path(
     "learned_token_nostop_n80_20260816"
 )
 DEFAULT_SOURCE_EPISODE = DEFAULT_EVAL_ROOT / "logs/env_airsim_26/seen/000784"
-DEFAULT_CONFIG = Path("NavVLAeval/openfly/config_portable.yaml")
+DEFAULT_CONFIG = Path("benchmark/openfly/config_portable.yaml")
 DEFAULT_ANNOTATION = Path("local/data/OpenFly/openfly_env/Annotation/seen.json")
 DEFAULT_OUTPUT = Path("eval_visualizations/openfly_000784_hd_v1")
 
@@ -406,10 +406,10 @@ def capture_frames(
     pilot_count: int,
 ) -> dict[str, Any]:
     """Capture through the evaluation backend and record actual readback poses."""
-    from NavVLAeval.common.config import load_eval_config
-    from NavVLAeval.common.runner.backend_plan import WorkerBackendPlan
-    from NavVLAeval.common.simulators.airsim.backend import AirSimEnvironmentBackend
-    from NavVLAeval.common.types import EvalEpisode, Pose4D
+    from benchmark.common.config import load_eval_config
+    from benchmark.common.runner.backend_plan import WorkerBackendPlan
+    from benchmark.common.simulators.airsim.backend import AirSimEnvironmentBackend
+    from benchmark.common.types import EvalEpisode, Pose4D
 
     output_dir = output_dir.resolve()
     info = _json(output_dir / "source_episode_copy/eval_info.json")

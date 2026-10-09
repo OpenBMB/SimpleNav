@@ -5,7 +5,6 @@ import sys
 import time
 
 import numpy as np
-from msgpackrpc.error import TimeoutError as RpcTimeoutError, TransportError
 
 from airsim_plugin.camera_views import camera_specs
 
@@ -15,6 +14,8 @@ class AirSimSessionUnavailableError(RuntimeError):
 
 
 def _call_airsim(operation, *args, **kwargs):
+    from msgpackrpc.error import TimeoutError as RpcTimeoutError, TransportError
+
     try:
         return operation(*args, **kwargs)
     except (RpcTimeoutError, TransportError, ConnectionError) as error:
@@ -174,14 +175,16 @@ class AirSimServerRuntime:
         self.rpc_client = None
 
     def start(self):
+        from tool.navvla.simulator_dependencies import require_simulator
+
+        require_simulator("airsim")
         import msgpackrpc
 
         self.log_path.parent.mkdir(parents=True, exist_ok=True)
         self.log_handle = self.log_path.open("ab", buffering=0)
-        server_script = self.repository_root / "airsim_plugin" / "AirVLNSimulatorServerTool.py"
         self.process = subprocess.Popen(
             [
-                sys.executable, str(server_script),
+                sys.executable, "-m", "airsim_plugin.AirVLNSimulatorServerTool",
                 "--gpus", str(self.gpu),
                 "--port", str(self.control_port),
                 "--env-root", str(self.env_root),
@@ -253,6 +256,8 @@ class AirSimServerRuntime:
         rpc_client = self.rpc_client
         self.rpc_client = None
         if rpc_client is not None:
+            from msgpackrpc.error import TimeoutError as RpcTimeoutError, TransportError
+
             try:
                 result = rpc_client.call("close_scenes", "127.0.0.1")
                 if not result:

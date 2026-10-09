@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-INTERNAL_ROOTS = ("starVLA", "examples", "deployment", "tool", "NavVLAeval")
+INTERNAL_ROOTS = ("starVLA", "examples", "deployment", "tool", "benchmark")
 
 
 def _internal_imports(path: Path) -> set[str]:

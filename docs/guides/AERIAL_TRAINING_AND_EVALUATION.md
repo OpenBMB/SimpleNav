@@ -6,7 +6,7 @@ This guide covers the complete OpenFly, AerialVLN, and TravelUAV workflow: resou
 
 ## 1. Install the shared environment
 
-Follow the [README environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment) to build the native wheels and synchronize the complete root lock.
+Follow the [README environment setup](../../README.md#1-clone-and-install-the-shared-uv-environment) to prepare the base wheels. Training uses base; online evaluation uses `uv sync --frozen --extra airsim` from the repository root. Habitat is not required.
 
 Dataset conversion, augmentation, and image collection are included in that environment:
 
@@ -216,7 +216,7 @@ Run `--dry-run` with a small sample limit before starting simulator workers.
 
 ## 7. OpenFly Seen
 
-Use `NavVLAeval/openfly/config_portable.yaml`. It evaluates the six executable AirSim Seen scenes for at most 80 policy steps. The released stop policy is:
+Use `benchmark/openfly/config_portable.yaml`. It evaluates the six executable AirSim Seen scenes for at most 80 policy steps. The released stop policy is:
 
 ```yaml
 termination_mode: action_or_max_steps
@@ -228,12 +228,12 @@ stop_action_confirmations: 3
 The episode stops after three consecutive replans whose final four adjacent waypoint segments each remain within 0.31 m.
 
 ```bash
-bash NavVLAeval/openfly/run_eval.sh --dry-run \
+bash benchmark/openfly/run_eval.sh --dry-run \
   --override benchmark.max_samples=2 \
   --override parallel.gpu_ids='[0]' \
   --override output.run_name=openfly_seen_smoke
 
-bash NavVLAeval/openfly/run_eval.sh \
+bash benchmark/openfly/run_eval.sh \
   --override parallel.gpu_ids='[0,2,3,4,5,6,7]' \
   --override output.run_name=openfly_seen_tb1024_ph32
 ```
@@ -242,7 +242,7 @@ The reference OpenFly AirSim host does not assign GPU 1 to evaluation.
 
 ## 8. AerialVLN-S Val Seen
 
-Use `NavVLAeval/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml`. It covers scenes 2, 3, 5, 8, 10, 12, 14, and 17 for at most 300 policy steps. The stop policy is:
+Use `benchmark/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml`. It covers scenes 2, 3, 5, 8, 10, 12, 14, and 17 for at most 300 policy steps. The stop policy is:
 
 ```yaml
 termination_mode: action_or_max_steps
@@ -254,15 +254,15 @@ stop_action_confirmations: 2
 The episode stops after two consecutive action chunks whose final adjacent XYZ waypoint segment is shorter than 0.292 m.
 
 ```bash
-bash NavVLAeval/aerialvln/run_eval.sh \
-  --config NavVLAeval/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml \
+bash benchmark/aerialvln/run_eval.sh \
+  --config benchmark/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml \
   --dry-run \
   --override benchmark.max_samples=2 \
   --override parallel.gpu_ids='[0]' \
   --override output.run_name=aerialvln_s_seen_smoke
 
-bash NavVLAeval/aerialvln/run_eval.sh \
-  --config NavVLAeval/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml \
+bash benchmark/aerialvln/run_eval.sh \
+  --config benchmark/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml \
   --override parallel.gpu_ids='[0,2,3,4,5,6,7]' \
   --override output.run_name=aerialvln_s_seen_tb1024_ph32
 ```
@@ -271,7 +271,7 @@ For partitioned runs, copy the config and change only `input.scene_ids`, `input.
 
 ## 9. TravelUAV Val Seen
 
-Use `NavVLAeval/traveluav/config_portable.yaml`. The public config uses four cameras, stride 5, eight waypoints, DINO stop, and depth-only collision stopping:
+Use `benchmark/traveluav/config_portable.yaml`. The public config uses four cameras, stride 5, eight waypoints, DINO stop, and depth-only collision stopping:
 
 ```yaml
 stop_policy: dino
@@ -285,13 +285,13 @@ env:
 Run the Seen split:
 
 ```bash
-bash NavVLAeval/traveluav/run_eval.sh --dry-run \
+bash benchmark/traveluav/run_eval.sh --dry-run \
   --override input.roots='[{namespace: vln_val_seen, path: ../../local/data/TravelUAV/vln_val_seen}]' \
   --override benchmark.max_samples=2 \
   --override parallel.gpu_ids='[0]' \
   --override output.run_name=traveluav_seen_smoke
 
-bash NavVLAeval/traveluav/run_eval.sh \
+bash benchmark/traveluav/run_eval.sh \
   --override input.roots='[{namespace: vln_val_seen, path: ../../local/data/TravelUAV/vln_val_seen}]' \
   --override parallel.gpu_ids='[0,2,3,4,5,6,7]' \
   --override output.run_name=traveluav_seen_tb1024_ph32

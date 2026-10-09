@@ -92,6 +92,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def render_vlnce_rgb(args: argparse.Namespace) -> Dict[str, Any]:
+    from tool.navvla.simulator_dependencies import require_simulator
+
+    require_simulator("habitat")
     family = normalize_family(args.family)
     if family == RXR_FAMILY and args.role is None:
         raise ValueError("--role is required for RxR")
@@ -210,8 +213,8 @@ def build_task_config(
     height: Optional[int],
 ):
     from habitat.config import get_config, read_write
-    from NavVLAeval.common.simulators.habitat.vlnce031_datasets import configure_dataset_config
-    from NavVLAeval.common.simulators.habitat.vlnce031_runtime import structured_camera_sensor_configs
+    from benchmark.common.simulators.habitat.vlnce031_datasets import configure_dataset_config
+    from benchmark.common.simulators.habitat.vlnce031_runtime import structured_camera_sensor_configs
 
     config = get_config(str(default_task_config(vlnce_root, family=family)))
     with read_write(config):

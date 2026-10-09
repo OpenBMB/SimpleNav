@@ -23,10 +23,12 @@ Download the released datasets and simulator environments from the [SimpleNAV Mo
 
 | Component | Install | Entry point | Output |
 | --- | --- | --- | --- |
-| [`dataset_conversion`](../../data_pipeline/dataset_conversion/README.md) | Shared root uv workspace | `vln-convert`, `vln-validate`, `vln-cosfly`, `vln-render-vlnce` | NavVLA LeRobot v3 split |
-| [`trajectory_augmentation`](../../data_pipeline/trajectory_augmentation/README.md) | Shared root uv workspace | `vln-augment` | Smoothed/resampled trajectory package and render requests |
-| [`image_collection`](../../data_pipeline/image_collection/README.md) | Shared root uv workspace | `vln-collect` | Four-view AirSim videos and camera metadata |
+| [`dataset_conversion`](../../data_pipeline/dataset_conversion/README.md) | Root SimpleNav base | `vln-convert`, `vln-validate`, `vln-cosfly`, `vln-render-vlnce` | NavVLA LeRobot v3 split |
+| [`trajectory_augmentation`](../../data_pipeline/trajectory_augmentation/README.md) | Root SimpleNav base | `vln-augment` | Smoothed/resampled trajectory package and render requests |
+| [`image_collection`](../../data_pipeline/image_collection/README.md) | Root base + `airsim` for rendering | `vln-collect` | Four-view AirSim videos and camera metadata |
 | [`tool/navvla`](../../tool/navvla/README.md) | Main project environment | `python -m tool.navvla.cli...` | Validation, repair, statistics, context, cache, and open-loop artifacts |
+
+All components belong to the root package. From the repository root, install base with `uv sync --frozen`; use `--extra airsim` for collection or `--extra habitat` for `vln-render-vlnce`. Conversion of existing images and trajectory augmentation require no simulator extra. See [installation](../../README.md#1-clone-and-install-the-shared-uv-environment) for native wheels.
 
 ## Convert a raw dataset
 

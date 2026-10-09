@@ -13,15 +13,15 @@ PORTABLE_TRAINING_CONFIGS = {
     "aerialvln": REPO_ROOT / "examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_aerialvln_portable.yaml",
     "traveluav": REPO_ROOT / "examples/NavVLA/train_files/qwen35/navvla_qwen35_cpm_traveluav_portable.yaml",
 }
-PORTABLE_EVAL_CONFIG = REPO_ROOT / "NavVLAeval/openfly/config_portable.yaml"
+PORTABLE_EVAL_CONFIG = REPO_ROOT / "benchmark/openfly/config_portable.yaml"
 PORTABLE_EVAL_CONFIGS = tuple(
     REPO_ROOT / relative
     for relative in (
-        "NavVLAeval/traveluav/config_portable.yaml",
-        "NavVLAeval/aerialvln/config_portable.yaml",
-        "NavVLAeval/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml",
-        "NavVLAeval/vlnce/r2r/config_portable.yaml",
-        "NavVLAeval/vlnce/rxr/config_portable.yaml",
+        "benchmark/traveluav/config_portable.yaml",
+        "benchmark/aerialvln/config_portable.yaml",
+        "benchmark/aerialvln/config_qwen35_tb1024_ph32_s_seen_stop_finalseg0p292_k2.yaml",
+        "benchmark/vlnce/r2r/config_portable.yaml",
+        "benchmark/vlnce/rxr/config_portable.yaml",
     )
 )
 
@@ -106,7 +106,7 @@ def test_training_launcher_materializes_portable_paths_from_any_working_director
 
 def test_portable_eval_config_materializes_simulator_and_driver_paths(tmp_path: Path) -> None:
     source = _load_yaml(PORTABLE_EVAL_CONFIG)
-    config_dir = tmp_path / "NavVLAeval/openfly"
+    config_dir = tmp_path / "benchmark/openfly"
     config_dir.mkdir(parents=True)
     (config_dir.parent / "driver_paths.yaml").write_text("LD_LIBRARY_PATH: []\n")
     config_path = config_dir / "config_portable.yaml"
@@ -114,7 +114,7 @@ def test_portable_eval_config_materializes_simulator_and_driver_paths(tmp_path: 
     previous = Path.cwd()
     try:
         os.chdir(tmp_path.parent)
-        from NavVLAeval.common.config import load_eval_config
+        from benchmark.common.config import load_eval_config
 
         cfg = load_eval_config(config_path)
     finally:

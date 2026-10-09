@@ -93,7 +93,7 @@ data_pipeline/
 - [Trajectory augmentation guide](trajectory_augmentation/README.md)
 - [Image collection guide](image_collection/README.md)
 
-All components use the root Python 3.10.12 uv workspace and its `.venv`.
+All components are installed by the single root `SimpleNav` project and use its Python 3.10.12 `.venv`; these directories have no separate `pyproject.toml`. Conversion and augmentation are in base. Select `uv sync --frozen --extra airsim` from the repository root for image collection, or `uv sync --frozen --extra habitat` for VLN-CE rendering. Repeat both extras if both simulators are needed. See [installation](../README.md#1-clone-and-install-the-shared-uv-environment) for required wheels.
 
 ## 0. Convert raw data to the common format
 

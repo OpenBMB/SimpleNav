@@ -3,13 +3,11 @@ requires = ["setuptools==80.9.0", "wheel==0.48.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "starVLA"
+name = "SimpleNav"
 authors = [
-    {name = "Jinhui Ye", email="jinhuiyes@gmail.com"},
-    {name = "Fangjing Wang", email="fangjing_wang@outlook.com"},
-    {name = "Junqiu Yu", email="michaelyu1101@163.com"},
+    {name = "Wenxiang Wu", email = "wenxiangwu@stu.hit.edu.cn"},
 ]
-description = "SimpleNAV: a unified framework for navigation vision-language-action research."
+description = "SimpleNav: a unified framework for navigation vision-language-action research."
 version = "1.0.1"
 readme = "README.md"
 requires-python = ">=3.10,<3.11"
@@ -29,7 +27,6 @@ classifiers = [
 dependencies = [
     "accelerate==1.5.2",
     "addict>=2.4.0",
-    "airsim==1.8.1",
     "albumentations==1.4.18",
     "attrs>=26.1.0",
     "av==12.3.0",
@@ -38,7 +35,6 @@ dependencies = [
     "einops>=0.8.2",
     "eva-decord==0.6.1",
     "fastparquet==2024.11.0",
-    "gym==0.23.0",
     "matplotlib>=3.10.8",
     "lmdb>=1.4.1",
     "msgpack==1.1.1",
@@ -47,9 +43,9 @@ dependencies = [
     "numpy==1.26.4",
     "numpydantic==1.6.9",
     "omegaconf>=2.3.0",
-    "opencv-python-headless>=4.10.0.84",
-    "pandas>=2.2.3",
-    "pillow>=12.2.0",
+    "opencv-python-headless>=4.10.0.84,<4.12",
+    "pandas>=2.2.3,<3",
+    "pillow>=12.2.0,<13",
     "pyarrow==14.0.1",
     "pycocotools>=2.0.11",
     "pydantic==2.10.6",
@@ -59,7 +55,7 @@ dependencies = [
     "qwen-vl-utils>=0.0.14",
     "rich>=14.3.4",
     "safetensors>=0.5.3",
-    "scipy>=1.15.3",
+    "scipy>=1.15.3,<2",
     "setuptools==80.9.0",
     "simple-pid>=2.0.1",
     "supervision>=0.28.0",
@@ -72,23 +68,14 @@ dependencies = [
     "transformers==5.12.1",
     "transformers-stream-generator==0.0.4",
     "tyro>=1.0.13",
-    "unrealcv>=1.2.0",
     "wandb>=0.26.0",
     "websocket>=0.2.1",
     "websocket-client==1.8.0",
     "websockets>=16.0",
     "yacs>=0.1.8",
     "yapf>=0.43.0",
-    "numpy-quaternion==2024.0.13",
-    "hydra-core==1.3.3",
-    "gym-notices==0.1.0",
     "cloudpickle==3.1.2",
-    "vln-dataset-conversion",
-    "vln-trajectory-augmentation",
-    "vln-waypoint-image-collection",
-    "habitat-sim==0.3.1",
-    "habitat-lab==0.3.1",
-    "magnum==0.0.0",
+    # Models, training, DINO and data processing are all part of base.
     "flash-attn==2.7.4.post1",
     "flash-linear-attention==0.4.2",
     "causal-conv1d==1.5.0.post8",
@@ -96,7 +83,26 @@ dependencies = [
     "pip==26.2.1",
 ]
 
+[project.scripts]
+vln-convert = "navvla_conversion.cli.convert_dataset:main"
+vln-validate = "navvla_conversion.cli.validate_dataset:main"
+vln-cosfly = "navvla_conversion.cli.cosfly:main"
+vln-render-vlnce = "navvla_conversion.cli.render_vlnce_rgb:main"
+vln-augment = "vln_aug.cli:main"
+vln-collect = "waypoint_collector.cli:main"
+
 [project.optional-dependencies]
+airsim = ["airsim==1.8.1", "msgpack-rpc-python==0.4.1"]
+habitat = [
+    "habitat-sim==0.3.1",
+    "habitat-lab==0.3.1",
+    "magnum==0.0.0",
+    "gym==0.23.0",
+    "gym-notices==0.1.0",
+    "numpy-quaternion==2024.0.13",
+    "hydra-core==1.3.3",
+]
+unrealcv = ["unrealcv>=1.2.0", "gym==0.23.0", "gym-notices==0.1.0"]
 dev = [
     "black>=24.2.0",
     "gpustat",
@@ -108,9 +114,15 @@ dev = [
 [tool.uv.extra-build-dependencies]
 airsim = ["numpy==1.26.4", "msgpack-rpc-python==0.4.1"]
 
+[tool.setuptools.package-dir]
+navvla_conversion = "data_pipeline/dataset_conversion/navvla_conversion"
+vln_aug = "data_pipeline/trajectory_augmentation/vln_aug"
+waypoint_collector = "data_pipeline/image_collection/waypoint_collector"
+airsim_plugin = "data_pipeline/image_collection/airsim_plugin"
+
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["starVLA*", "NavVLAeval*", "tool*", "deployment*", "examples*"]
+where = [".", "data_pipeline/dataset_conversion", "data_pipeline/trajectory_augmentation", "data_pipeline/image_collection"]
+include = ["starVLA*", "benchmark*", "tool*", "deployment*", "examples*", "navvla_conversion*", "vln_aug*", "waypoint_collector*", "airsim_plugin*"]
 exclude = [
     "tests",
     "cache",
@@ -121,7 +133,6 @@ exclude = [
     "eval",
     ".vscode",
     "*.egg-info",
-    "**.log",
     "*.tmp",
     "*.bak",
     "**__pycache__**",
@@ -135,7 +146,7 @@ exclude = [
 
 [tool.setuptools.package-data]
 "cogact" = ["py.typed"]
-"NavVLAeval.track.habitat" = ["config/**/*.yaml", "LICENSE"]
+"benchmark.track.habitat" = ["config/**/*.yaml", "LICENSE"]
 
 [tool.black]
 line-length = 121
@@ -153,13 +164,7 @@ ignore = ["F722"]
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402", "F401"]
 
-[tool.uv.workspace]
-members = ["data_pipeline/dataset_conversion", "data_pipeline/trajectory_augmentation", "data_pipeline/image_collection"]
-
 [tool.uv.sources]
-vln-dataset-conversion = { workspace = true }
-vln-trajectory-augmentation = { workspace = true }
-vln-waypoint-image-collection = { workspace = true }
 habitat-lab = { git = "https://github.com/facebookresearch/habitat-lab.git", rev = "142616776544f918c19e7f0392b65cc8cc69fa13", subdirectory = "habitat-lab" }
 habitat-sim = { path = "third_party/wheels/habitat_sim-0.3.1-cp310-cp310-linux_x86_64.whl" }
 magnum = { path = "third_party/wheels/magnum-0.0.0-cp310-cp310-linux_x86_64.whl" }
@@ -172,4 +177,5 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 default = true
 
 [tool.uv]
+# Supported target platform for dependency resolution, not a named environment.
 environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
